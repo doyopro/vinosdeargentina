@@ -55,16 +55,19 @@
             margin-top: 4px;
             position: relative;
             overflow: hidden;
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center top;
         }
         
         .wine-header::before {
             content: '';
             position: absolute;
             inset: 0;
-            background-image: url('https://images.unsplash.com/photo-1506377247377-2a5b3b0ca7df?auto=format&fit=crop&q=80&w=2070');
+            background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&q=80&w=2000&blend=https://images.unsplash.com/photo-1506912735681-80f25bf45d56?auto=format&fit=crop&q=80&w=2000&blend-mode=darken');
             background-size: cover;
             background-position: center;
-            opacity: 0.08;
+            opacity: 0.15;
             mix-blend-mode: overlay;
         }
         
@@ -72,7 +75,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(to bottom, transparent 50%, rgba(42, 2, 2, 0.3) 100%);
+            background: linear-gradient(135deg, rgba(42, 2, 2, 0.5) 0%, rgba(114, 0, 0, 0.3) 50%, rgba(42, 2, 2, 0.4) 100%);
         }
         
         .header-content {
@@ -567,12 +570,10 @@
             gap: 1rem;
             padding-bottom: 1rem;
             border-bottom: 1px solid var(--stone-200);
-            margin-bottom: 1rem;
         }
         
         .cart-item:last-child {
             border-bottom: none;
-            margin-bottom: 0;
         }
         
         .cart-item-name {
@@ -677,7 +678,6 @@
         .whatsapp-btn {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 12px;
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
@@ -686,7 +686,6 @@
             text-decoration: none;
             font-weight: 600;
             transition: background-color 0.2s;
-            margin: 0 auto;
         }
         
         .whatsapp-btn:hover {
@@ -761,18 +760,18 @@
                 <table id="product-list">
                     <thead>
                         <tr>
-                            <th style="width: 20%;">Bodega / Origen</th>
+                            <th style="width: 18%;">Bodega / Origen</th>
                             <th style="width: 35%;">Vino & Detalles</th>
-                            <th style="width: 10%; text-align: center;">Formato</th>
-                            <th style="width: 10%; text-align: right;">Precio Bot.</th>
+                            <th style="width: 12%; text-align: center;">Formato</th>
+                            <th style="width: 12%; text-align: right;">Precio Bot.</th>
                             <th style="width: 15%; text-align: right; background: var(--stone-100);">Precio Caja</th>
-                            <th style="width: 10%; text-align: center; background: var(--red-50);">Cajas</th>
+                            <th style="width: 8%; text-align: center; background: var(--red-50);">Cajas</th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- NORTE -->
-                        <tr>
-                            <td colspan="6" class="region-header">Valles Calchaquíes y Norte Argentino (Hasta 2500m)</td>
+                        <tr class="region-header">
+                            <td colspan="6">Valles Calchaquíes y Norte Argentino (Hasta 2500m)</td>
                         </tr>
                         
                         <tr data-name="The Llama (Malbec / Torrontés / Rosé)" data-bottle="10.20" data-box="6">
@@ -781,9 +780,9 @@
                                 <div class="bodega-location">Cafayate (1700m)</div>
                             </td>
                             <td>
-                                <div class="wine-name">The Llama (Mix Variedades)</div>
+                                <div class="wine-name">The Llama (Malbec / Torrontés / Rosé)</div>
                                 <div class="wine-notes">Malbec con fruta roja y pimienta negra. Torrontés luminoso.</div>
-                                <a href="docs/catalogo-dealtura.pdf" target="_blank" class="wine-link">
+                                <a href="https://dealturawines.com/es/" target="_blank" class="wine-link">
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                     + Información
                                 </a>
@@ -808,7 +807,7 @@
                             <td>
                                 <div class="wine-name">Punta Corral 2022</div>
                                 <div class="wine-notes">Corte de Malbec, Syrah y Cab. Franc. 10 meses en roble. Notas de morrón verde.</div>
-                                <a href="docs/catalogo-dealtura.pdf" target="_blank" class="wine-link">
+                                <a href="https://dealturawines.com/es/" target="_blank" class="wine-link">
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                     + Información
                                 </a>
@@ -833,7 +832,7 @@
                             <td>
                                 <div class="wine-name">Franc Dupont / Sikuri 2022</div>
                                 <div class="wine-notes">Vinos de extrema altitud. Sikuri ofrece notas de carnes ahumadas y pimienta negra.</div>
-                                <a href="docs/catalogo-dealtura.pdf" target="_blank" class="wine-link">
+                                <a href="https://dealturawines.com/es/" target="_blank" class="wine-link">
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                     + Información
                                 </a>
@@ -858,7 +857,7 @@
                             <td>
                                 <div class="wine-name">Pascana 2021</div>
                                 <div class="wine-notes">18 meses en barrica. Intenso, especiado. Proyecto de Familia Etchart & Michel Rolland.</div>
-                                <a href="docs/catalogo-dealtura.pdf" target="_blank" class="wine-link">
+                                <a href="https://dealturawines.com/es/" target="_blank" class="wine-link">
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                     + Información
                                 </a>
@@ -874,35 +873,10 @@
                                 </div>
                             </td>
                         </tr>
-
-                        <tr data-name="Coquena Tannat 2025" data-bottle="12.00" data-box="6">
-                            <td>
-                                <div class="bodega-name">Bodega Yacochuya</div>
-                                <div class="bodega-location">Cafayate (1700m)</div>
-                            </td>
-                            <td>
-                                <div class="wine-name">Coquena Tannat 2025</div>
-                                <div class="wine-notes">Potencia y frescura. Aromas de fruta negra y tipicidad del varietal con taninos firmes.</div>
-                                <a href="docs/catalogo-dealtura.pdf" target="_blank" class="wine-link">
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                    + Información
-                                </a>
-                            </td>
-                            <td><span class="format-tag">Caja 6</span></td>
-                            <td class="price-bottle">12,00 €</td>
-                            <td class="price-box">72,00 €</td>
-                            <td class="qty-cell">
-                                <div class="qty-controls">
-                                    <button class="qty-btn minus" onclick="updateTableQty(this, -1)">−</button>
-                                    <span class="qty-display">0</span>
-                                    <button class="qty-btn plus" onclick="updateTableQty(this, 1)">+</button>
-                                </div>
-                            </td>
-                        </tr>
                         
                         <!-- CUYO -->
-                        <tr>
-                            <td colspan="6" class="region-header">Región de Cuyo y Valle de Uco</td>
+                        <tr class="region-header">
+                            <td colspan="6">Región de Cuyo y Valle de Uco</td>
                         </tr>
                         
                         <tr data-name="Malbec / Chardonnay 2024" data-bottle="6.00" data-box="12">
@@ -913,7 +887,7 @@
                             <td>
                                 <div class="wine-name">Malbec / Chardonnay 2024 <span style="display: inline-block; background: #fef08a; color: #854d0e; font-size: 0.7rem; padding: 0.2rem 0.4rem; border-radius: 3px; font-weight: 600; margin-left: 0.5rem;">ORO</span></div>
                                 <div class="wine-notes">Malbec afrutado, cerezas y ciruelas. Taninos redondos. Premiado por Gilbert & Gaillard.</div>
-                                <a href="docs/ficha-buenos-aires.pdf" target="_blank" class="wine-link">
+                                <a href="https://dealturawines.com/es/" target="_blank" class="wine-link">
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                     Ficha Técnica
                                 </a>
@@ -938,7 +912,7 @@
                             <td>
                                 <div class="wine-name">Orange Field 2024 <span style="display: inline-block; background: #dcfce7; color: #15803d; font-size: 0.7rem; padding: 0.2rem 0.4rem; border-radius: 3px; font-weight: 600; margin-left: 0.5rem;">ORGÁNICO</span></div>
                                 <div class="wine-notes">Vino de Garage. Blend de criollas argentinas co-fermentado 90 días con pieles.</div>
-                                <a href="docs/catalogo-dealtura.pdf" target="_blank" class="wine-link">
+                                <a href="https://dealturawines.com/es/" target="_blank" class="wine-link">
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                     + Información
                                 </a>
@@ -946,31 +920,6 @@
                             <td><span class="format-tag">Caja 12</span></td>
                             <td class="price-bottle">13,20 €</td>
                             <td class="price-box">158,40 €</td>
-                            <td class="qty-cell">
-                                <div class="qty-controls">
-                                    <button class="qty-btn minus" onclick="updateTableQty(this, -1)">−</button>
-                                    <span class="qty-display">0</span>
-                                    <button class="qty-btn plus" onclick="updateTableQty(this, 1)">+</button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr data-name="Criolla Clarete / Blanca 2025" data-bottle="11.40" data-box="12">
-                            <td>
-                                <div class="bodega-name">Paso a Paso Wines</div>
-                                <div class="bodega-location">Valle de Uco (1200m)</div>
-                            </td>
-                            <td>
-                                <div class="wine-name">Criolla Clarete / Blanca 2025</div>
-                                <div class="wine-notes">Elaboradores artesanales rescatando cepas clásicas. Un vino original con notable frescura.</div>
-                                <a href="docs/catalogo-dealtura.pdf" target="_blank" class="wine-link">
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                    + Información
-                                </a>
-                            </td>
-                            <td><span class="format-tag">Caja 12</span></td>
-                            <td class="price-bottle">11,40 €</td>
-                            <td class="price-box">136,80 €</td>
                             <td class="qty-cell">
                                 <div class="qty-controls">
                                     <button class="qty-btn minus" onclick="updateTableQty(this, -1)">−</button>
@@ -988,7 +937,7 @@
                             <td>
                                 <div class="wine-name">Cab Franc / Alcaparrosa / Ripasso</div>
                                 <div class="wine-notes">Microvinificaciones en huevos de concreto. El Ripasso aporta color vivo y pimiento rojo.</div>
-                                <a href="docs/catalogo-dealtura.pdf" target="_blank" class="wine-link">
+                                <a href="https://dealturawines.com/es/" target="_blank" class="wine-link">
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                     + Información
                                 </a>
@@ -1013,7 +962,7 @@
                             <td>
                                 <div class="wine-name">Gran Sombrerero Malbec</div>
                                 <div class="wine-notes">Nacido en micro-terroirs exclusivos, aportando estructura y tensión calcárea.</div>
-                                <a href="docs/catalogo-dealtura.pdf" target="_blank" class="wine-link">
+                                <a href="https://dealturawines.com/es/" target="_blank" class="wine-link">
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                     + Información
                                 </a>
@@ -1029,35 +978,10 @@
                                 </div>
                             </td>
                         </tr>
-
-                        <tr data-name="Blanc de Malbec 2023" data-bottle="11.40" data-box="6">
-                            <td>
-                                <div class="bodega-name">Coloso Wines</div>
-                                <div class="bodega-location">Agrelo (900m)</div>
-                            </td>
-                            <td>
-                                <div class="wine-name">Blanc de Malbec 2023</div>
-                                <div class="wine-notes">Vinificado "Blanc de Noir". Aromas frescos y florales con acidez viva.</div>
-                                <a href="docs/catalogo-dealtura.pdf" target="_blank" class="wine-link">
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                    + Información
-                                </a>
-                            </td>
-                            <td><span class="format-tag">Caja 6</span></td>
-                            <td class="price-bottle">11,40 €</td>
-                            <td class="price-box">68,40 €</td>
-                            <td class="qty-cell">
-                                <div class="qty-controls">
-                                    <button class="qty-btn minus" onclick="updateTableQty(this, -1)">−</button>
-                                    <span class="qty-display">0</span>
-                                    <button class="qty-btn plus" onclick="updateTableQty(this, 1)">+</button>
-                                </div>
-                            </td>
-                        </tr>
                         
                         <!-- PATAGONIA -->
-                        <tr>
-                            <td colspan="6" class="region-header">Patagonia Argentina</td>
+                        <tr class="region-header">
+                            <td colspan="6">Patagonia Argentina</td>
                         </tr>
                         
                         <tr data-name="Merlot / Cab. Franc / Pinot" data-bottle="14.40" data-box="6">
@@ -1068,7 +992,7 @@
                             <td>
                                 <div class="wine-name">Merlot / Cab. Franc / Pinot Noir</div>
                                 <div class="wine-notes">Crianza de 9 meses en roble. Aromas de frutos negros maduros con personalidad marcada.</div>
-                                <a href="docs/catalogo-dealtura.pdf" target="_blank" class="wine-link">
+                                <a href="https://dealturawines.com/es/" target="_blank" class="wine-link">
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                     + Información
                                 </a>
@@ -1076,31 +1000,6 @@
                             <td><span class="format-tag">Caja 6</span></td>
                             <td class="price-bottle">14,40 €</td>
                             <td class="price-box">86,40 €</td>
-                            <td class="qty-cell">
-                                <div class="qty-controls">
-                                    <button class="qty-btn minus" onclick="updateTableQty(this, -1)">−</button>
-                                    <span class="qty-display">0</span>
-                                    <button class="qty-btn plus" onclick="updateTableQty(this, 1)">+</button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr data-name="Pampeano Pinot Noir 2024" data-bottle="12.00" data-box="6">
-                            <td>
-                                <div class="bodega-name">Bodega del Desierto</div>
-                                <div class="bodega-location">La Pampa (300m)</div>
-                            </td>
-                            <td>
-                                <div class="wine-name">Pampeano Pinot Noir 2024</div>
-                                <div class="wine-notes">Terruño luminoso. Pinot Noir sutil con frescura, fruta roja y carácter mineral.</div>
-                                <a href="docs/catalogo-dealtura.pdf" target="_blank" class="wine-link">
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                    + Información
-                                </a>
-                            </td>
-                            <td><span class="format-tag">Caja 6</span></td>
-                            <td class="price-bottle">12,00 €</td>
-                            <td class="price-box">72,00 €</td>
                             <td class="qty-cell">
                                 <div class="qty-controls">
                                     <button class="qty-btn minus" onclick="updateTableQty(this, -1)">−</button>
