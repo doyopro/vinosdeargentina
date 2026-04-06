@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>De Altura Wines | Marketplace Canarias 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #fdfbf7;
+            color: #2c2c2a;
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; }
+        
+        /* Color System */
+        :root {
+            --wine-dark: #4a0404;
+            --wine-bright: #720000;
+            --wine-accent: #a82828;
+            --amber-light: #fae4b6;
+            --amber-dark: #d4851a;
+            --stone-50: #fef9f6;
+            --stone-100: #f9fafa;
+            --stone-200: #f3f4f6;
+            --stone-400: #9ca3af;
+            --stone-500: #6b7280;
+            --stone-900: #1f2937;
+            --red-50: #fef2f2;
+            --red-100: #fee2e2;
+            --red-800: #991b1b;
+        }
+        
+        /* Canarias Flag Bar */
+        .canarias-flag-bar {
+            height: 4px;
+            background: linear-gradient(to right, #ffffff 33.3%, #00a1e4 33.3%, #00a1e4 66.6%, #fcd116 66.6%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        /* Header */
+        .wine-header {
+            background: linear-gradient(135deg, var(--wine-dark) 0%, var(--wine-bright) 100%);
+            color: white;
+            padding: 5rem 2rem 4rem;
+            margin-top: 4px;
+            position: relative;
+            overflow: hidden;
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center top;
+        }
+        
+        .wine-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url('imagenes/andes-hero.png');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15;
+            mix-blend-mode: overlay;
+        }
+        
+        .wine-header::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(42, 2, 2, 0.5) 0%, rgba(114, 0, 0, 0.3) 50%, rgba(42, 2, 2, 0.4) 100%);
+        }
+        
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
+        
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(8px);
+        }
+        
+        .pulse-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .header-badge span { display: inline; }
+        
+        .header-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .header-title { font-size: 2.5rem; }
+        }
+        
+        .header-subtitle {
+            font-size: 1.25rem;
+            font-weight: 300;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header-divider {
+            width: 40px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            margin: 1.5rem auto;
+        }
+        
+        .header-description {
+            font-size: 0.95rem;
+            font-weight: 300;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+            line-height: 1.8;
+        }
+        
+        /* Info Card */
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            padding: 2rem;
+            max-width: 1000px;
+            margin: -40px auto 0;
+            position: relative;
+            z-index: 20;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 2rem;
+            align-items: center;
+            border-top: 3px solid var(--wine-bright);
+        }
+        
+        @media (max-width: 768px) {
+            .info-card {
+                grid-template-columns: 1fr;
+                margin: -30px 1rem 0;
+            }
+        }
+        
+        .info-content h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--stone-900);
+        }
+        
+        .info-content p {
+            color: var(--stone-500);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .info-badge {
+            display: inline-block;
+            background: var(--red-50);
+            color: var(--red-800);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            border: 1px solid #fecaca;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .contact-block {
+            text-align: right;
+        }
+        
+        .contact-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--amber-dark);
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.25rem;
+        }
+        
+        .contact-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--stone-900);
+            margin-bottom: 0.25rem;
+        }
+        
+        .contact-phone {
+            font-size: 1rem;
+            color: var(--wine-bright);
+            font-weight: 600;
+        }
+        
+        /* Main Content */
+        main {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 1rem;
+        }
+        
+        .catalog-wrapper {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            overflow: hidden;
+            border: 1px solid #f3f4f6;
+        }
+        
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+        
+        thead {
+            background: var(--stone-100);
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--stone-500);
+        }
+        
+        tbody tr {
+            border-bottom: 1px solid var(--stone-200);
+            transition: background-color 0.2s ease;
+        }
+        
+        tbody tr:hover {
+            background-color: var(--stone-50);
+        }
+        
+        tbody tr.selected-row {
+            background-color: var(--red-50);
+        }
+        
+        td {
+            padding: 1rem;
+            vertical-align: middle;
+            font-size: 0.9rem;
+        }
+        
+        .region-header {
+            background-color: var(--red-50);
+            color: var(--red-800);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.8rem;
+            padding: 0.75rem 1rem;
+        }
+        
+        .bodega-name {
+            font-weight: 600;
+            color: var(--stone-900);
+            font-size: 0.95rem;
+        }
+        
+        .bodega-location {
+            color: var(--stone-400);
+            font-size: 0.8rem;
+            font-style: italic;
+            margin-top: 0.25rem;
+        }
+        
+        .wine-name {
+            font-weight: 600;
+            color: var(--stone-900);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .wine-notes {
+            font-size: 0.8rem;
+            color: var(--stone-500);
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+        }
+        
+        .wine-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--wine-bright);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .wine-link:hover {
+            color: var(--wine-dark);
+        }
+        
+        .wine-link svg {
+            width: 12px;
+            height: 12px;
+        }
+        
+        .format-tag {
+            display: inline-block;
+            background: var(--stone-100);
+            color: var(--stone-600);
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .price-bottle {
+            text-align: right;
+            color: var(--stone-600);
+            font-weight: 500;
+        }
+        
+        .price-box {
+            text-align: right;
+            font-weight: 700;
+            color: var(--stone-900);
+            font-size: 1.05rem;
+            background: var(--stone-100);
+            padding: 1rem !important;
+        }
+        
+        .qty-cell {
+            text-align: center;
+            background: var(--red-50);
+            padding: 1rem !important;
+        }
+        
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 4px;
+            width: fit-content;
+            margin: 0 auto;
+        }
+        
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--stone-600);
+            border-radius: 4px;
+            transition: background-color 0.2s, color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .qty-btn:hover {
+            background-color: var(--stone-200);
+        }
+        
+        .qty-btn.plus {
+            background-color: var(--wine-bright);
+            color: white;
+        }
+        
+        .qty-btn.plus:hover {
+            background-color: var(--wine-dark);
+        }
+        
+        .qty-display {
+            font-weight: 700;
+            color: var(--wine-bright);
+            font-size: 0.95rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* Cart Button */
+        .cart-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 50;
+            background: var(--wine-bright);
+            color: white;
+            border: 2px solid white;
+            padding: 1rem;
+            border-radius: 50%;
+            width: 64px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(114, 0, 0, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .cart-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 32px rgba(114, 0, 0, 0.4);
+        }
+        
+        .cart-button svg {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff6b6b;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 700;
+            border: 2px solid white;
+        }
+        
+        .cart-count.updated {
+            animation: bounce 0.4s ease-in-out;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+        
+        /* Cart Drawer */
+        .cart-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 60;
+            backdrop-filter: blur(4px);
+        }
+        
+        .cart-overlay.active {
+            display: block;
+        }
+        
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            z-index: 70;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -4px 0 16px rgba(0,0,0,0.1);
+        }
+        
+        .cart-drawer.active {
+            transform: translateX(0);
+        }
+        
+        .cart-header {
+            background: var(--stone-50);
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .cart-header h2 {
+            font-size: 1.5rem;
+            margin: 0;
+            color: var(--wine-dark);
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: var(--stone-400);
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+        
+        .close-btn:hover {
+            color: var(--stone-900);
+        }
+        
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--stone-200);
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cart-item-name {
+            font-weight: 600;
+            color: var(--stone-900);
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .cart-item-qty {
+            font-size: 0.8rem;
+            color: var(--amber-dark);
+            font-weight: 600;
+        }
+        
+        .cart-item-qty-note {
+            font-size: 0.75rem;
+            color: var(--stone-400);
+        }
+        
+        .cart-item-price {
+            font-weight: 700;
+            color: var(--wine-bright);
+            font-size: 1rem;
+            white-space: nowrap;
+        }
+        
+        .cart-empty {
+            text-align: center;
+            color: var(--stone-400);
+            font-style: italic;
+            padding: 3rem 1rem;
+        }
+        
+        .cart-footer {
+            background: var(--stone-50);
+            border-top: 1px solid #e5e7eb;
+            padding: 1.5rem;
+        }
+        
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--stone-900);
+            margin-bottom: 1rem;
+        }
+        
+        .cart-note {
+            font-size: 0.7rem;
+            color: var(--stone-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        
+        .checkout-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--wine-bright);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .checkout-btn:hover {
+            background-color: var(--wine-dark);
+        }
+        
+        /* Footer */
+        footer {
+            background: #2a2a28;
+            color: white;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+            text-align: center;
+        }
+        
+        footer h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--amber-light);
+        }
+        
+        footer p {
+            color: #999;
+            margin-bottom: 2rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+        
+        .whatsapp-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        
+        .whatsapp-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .whatsapp-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .footer-bottom {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+            color: #666;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header-title { font-size: 2.2rem; }
+            .header-subtitle { font-size: 1.1rem; }
+            .table-container { font-size: 0.85rem; }
+            th, td { padding: 0.75rem; }
+            .cart-drawer {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Canarias Flag Bar -->
+    <div class="canarias-flag-bar"></div>
+    
+    <!-- Header -->
+    <header class="wine-header">
+        <div class="header-content">
+            <div class="header-badge">
+                <span class="pulse-dot"></span>
+                <span>Distribución Oficial · Canarias 2026</span>
+            </div>
+            <h1 class="header-title">De Altura Wines</h1>
+            <p class="header-subtitle">La excelencia de los Andes, directo a Islas Canarias.</p>
+            <div class="header-divider"></div>
+            <p class="header-description">Apostamos por la calidad y autenticidad de los terruños más extremos. Catálogo de vinos de altura para consumidores curiosos, compradores directos y profesionales HORECA.</p>
+        </div>
+    </header>
+    
+    <!-- Info Card -->
+    <section style="padding: 0 1rem;">
+        <div class="info-card">
+            <div class="info-content">
+                <h2>Tarifas de Distribución</h2>
+                <p>Seleccione las cajas que desee. Envíos garantizados a todo el archipiélago.</p>
+                <div class="info-badge">* Tarifas netas (IGIC / AIEM no incluidos)</div>
+            </div>
+            <div class="contact-block">
+                <div class="contact-label">Asistencia y HORECA</div>
+                <div class="contact-name">Equipo Comercial</div>
+                <div class="contact-phone">+34 633 706 676</div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Main Catalog -->
+    <main>
+        <div class="catalog-wrapper">
+            <div class="table-container">
+                <table id="product-list">
+                    <thead>
+                        <tr>
+                            <th style="width: 18%;">Bodega / Origen</th>
+                            <th style="width: 35%;">Vino & Detalles</th>
+                            <th style="width: 12%; text-align: center;">Formato</th>
+                            <th style="width: 12%; text-align: right;">Precio Bot.</th>
+                            <th style="width: 15%; text-align: right; background: var(--stone-100);">Precio Caja</th>
+                            <th style="width: 8%; text-align: center; background: var(--red-50);">Cajas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- NORTE -->
+                        <tr class="region-header">
+                            <td colspan="6">Valles Calchaquíes y Norte Argentino (Hasta 2500m)</td>
+                        </tr>
+                        
+                        <tr data-name="The Llama (Malbec / Torrontés / Rosé)" data-bottle="11.22" data-box="6">
+                            <td>
+                                <div class="bodega-name">Viñas en Flor</div>
+                                <div class="bodega-location">Cafayate (1700m)</div>
+                            </td>
+                            <td>
+                                <div class="wine-name">The Llama (Malbec / Torrontés / Rosé)</div>
+                                <div class="wine-notes">Malbec con fruta roja y pimienta negra. Torrontés luminoso.</div>
+                                <a href="https://dealturawines.com/es/" target="_blank" class="wine-link">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    + Información
+                                </a>
+                            </td>
+                            <td><span class="format-tag">Caja 6</span></td>
+                            <td class="price-bottle">11,22 €</td>
+                            <td class="price-box">61,20 €</td>
+                            <td class="qty-cell">
+                                <div class="qty-controls">
+                                    <button class="qty-btn minus" onclick="updateTableQty(this, -1)">−</button>
+                                    <span class="qty-display">0</span>
+                                    <button class="qty-btn plus" onclick="updateTableQty(this, 1)">+</button>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr data-name="Punta Corral 2022" data-bottle="19.80" data-box="6">
+                            <td>
+                                <div class="bodega-name">Fernando Dupont</div>
+                                <div class="bodega-location">Maimará (2500m)</div>
+                            </td>
+                            <td>
+                                <div class="wine-name">Punta Corral 2022</div>
+                                <div class="wine-notes">Corte de Malbec, Syrah y Cab. Franc. 10 meses en roble. Notas de morrón verde.</div>
+                                <a href="https://dealturawines.com/es/" target="_blank" class="wine-link">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    + Información
+                                </a>
+                            </td>
+                            <td><span class="format-tag">Caja 6</span></td>
+                            <td class="price-bottle">19,80 €</td>
+                            <td class="price-box">108,00 €</td>
+                            <td class="qty-cell">
+                                <div class="qty-controls">
+                                    <button class="qty-btn minus" onclick="updateTableQty(this, -1)">−</button>
+                                    <span class="qty-display">0</span>
+                                    <button class="qty-btn plus" onclick="updateTableQty(this, 1)">+</button>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr data-name="Franc Dupont / Sikuri 2022" data-bottle="25.08" data-box="6">
+                            <td>
+                                <div class="bodega-name">Fernando Dupont</div>
+                                <div class="bodega-location">Jujuy (2800m)</div>
+                            </td>
+                            <td>
+                                <div class="wine-name">Franc Dupont / Sikuri 2022</div>
+                                <div class="wine-notes">Vinos de extrema altitud. Sikuri ofrece notas de carnes ahumadas y pimienta negra.</div>
+                                <a href="https://dealturawines.com/es/" target="_blank" class="wine-link">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    + Información
+                                </a>
+                            </td>
+                            <td><span class="format-tag">Caja 6</span></td>
+                            <td class="price-bottle">25,08 €</td>
+                            <td class="price-box">136,80 €</td>
+                            <td class="qty-cell">
+                                <div class="qty-controls">
+                                    <button class="qty-btn minus" onclick="updateTableQty(this, -1)">−</button>
+                                    <span class="qty-display">0</span>
+                                    <button class="qty-btn plus" onclick="updateTableQty(this, 1)">+</button>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr data-name="Pascana 2021" data-bottle="36.96" data-box="6">
+                            <td>
+                                <div class="bodega-name">Bodega Yacochuya</div>
+                                <div class="bodega-location">Cafayate (1700m)</div>
+                            </td>
+                            <td>
+                                <div class="wine-name">Pascana 2021</div>
+                                <div class="wine-notes">18 meses en barrica. Intenso, especiado. Proyecto de Familia Etchart & Michel Rolland.</div>
+                                <a href="https://dealturawines.com/es/" target="_blank" class="wine-link">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    + Información
+                                </a>
+                            </td>
+                            <td><span class="format-tag">Caja 6</span></td>
+                            <td class="price-bottle">36,96 €</td>
+                            <td class="price-box">201,60 €</td>
+                            <td class="qty-cell">
+                                <div class="qty-controls">
+                                    <button class="qty-btn minus" onclick="updateTableQty(this, -1)">−</button>
+                                    <span class="qty-display">0</span>
+                                    <button class="qty-btn plus" onclick="updateTableQty(this, 1)">+</button>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- CUYO -->
+                        <tr class="region-header">
+                            <td colspan="6">Región de Cuyo y Valle de Uco</td>
+                        </tr>
+                        
+                        <tr data-name="Malbec / Chardonnay 2024" data-bottle="6.60" data-box="12">
+                            <td>
+                                <div class="bodega-name">Buenos Aires</div>
+                                <div class="bodega-location">Mendoza (1000m)</div>
+                            </td>
+                            <td>
+                                <div class="wine-name">Malbec / Chardonnay 2024 <span style="display: inline-block; background: #fef08a; color: #854d0e; font-size: 0.7rem; padding: 0.2rem 0.4rem; border-radius: 3px; font-weight: 600; margin-left: 0.5rem;">ORO</span></div>
+                                <div class="wine-notes">Malbec afrutado, cerezas y ciruelas. Taninos redondos. Premiado por Gilbert & Gaillard.</div>
+                                <a href="https://dealturawines.com/es/" target="_blank" class="wine-link">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    Ficha Técnica
+                                </a>
+                            </td>
+                            <td><span class="format-tag">Caja 12</span></td>
+                            <td class="price-bottle">6,60 €</td>
+                            <td class="price-box">72,00 €</td>
+                            <td class="qty-cell">
+                                <div class="qty-controls">
+                                    <button class="qty-btn minus" onclick="updateTableQty(this, -1)">−</button>
+                                    <span class="qty-display">0</span>
+                                    <button class="qty-btn plus" onclick="updateTableQty(this, 1)">+</button>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr data-name="Orange Field 2024" data-bottle="14.52" data-box="12">
+                            <td>
+                                <div class="bodega-name">Paso a Paso Wines</div>
+                                <div class="bodega-location">Valle de Uco (1200m)</div>
+                            </td>
+                            <td>
+                                <div class="wine-name">Orange Field 2024 <span style="display: inline-block; background: #dcfce7; color: #15803d; font-size: 0.7rem; padding: 0.2rem 0.4rem; border-radius: 3px; font-weight: 600; margin-left: 0.5rem;">ORGÁNICO</span></div>
+                                <div class="wine-notes">Vino de Garage. Blend de criollas argentinas co-fermentado 90 días con pieles.</div>
+                                <a href="https://dealturawines.com/es/" target="_blank" class="wine-link">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    + Información
+                                </a>
+                            </td>
+                            <td><span class="format-tag">Caja 12</span></td>
+                            <td class="price-bottle">14,52 €</td>
+                            <td class="price-box">158,40 €</td>
+                            <td class="qty-cell">
+                                <div class="qty-controls">
+                                    <button class="qty-btn minus" onclick="updateTableQty(this, -1)">−</button>
+                                    <span class="qty-display">0</span>
+                                    <button class="qty-btn plus" onclick="updateTableQty(this, 1)">+</button>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr data-name="Cab Franc / Ripasso" data-bottle="13.86" data-box="6">
+                            <td>
+                                <div class="bodega-name">Nido del Tigre</div>
+                                <div class="bodega-location">Calingasta (1500m)</div>
+                            </td>
+                            <td>
+                                <div class="wine-name">Cab Franc / Alcaparrosa / Ripasso</div>
+                                <div class="wine-notes">Microvinificaciones en huevos de concreto. El Ripasso aporta color vivo y pimiento rojo.</div>
+                                <a href="https://dealturawines.com/es/" target="_blank" class="wine-link">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    + Información
+                                </a>
+                            </td>
+                            <td><span class="format-tag">Caja 6</span></td>
+                            <td class="price-bottle">13,86 €</td>
+                            <td class="price-box">75,60 €</td>
+                            <td class="qty-cell">
+                                <div class="qty-controls">
+                                    <button class="qty-btn minus" onclick="updateTableQty(this, -1)">−</button>
+                                    <span class="qty-display">0</span>
+                                    <button class="qty-btn plus" onclick="updateTableQty(this, 1)">+</button>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr data-name="Gran Sombrerero Malbec" data-bottle="17.16" data-box="6">
+                            <td>
+                                <div class="bodega-name">Huentala Wines</div>
+                                <div class="bodega-location">Gualtallary (1400m)</div>
+                            </td>
+                            <td>
+                                <div class="wine-name">Gran Sombrerero Malbec</div>
+                                <div class="wine-notes">Nacido en micro-terroirs exclusivos, aportando estructura y tensión calcárea.</div>
+                                <a href="https://dealturawines.com/es/" target="_blank" class="wine-link">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    + Información
+                                </a>
+                            </td>
+                            <td><span class="format-tag">Caja 6</span></td>
+                            <td class="price-bottle">17,16 €</td>
+                            <td class="price-box">93,60 €</td>
+                            <td class="qty-cell">
+                                <div class="qty-controls">
+                                    <button class="qty-btn minus" onclick="updateTableQty(this, -1)">−</button>
+                                    <span class="qty-display">0</span>
+                                    <button class="qty-btn plus" onclick="updateTableQty(this, 1)">+</button>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- PATAGONIA -->
+                        <tr class="region-header">
+                            <td colspan="6">Patagonia Argentina</td>
+                        </tr>
+                        
+                        <tr data-name="Merlot / Cab. Franc / Pinot" data-bottle="15.84" data-box="6">
+                            <td>
+                                <div class="bodega-name">Bodega del Desierto</div>
+                                <div class="bodega-location">La Pampa (300m)</div>
+                            </td>
+                            <td>
+                                <div class="wine-name">Merlot / Cab. Franc / Pinot Noir</div>
+                                <div class="wine-notes">Crianza de 9 meses en roble. Aromas de frutos negros maduros con personalidad marcada.</div>
+                                <a href="https://dealturawines.com/es/" target="_blank" class="wine-link">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    + Información
+                                </a>
+                            </td>
+                            <td><span class="format-tag">Caja 6</span></td>
+                            <td class="price-bottle">15,84 €</td>
+                            <td class="price-box">86,40 €</td>
+                            <td class="qty-cell">
+                                <div class="qty-controls">
+                                    <button class="qty-btn minus" onclick="updateTableQty(this, -1)">−</button>
+                                    <span class="qty-display">0</span>
+                                    <button class="qty-btn plus" onclick="updateTableQty(this, 1)">+</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Cart Button -->
+    <button class="cart-button" onclick="toggleCart()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+        <span id="cart-count">0</span>
+        <div id="cart-count-badge" class="cart-count" style="display: none;">0</div>
+    </button>
+    
+    <!-- Cart Drawer -->
+    <div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+    <aside class="cart-drawer" id="cart-drawer">
+        <div class="cart-header">
+            <h2>Su Pedido</h2>
+            <button class="close-btn" onclick="toggleCart()">×</button>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <p class="cart-empty">Su carrito está vacío</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Subtotal Base:</span>
+                <span id="cart-total">0,00 €</span>
+            </div>
+            <p class="cart-note">* IGIC / AIEM se calcularán en el siguiente paso (Stripe).</p>
+            <button class="checkout-btn" onclick="checkout()">Procesar Pago Seguro</button>
+        </div>
+    </aside>
+    
+    <!-- Footer -->
+    <footer>
+        <h2>Asistencia & HORECA</h2>
+        <p>¿Dudas sobre su pedido o tarifas por volumen para hostelería? Nuestro equipo le asesorará directamente.</p>
+        <a href="https://wa.me/34633706676?text=Hola,%20deseo%20hacer%20una%20consulta%20sobre%20el%20Catálogo%20de%20Vinos" class="whatsapp-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+            Contactar por WhatsApp
+        </a>
+        <div class="footer-bottom">
+            <a href="https://dealturawines.com" style="color: inherit; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#d4851a'" onmouseout="this.style.color='inherit'">www.dealturawines.com</a>
+            <span>© 2026 De Altura Wines · Canarias</span>
+        </div>
+    </footer>
+    
+    <!-- Cart Logic -->
+    <script>
+        let cart = {};
+        
+        function updateTableQty(btn, change) {
+            const row = btn.closest('tr');
+            const name = row.getAttribute('data-name');
+            const bottlePrice = parseFloat(row.getAttribute('data-bottle'));
+            const boxSize = parseInt(row.getAttribute('data-box'));
+            const display = row.querySelector('.qty-display');
+            
+            let currentCajas = parseInt(display.innerText) || 0;
+            let newCajas = Math.max(0, currentCajas + change);
+            
+            display.innerText = newCajas;
+            
+            if (newCajas > 0) {
+                cart[name] = {
+                    cajas: newCajas,
+                    botellas: newCajas * boxSize,
+                    precioCaja: bottlePrice * boxSize
+                };
+                row.classList.add('selected-row');
+            } else {
+                delete cart[name];
+                row.classList.remove('selected-row');
+            }
+            
+            renderCart();
+        }
+        
+        function renderCart() {
+            const itemsContainer = document.getElementById('cart-items');
+            const totalContainer = document.getElementById('cart-total');
+            const countContainer = document.getElementById('cart-count');
+            const countBadge = document.getElementById('cart-count-badge');
+            
+            itemsContainer.innerHTML = '';
+            let total = 0;
+            let countCajas = 0;
+            
+            Object.keys(cart).forEach(name => {
+                const item = cart[name];
+                const itemTotal = item.cajas * item.precioCaja;
+                total += itemTotal;
+                countCajas += item.cajas;
+                
+                itemsContainer.innerHTML += `
+                    <div class="cart-item">
+                        <div style="flex: 1;">
+                            <div class="cart-item-name">${name}</div>
+                            <div class="cart-item-qty">${item.cajas} Caja(s)</div>
+                            <div class="cart-item-qty-note">(${item.botellas} botellas)</div>
+                        </div>
+                        <div class="cart-item-price">${itemTotal.toFixed(2)} €</div>
+                    </div>
+                `;
+            });
+            
+            if (countCajas === 0) {
+                itemsContainer.innerHTML = '<p class="cart-empty">Su carrito está vacío</p>';
+            }
+            
+            totalContainer.innerText = total.toFixed(2) + ' €';
+            countContainer.innerText = countCajas;
+            
+            if (countCajas > 0) {
+                countBadge.innerText = countCajas;
+                countBadge.style.display = 'flex';
+                countBadge.classList.add('updated');
+                setTimeout(() => countBadge.classList.remove('updated'), 400);
+            } else {
+                countBadge.style.display = 'none';
+            }
+        }
+        
+        function toggleCart() {
+            if (Object.keys(cart).length === 0 && !document.getElementById('cart-drawer').classList.contains('active')) {
+                const btn = document.querySelector('.cart-button');
+                btn.style.opacity = '0.6';
+                setTimeout(() => { btn.style.opacity = '1'; }, 300);
+                return;
+            }
+            
+            document.getElementById('cart-drawer').classList.toggle('active');
+            document.getElementById('cart-overlay').classList.toggle('active');
+        }
+        
+        function checkout() {
+            alert('Redirigiendo a la pasarela segura de pago...\n\n(Próxima Fase: Conexión con Stripe)');
+            console.log("Resumen de Pedido:", cart);
+        }
+    </script>
+</body>
+</html>
