@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>De Altura Wines | Selección Canarias 2026</title>
+    <title>De Altura Wines | Marketplace Canarias 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -15,26 +15,60 @@
             background: linear-gradient(to right, #ffffff 33.3%, #00a1e4 33.3%, #00a1e4 66.6%, #fcd116 66.6%);
         }
         .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
         th { background-color: #f9fafa; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.1em; color: #6b7280; padding: 1.25rem 1rem; border-bottom: 2px solid #e5e7eb; }
-        td { padding: 1.25rem 1rem; border-bottom: 1px solid #f3f4f6; vertical-align: top; }
+        td { padding: 1.25rem 1rem; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
         .region-header { background-color: #fef2f2; color: #7f1d1d; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em; }
+        
+        /* Estilos del Carrito */
+        .cart-drawer { transition: transform 0.3s ease-in-out; transform: translateX(100%); }
+        .cart-drawer.active { transform: translateX(0); }
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { opacity: 1; }
     </style>
 </head>
 <body class="text-gray-800">
 
     <!-- Barra Bandera Canarias -->
-    <div class="canarias-flag-bar w-full fixed top-0 z-50 shadow-sm"></div>
+    <div class="canarias-flag-bar w-full fixed top-0 z-[60] shadow-sm"></div>
+
+    <!-- Botón Flotante Carrito -->
+    <button onclick="toggleCart()" class="fixed bottom-6 right-6 z-50 bg-red-900 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center gap-3 border-2 border-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+        <span id="cart-count" class="font-bold text-lg">0</span>
+    </button>
+
+    <!-- Panel Lateral Carrito (Marketplace) -->
+    <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/50 hidden z-[70] backdrop-blur-sm"></div>
+    <aside id="cart-drawer" class="cart-drawer fixed top-0 right-0 h-full w-full max-w-md bg-white z-[80] shadow-2xl flex flex-col">
+        <div class="bg-stone-50 p-6 flex justify-between items-center border-b border-stone-200">
+            <h2 class="text-2xl font-bold italic text-red-950">Su Pedido</h2>
+            <button onclick="toggleCart()" class="text-stone-400 hover:text-black text-3xl leading-none">&times;</button>
+        </div>
+        <div id="cart-items" class="flex-grow overflow-y-auto p-6 space-y-4">
+            <p class="text-gray-400 italic text-center py-10">Su carrito está vacío</p>
+        </div>
+        <div class="p-6 bg-stone-50 border-t border-stone-200 space-y-4">
+            <div class="flex justify-between text-xl font-bold text-gray-900">
+                <span>Subtotal Base:</span>
+                <span id="cart-total">0.00 €</span>
+            </div>
+            <p class="text-xs text-gray-500 uppercase tracking-widest">* IGIC / AIEM se calcularán en el siguiente paso (Stripe).</p>
+            <button onclick="checkout()" class="w-full bg-red-900 text-white py-4 rounded-xl font-bold hover:bg-red-800 transition-colors shadow-lg text-lg">
+                Procesar Pago Seguro
+            </button>
+        </div>
+    </aside>
 
     <!-- Encabezado -->
     <header class="wine-gradient text-white pt-24 pb-20 px-6">
         <div class="max-w-5xl mx-auto text-center">
-            <div class="inline-block px-4 py-1 mb-6 text-xs tracking-widest uppercase bg-white/10 rounded-full border border-white/20">
-                Importación y Distribución · Canarias 2026 🇮🇨
+            <div class="inline-block px-4 py-1 mb-6 text-xs tracking-widest uppercase bg-white/10 rounded-full border border-white/20 shadow-sm">
+                Marketplace Oficial · Canarias 2026 🇮🇨
             </div>
             <h1 class="text-5xl md:text-6xl font-bold mb-4">De Altura Wines</h1>
             <p class="text-xl opacity-90 max-w-2xl mx-auto italic font-light">
-                "La excelencia de los Andes, seleccionada para el paladar canario."
+                "La excelencia de los Andes, directo a su bodega."
             </p>
         </div>
     </header>
@@ -43,184 +77,218 @@
     <section class="max-w-6xl mx-auto -mt-10 px-4">
         <div class="bg-white p-8 rounded-xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-6 border-t-4 border-red-800">
             <div class="text-center md:text-left">
-                <h2 class="text-2xl font-bold text-gray-900 mb-1">Tarifas Oficiales</h2>
-                <p class="text-gray-500 text-sm">Venta directa por cajas cerradas. Disponibilidad en todo el archipiélago.</p>
+                <h2 class="text-2xl font-bold text-gray-900 mb-1">Tarifas de Distribución</h2>
+                <p class="text-gray-500 text-sm">Añada las cajas que desee a su carrito. Envíos garantizados a todo el archipiélago.</p>
                 <div class="mt-3 inline-block bg-red-50 text-red-800 text-xs font-bold px-3 py-1 rounded-md border border-red-100 uppercase tracking-widest">
-                    * Tarifas + Impuestos (IGIC / AIEM no incluidos)
+                    * Tarifas netas (IGIC / AIEM no incluidos)
                 </div>
             </div>
             <div class="flex flex-col items-center md:items-end">
-                <span class="text-xs uppercase text-amber-600 font-bold tracking-widest mb-1">Asesoramiento & Pedidos</span>
+                <span class="text-xs uppercase text-amber-600 font-bold tracking-widest mb-1">Asistencia de Compra</span>
                 <span class="text-xl font-bold text-gray-900">Equipo Comercial</span>
                 <span class="text-gray-600 font-semibold">+34 633 706 676</span>
             </div>
         </div>
     </section>
 
-    <!-- Catálogo -->
+    <!-- Catálogo de Productos -->
     <main class="max-w-6xl mx-auto px-4 py-16">
         <div class="bg-white shadow-md rounded-xl overflow-hidden border border-gray-100">
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
-                            <th class="text-left w-1/4">Bodega / Origen</th>
+                            <th class="text-left w-1/5">Bodega / Origen</th>
                             <th class="text-left w-2/5">Vino & Notas de Cata</th>
-                            <th class="text-center">Formato</th>
-                            <th class="text-right">Botella</th>
-                            <th class="text-right bg-gray-50">Caja Completa</th>
+                            <th class="text-right">Precio Bot.</th>
+                            <th class="text-right bg-stone-50">Precio Caja</th>
+                            <th class="text-center bg-red-50">Cant. Cajas</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="product-list">
+                        
                         <!-- NORTE -->
                         <tr class="region-header">
-                            <td colspan="5" class="py-3 px-6 text-sm">Valles Calchaquíes y Norte Argentino</td>
+                            <td colspan="5" class="py-3 px-6 text-sm">Valles Calchaquíes y Norte Argentino (Hasta 2500m)</td>
                         </tr>
-                        <tr>
+                        
+                        <tr data-name="The Llama (Malbec / Torrontés / Rosé)" data-bottle="10.20" data-box="6">
                             <td><span class="font-bold text-gray-900">Viñas en Flor</span><br><small class="text-gray-400 italic">Cafayate (1700m)</small></td>
                             <td>
                                 <span class="font-semibold text-gray-900">The Llama (Malbec / Torrontés / Rosé)</span>
-                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Vinos expresivos de arena profunda. El Malbec revela fruta roja, ciruela y pimienta negra con taninos sedosos. El Torrontés aporta frescura y luz de montaña.</span>
+                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Vinos expresivos de arena profunda. El Malbec revela fruta roja y pimienta negra. El Torrontés aporta luz de montaña.</span>
                             </td>
-                            <td class="text-center font-medium text-gray-600">Caja 6</td>
-                            <td class="text-right text-gray-600 font-medium">10,20 €</td>
-                            <td class="text-right font-bold text-red-900 bg-gray-50 text-lg">61,20 €</td>
+                            <td class="text-right text-gray-500 font-medium">10,20 €</td>
+                            <td class="text-right font-bold text-gray-900 bg-stone-50 text-lg">61,20 €<br><span class="text-[10px] text-gray-400 font-normal">Caja de 6</span></td>
+                            <td class="text-center bg-red-50/30">
+                                <input type="number" min="0" step="1" value="0" onchange="updateCart(this)" class="w-16 p-2 border border-red-200 rounded-md text-center focus:ring-2 focus:ring-red-800 font-bold text-lg shadow-inner">
+                            </td>
                         </tr>
-                        <tr>
+                        
+                        <tr data-name="Punta Corral 2022" data-bottle="18.00" data-box="6">
                             <td><span class="font-bold text-gray-900">Fernando Dupont</span><br><small class="text-gray-400 italic">Maimará (2500m)</small></td>
                             <td>
                                 <span class="font-semibold text-gray-900">Punta Corral 2022</span>
-                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Corte de Malbec, Syrah y Cab. Franc. 10 meses en roble francés. Notas especiadas de morrones verdes y mentol. Pioneros en la Quebrada de Humahuaca.</span>
+                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Corte de Malbec, Syrah y Cab. Franc. 10 meses en roble francés. Notas especiadas de morrones verdes y mentol.</span>
                             </td>
-                            <td class="text-center font-medium text-gray-600">Caja 6</td>
-                            <td class="text-right text-gray-600 font-medium">18,00 €</td>
-                            <td class="text-right font-bold text-red-900 bg-gray-50 text-lg">108,00 €</td>
+                            <td class="text-right text-gray-500 font-medium">18,00 €</td>
+                            <td class="text-right font-bold text-gray-900 bg-stone-50 text-lg">108,00 €<br><span class="text-[10px] text-gray-400 font-normal">Caja de 6</span></td>
+                            <td class="text-center bg-red-50/30">
+                                <input type="number" min="0" step="1" value="0" onchange="updateCart(this)" class="w-16 p-2 border border-red-200 rounded-md text-center focus:ring-2 focus:ring-red-800 font-bold text-lg shadow-inner">
+                            </td>
                         </tr>
-                        <tr>
+
+                        <tr data-name="Franc Dupont / Sikuri 2022" data-bottle="22.80" data-box="6">
                             <td><span class="font-bold text-gray-900">Fernando Dupont</span></td>
                             <td>
                                 <span class="font-semibold text-gray-900">Franc Dupont / Sikuri 2022</span>
                                 <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Vinos de extrema altitud. Sikuri (Syrah) ofrece gran frescura con notas de carnes ahumadas y pimienta negra.</span>
                             </td>
-                            <td class="text-center font-medium text-gray-600">Caja 6</td>
-                            <td class="text-right text-gray-600 font-medium">22,80 €</td>
-                            <td class="text-right font-bold text-red-900 bg-gray-50 text-lg">136,80 €</td>
+                            <td class="text-right text-gray-500 font-medium">22,80 €</td>
+                            <td class="text-right font-bold text-gray-900 bg-stone-50 text-lg">136,80 €<br><span class="text-[10px] text-gray-400 font-normal">Caja de 6</span></td>
+                            <td class="text-center bg-red-50/30">
+                                <input type="number" min="0" step="1" value="0" onchange="updateCart(this)" class="w-16 p-2 border border-red-200 rounded-md text-center focus:ring-2 focus:ring-red-800 font-bold text-lg shadow-inner">
+                            </td>
                         </tr>
-                        <tr>
+
+                        <tr data-name="Pascana 2021" data-bottle="33.60" data-box="6">
                             <td><span class="font-bold text-gray-900">Bodega Yacochuya</span><br><small class="text-gray-400 italic">Cafayate (1700m)</small></td>
                             <td>
                                 <span class="font-semibold text-gray-900">Pascana 2021</span>
-                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Corte de Malbec, Cabernet y Syrah. 18 meses en barrica. Intenso, con notas especiadas, ahumadas y de chocolate. Familia Etchart & Michel Rolland.</span>
+                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">18 meses en barrica. Intenso, especiado y ahumado. Proyecto de la Familia Etchart & Michel Rolland.</span>
                             </td>
-                            <td class="text-center font-medium text-gray-600">Caja 6</td>
-                            <td class="text-right text-gray-600 font-medium">33,60 €</td>
-                            <td class="text-right font-bold text-red-900 bg-gray-50 text-lg">201,60 €</td>
+                            <td class="text-right text-gray-500 font-medium">33,60 €</td>
+                            <td class="text-right font-bold text-gray-900 bg-stone-50 text-lg">201,60 €<br><span class="text-[10px] text-gray-400 font-normal">Caja de 6</span></td>
+                            <td class="text-center bg-red-50/30">
+                                <input type="number" min="0" step="1" value="0" onchange="updateCart(this)" class="w-16 p-2 border border-red-200 rounded-md text-center focus:ring-2 focus:ring-red-800 font-bold text-lg shadow-inner">
+                            </td>
                         </tr>
-                        <tr>
+
+                        <tr data-name="Coquena Tannat 2025" data-bottle="12.00" data-box="6">
                             <td><span class="font-bold text-gray-900">Bodega Yacochuya</span></td>
                             <td>
                                 <span class="font-semibold text-gray-900">Coquena Tannat 2025</span>
-                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Potencia y frescura. Vino intenso con aromas de fruta negra, revelando toda la tipicidad del varietal con taninos firmes y presentes.</span>
+                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Potencia y frescura. Aromas de fruta negra, revelando toda la tipicidad del varietal con taninos firmes.</span>
                             </td>
-                            <td class="text-center font-medium text-gray-600">Caja 6</td>
-                            <td class="text-right text-gray-600 font-medium">12,00 €</td>
-                            <td class="text-right font-bold text-red-900 bg-gray-50 text-lg">72,00 €</td>
+                            <td class="text-right text-gray-500 font-medium">12,00 €</td>
+                            <td class="text-right font-bold text-gray-900 bg-stone-50 text-lg">72,00 €<br><span class="text-[10px] text-gray-400 font-normal">Caja de 6</span></td>
+                            <td class="text-center bg-red-50/30">
+                                <input type="number" min="0" step="1" value="0" onchange="updateCart(this)" class="w-16 p-2 border border-red-200 rounded-md text-center focus:ring-2 focus:ring-red-800 font-bold text-lg shadow-inner">
+                            </td>
                         </tr>
 
                         <!-- CUYO -->
                         <tr class="region-header">
                             <td colspan="5" class="py-3 px-6 text-sm">Región de Cuyo y Valle de Uco</td>
                         </tr>
-                        <tr>
+                        
+                        <tr data-name="Malbec / Chardonnay 2024" data-bottle="6.00" data-box="12">
                             <td><span class="font-bold text-gray-900">Buenos Aires</span><br><small class="text-gray-400 italic">Mendoza (1000m)</small></td>
                             <td>
-                                <span class="font-semibold text-gray-900 flex items-center gap-2">
-                                    Malbec / Chardonnay 2024
-                                    <span class="text-[10px] bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded uppercase font-bold">Medalla Oro</span>
-                                </span>
-                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">De suelos arenosos. Malbec afrutado con vibrantes notas de cerezas y ciruelas. Entrada amable, estructura definida y taninos redondos. Premiado por Gilbert & Gaillard.</span>
+                                <span class="font-semibold text-gray-900">Malbec / Chardonnay 2024 <span class="text-[10px] bg-yellow-100 text-yellow-800 px-1 rounded uppercase font-bold ml-1">Oro</span></span>
+                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Malbec afrutado, cerezas y ciruelas. Taninos redondos. Premiado por Gilbert & Gaillard.</span>
                             </td>
-                            <td class="text-center font-medium text-gray-600">Caja 12</td>
-                            <td class="text-right text-gray-600 font-medium">6,00 €</td>
-                            <td class="text-right font-bold text-red-900 bg-gray-50 text-lg">72,00 €</td>
+                            <td class="text-right text-gray-500 font-medium">6,00 €</td>
+                            <td class="text-right font-bold text-gray-900 bg-stone-50 text-lg">72,00 €<br><span class="text-[10px] text-gray-400 font-normal">Caja de 12</span></td>
+                            <td class="text-center bg-red-50/30">
+                                <input type="number" min="0" step="1" value="0" onchange="updateCart(this)" class="w-16 p-2 border border-red-200 rounded-md text-center focus:ring-2 focus:ring-red-800 font-bold text-lg shadow-inner">
+                            </td>
                         </tr>
-                        <tr>
+
+                        <tr data-name="Orange Field 2024" data-bottle="13.20" data-box="12">
                             <td><span class="font-bold text-gray-900">Paso a Paso Wines</span><br><small class="text-gray-400 italic">Valle de Uco (1200m)</small></td>
                             <td>
-                                <span class="font-semibold text-gray-900 flex items-center gap-2">
-                                    Orange Field 2024
-                                    <span class="text-[10px] bg-green-100 text-green-800 px-2 py-0.5 rounded uppercase font-bold">Orgánico</span>
-                                </span>
-                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Vino de Garage. Blend de criollas argentinas co-fermentado con sus pieles durante 90 días. Frescura y complejidad tánica bajo elaboración artesanal natural.</span>
+                                <span class="font-semibold text-gray-900">Orange Field 2024 <span class="text-[10px] bg-green-100 text-green-800 px-1 rounded uppercase font-bold ml-1">Orgánico</span></span>
+                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Vino de Garage. Blend de criollas argentinas co-fermentado 90 días. Frescura y complejidad tánica.</span>
                             </td>
-                            <td class="text-center font-medium text-gray-600">Caja 12</td>
-                            <td class="text-right text-gray-600 font-medium">13,20 €</td>
-                            <td class="text-right font-bold text-red-900 bg-gray-50 text-lg">158,40 €</td>
+                            <td class="text-right text-gray-500 font-medium">13,20 €</td>
+                            <td class="text-right font-bold text-gray-900 bg-stone-50 text-lg">158,40 €<br><span class="text-[10px] text-gray-400 font-normal">Caja de 12</span></td>
+                            <td class="text-center bg-red-50/30">
+                                <input type="number" min="0" step="1" value="0" onchange="updateCart(this)" class="w-16 p-2 border border-red-200 rounded-md text-center focus:ring-2 focus:ring-red-800 font-bold text-lg shadow-inner">
+                            </td>
                         </tr>
-                        <tr>
+
+                        <tr data-name="Criolla Clarete / Blanca 2025" data-bottle="11.40" data-box="12">
                             <td><span class="font-bold text-gray-900">Paso a Paso Wines</span></td>
                             <td>
                                 <span class="font-semibold text-gray-900">Criolla Clarete / Blanca 2025</span>
-                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Elaboradores artesanales rescatando cepas clásicas. Un vino original con una frescura notable y mínima intervención.</span>
+                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Elaboradores artesanales rescatando cepas clásicas. Un vino original con una frescura notable.</span>
                             </td>
-                            <td class="text-center font-medium text-gray-600">Caja 12</td>
-                            <td class="text-right text-gray-600 font-medium">11,40 €</td>
-                            <td class="text-right font-bold text-red-900 bg-gray-50 text-lg">136,80 €</td>
+                            <td class="text-right text-gray-500 font-medium">11,40 €</td>
+                            <td class="text-right font-bold text-gray-900 bg-stone-50 text-lg">136,80 €<br><span class="text-[10px] text-gray-400 font-normal">Caja de 12</span></td>
+                            <td class="text-center bg-red-50/30">
+                                <input type="number" min="0" step="1" value="0" onchange="updateCart(this)" class="w-16 p-2 border border-red-200 rounded-md text-center focus:ring-2 focus:ring-red-800 font-bold text-lg shadow-inner">
+                            </td>
                         </tr>
-                        <tr>
+
+                        <tr data-name="Cab Franc / Alcaparrosa / Ripasso" data-bottle="12.60" data-box="6">
                             <td><span class="font-bold text-gray-900">Nido del Tigre</span><br><small class="text-gray-400 italic">Calingasta (1500m)</small></td>
                             <td>
-                                <span class="font-semibold text-gray-900">Cabernet Franc / Alcaparrosa / Ripasso</span>
-                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Microvinificaciones artesanales en huevos de concreto. El Ripasso fermenta con Malbec aportando color vivo, pimiento rojo, especias y gran elegancia.</span>
+                                <span class="font-semibold text-gray-900">Cab Franc / Alcaparrosa / Ripasso</span>
+                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Microvinificaciones en huevos de concreto. El Ripasso aporta color vivo, pimiento rojo y especias.</span>
                             </td>
-                            <td class="text-center font-medium text-gray-600">Caja 6</td>
-                            <td class="text-right text-gray-600 font-medium">12,60 €</td>
-                            <td class="text-right font-bold text-red-900 bg-gray-50 text-lg">75,60 €</td>
+                            <td class="text-right text-gray-500 font-medium">12,60 €</td>
+                            <td class="text-right font-bold text-gray-900 bg-stone-50 text-lg">75,60 €<br><span class="text-[10px] text-gray-400 font-normal">Caja de 6</span></td>
+                            <td class="text-center bg-red-50/30">
+                                <input type="number" min="0" step="1" value="0" onchange="updateCart(this)" class="w-16 p-2 border border-red-200 rounded-md text-center focus:ring-2 focus:ring-red-800 font-bold text-lg shadow-inner">
+                            </td>
                         </tr>
-                        <tr>
+
+                        <tr data-name="Gran Sombrerero Malbec" data-bottle="15.60" data-box="6">
                             <td><span class="font-bold text-gray-900">Huentala Wines</span><br><small class="text-gray-400 italic">Gualtallary (1400m)</small></td>
                             <td>
                                 <span class="font-semibold text-gray-900">Gran Sombrerero Malbec</span>
-                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Nacido en uno de los micro-terroirs más exclusivos, aportando estructura y tensión clásica de Gualtallary.</span>
+                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Nacido en uno de los micro-terroirs más exclusivos, aportando estructura y tensión.</span>
                             </td>
-                            <td class="text-center font-medium text-gray-600">Caja 6</td>
-                            <td class="text-right text-gray-600 font-medium">15,60 €</td>
-                            <td class="text-right font-bold text-red-900 bg-gray-50 text-lg">93,60 €</td>
+                            <td class="text-right text-gray-500 font-medium">15,60 €</td>
+                            <td class="text-right font-bold text-gray-900 bg-stone-50 text-lg">93,60 €<br><span class="text-[10px] text-gray-400 font-normal">Caja de 6</span></td>
+                            <td class="text-center bg-red-50/30">
+                                <input type="number" min="0" step="1" value="0" onchange="updateCart(this)" class="w-16 p-2 border border-red-200 rounded-md text-center focus:ring-2 focus:ring-red-800 font-bold text-lg shadow-inner">
+                            </td>
                         </tr>
-                        <tr>
+
+                        <tr data-name="Blanc de Malbec 2023" data-bottle="11.40" data-box="6">
                             <td><span class="font-bold text-gray-900">Coloso Wines</span><br><small class="text-gray-400 italic">Agrelo (900m)</small></td>
                             <td>
                                 <span class="font-semibold text-gray-900">Blanc de Malbec 2023</span>
-                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Vinificado "Blanc de Noir". Uvas cosechadas a mano de noche. Aromas frescos y florales con notas de pera y acidez viva.</span>
+                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Vinificado "Blanc de Noir". Aromas frescos y florales con acidez viva.</span>
                             </td>
-                            <td class="text-center font-medium text-gray-600">Caja 6</td>
-                            <td class="text-right text-gray-600 font-medium">11,40 €</td>
-                            <td class="text-right font-bold text-red-900 bg-gray-50 text-lg">68,40 €</td>
+                            <td class="text-right text-gray-500 font-medium">11,40 €</td>
+                            <td class="text-right font-bold text-gray-900 bg-stone-50 text-lg">68,40 €<br><span class="text-[10px] text-gray-400 font-normal">Caja de 6</span></td>
+                            <td class="text-center bg-red-50/30">
+                                <input type="number" min="0" step="1" value="0" onchange="updateCart(this)" class="w-16 p-2 border border-red-200 rounded-md text-center focus:ring-2 focus:ring-red-800 font-bold text-lg shadow-inner">
+                            </td>
                         </tr>
 
                         <!-- PATAGONIA -->
                         <tr class="region-header">
                             <td colspan="5" class="py-3 px-6 text-sm">Patagonia Argentina</td>
                         </tr>
-                        <tr>
+                        
+                        <tr data-name="Merlot / Cab. Franc / Pinot Noir" data-bottle="14.40" data-box="6">
                             <td><span class="font-bold text-gray-900">Bodega del Desierto</span><br><small class="text-gray-400 italic">La Pampa (300m)</small></td>
                             <td>
                                 <span class="font-semibold text-gray-900">Merlot / Cab. Franc / Pinot Noir</span>
-                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Suelos áridos y aluviales. Crianza de 9 meses en roble francés y americano. Aromas de frutos negros maduros con estructura plena y personalidad marcada.</span>
+                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Crianza de 9 meses en roble. Aromas de frutos negros maduros con personalidad marcada.</span>
                             </td>
-                            <td class="text-center font-medium text-gray-600">Caja 6</td>
-                            <td class="text-right text-gray-600 font-medium">14,40 €</td>
-                            <td class="text-right font-bold text-red-900 bg-gray-50 text-lg">86,40 €</td>
+                            <td class="text-right text-gray-500 font-medium">14,40 €</td>
+                            <td class="text-right font-bold text-gray-900 bg-stone-50 text-lg">86,40 €<br><span class="text-[10px] text-gray-400 font-normal">Caja de 6</span></td>
+                            <td class="text-center bg-red-50/30">
+                                <input type="number" min="0" step="1" value="0" onchange="updateCart(this)" class="w-16 p-2 border border-red-200 rounded-md text-center focus:ring-2 focus:ring-red-800 font-bold text-lg shadow-inner">
+                            </td>
                         </tr>
-                        <tr>
+
+                        <tr data-name="Pampeano Pinot Noir 2024" data-bottle="12.00" data-box="6">
                             <td><span class="font-bold text-gray-900">Bodega del Desierto</span></td>
                             <td>
                                 <span class="font-semibold text-gray-900">Pampeano Pinot Noir 2024</span>
-                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Terruño extremo y luminoso. Pinot Noir sutil vinificado en acero inoxidable. Mucha frescura, fruta roja, finas hierbas y un carácter mineral típico patagónico.</span>
+                                <span class="text-xs text-gray-500 block mt-1 leading-relaxed">Terruño luminoso. Pinot Noir sutil con frescura, fruta roja y carácter mineral.</span>
                             </td>
-                            <td class="text-center font-medium text-gray-600">Caja 6</td>
-                            <td class="text-right text-gray-600 font-medium">12,00 €</td>
-                            <td class="text-right font-bold text-red-900 bg-gray-50 text-lg">72,00 €</td>
+                            <td class="text-right text-gray-500 font-medium">12,00 €</td>
+                            <td class="text-right font-bold text-gray-900 bg-stone-50 text-lg">72,00 €<br><span class="text-[10px] text-gray-400 font-normal">Caja de 6</span></td>
+                            <td class="text-center bg-red-50/30">
+                                <input type="number" min="0" step="1" value="0" onchange="updateCart(this)" class="w-16 p-2 border border-red-200 rounded-md text-center focus:ring-2 focus:ring-red-800 font-bold text-lg shadow-inner">
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -228,26 +296,101 @@
         </div>
     </main>
 
-    <!-- Footer de Contacto -->
-    <footer class="bg-stone-900 text-white py-20 px-6">
-        <div class="max-w-4xl mx-auto text-center">
-            <h2 class="text-4xl font-bold mb-6 italic">Gestione su pedido</h2>
-            <p class="text-stone-400 mb-10 text-lg">Haga clic en el botón inferior para contactar a nuestro equipo comercial por WhatsApp y coordinar su entrega.</p>
-            
-            <div class="flex justify-center">
-                <a href="https://wa.me/34633706676?text=Hola,%20deseo%20realizar%20un%20pedido%20del%20catálogo%20de%20De%20Altura%20Wines" class="bg-green-600 hover:bg-green-700 text-white px-10 py-5 rounded-full font-bold transition-all shadow-2xl flex items-center justify-center text-xl">
-                    <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.588-5.946 0-6.556 5.332-11.888 11.888-11.888 3.176 0 6.164 1.236 8.41 3.483 2.247 2.247 3.483 5.234 3.483 8.41 0 6.556-5.332 11.888-11.888 11.888-2.007 0-3.974-.509-5.714-1.472l-6.098 1.602zm5.714-2.825c1.642.973 3.398 1.488 5.217 1.488 5.503 0 9.977-4.474 9.977-9.977 0-2.664-1.037-5.168-2.92-7.051-1.883-1.883-4.387-2.92-7.051-2.92-5.503 0-9.977 4.474-9.977 9.977 0 2.062.632 4.041 1.82 5.711l-1.01 3.692 3.864-1.016zm9.516-11.305c-.279-.139-1.647-.812-1.903-.905-.256-.092-.442-.139-.628.139-.186.279-.721.905-.884 1.091-.163.186-.326.209-.605.07-.279-.139-1.177-.433-2.242-1.383-.829-.739-1.388-1.652-1.551-1.93-.163-.279-.017-.43.121-.568.125-.125.279-.326.418-.488.139-.163.186-.279.279-.465.092-.186.046-.349-.023-.488-.069-.139-.628-1.511-.861-2.07-.226-.549-.456-.475-.628-.484-.163-.008-.349-.01-.535-.01s-.488.07-.744.349c-.256.279-.977.954-.977 2.326s1.001 2.701 1.139 2.887c.139.186 1.97 3.008 4.773 4.218.667.288 1.188.459 1.594.587.67.213 1.279.183 1.761.11.539-.081 1.647-.674 1.881-1.324.233-.651.233-1.21.163-1.324-.069-.114-.256-.186-.535-.326z"/></svg>
-                    Contactar por WhatsApp
-                </a>
-            </div>
-            
-            <div class="mt-16 pt-8 border-t border-stone-800 text-xs text-stone-500 uppercase tracking-widest flex flex-col md:flex-row justify-center gap-4">
-                <span>De Altura Wines · Canarias 2026</span>
-                <span class="hidden md:inline">|</span>
-                <a href="https://dealturawines.com" class="hover:text-stone-300">www.dealturawines.com</a>
-            </div>
+    <footer class="bg-stone-900 text-white py-20 px-6 text-center">
+        <h2 class="text-4xl font-bold mb-6 italic text-amber-50">Atención Personalizada</h2>
+        <p class="text-stone-400 mb-10">Si tiene dudas antes de comprar, nuestro equipo comercial le asesorará vía WhatsApp.</p>
+        <div class="flex justify-center">
+            <a href="https://wa.me/34633706676?text=Hola,%20deseo%20hacer%20una%20consulta%20sobre%20el%20Catálogo%20de%20Altura" class="border border-white/30 hover:bg-white/10 text-white px-10 py-4 rounded-full font-bold transition-all shadow-xl flex items-center text-lg">
+                Hablar con un Asesor
+            </a>
         </div>
+        <p class="mt-16 text-xs text-stone-500 uppercase tracking-widest">© 2026 De Altura Wines · Digital Ecosystem by DOYO</p>
     </footer>
+
+    <!-- Lógica del Carrito Marketplace -->
+    <script>
+        let cart = {};
+
+        function updateCart(input) {
+            const row = input.closest('tr');
+            const name = row.getAttribute('data-name');
+            const bottlePrice = parseFloat(row.getAttribute('data-bottle'));
+            const boxSize = parseInt(row.getAttribute('data-box'));
+            const qtyCajas = parseInt(input.value) || 0;
+
+            if (qtyCajas > 0) {
+                cart[name] = { 
+                    cajas: qtyCajas,
+                    botellas: qtyCajas * boxSize,
+                    precioCaja: bottlePrice * boxSize
+                };
+            } else {
+                delete cart[name];
+                input.value = 0;
+            }
+            renderCart();
+        }
+
+        function renderCart() {
+            const itemsContainer = document.getElementById('cart-items');
+            const totalContainer = document.getElementById('cart-total');
+            const countContainer = document.getElementById('cart-count');
+            
+            itemsContainer.innerHTML = '';
+            let total = 0;
+            let countCajas = 0;
+
+            Object.keys(cart).forEach(name => {
+                const item = cart[name];
+                const itemTotal = item.cajas * item.precioCaja;
+                total += itemTotal;
+                countCajas += item.cajas;
+
+                itemsContainer.innerHTML += `
+                    <div class="flex justify-between items-start border-b border-stone-100 py-4">
+                        <div class="pr-4">
+                            <p class="font-bold text-sm text-gray-900">${name}</p>
+                            <p class="text-xs text-amber-700 font-semibold mt-1">${item.cajas} Caja(s) <span class="text-gray-400 font-normal">(${item.botellas} botellas)</span></p>
+                        </div>
+                        <p class="font-bold text-red-900 text-lg whitespace-nowrap">${itemTotal.toFixed(2)} €</p>
+                    </div>
+                `;
+            });
+
+            if (countCajas === 0) {
+                itemsContainer.innerHTML = '<p class="text-gray-400 italic text-center py-10">Su carrito está vacío</p>';
+                document.getElementById('cart-drawer').classList.remove('active');
+                document.getElementById('cart-overlay').classList.add('hidden');
+            }
+            
+            totalContainer.innerText = total.toFixed(2) + ' €';
+            countContainer.innerText = countCajas;
+            
+            // Animación del botón flotante
+            const btn = countContainer.parentElement;
+            btn.classList.add('scale-125');
+            setTimeout(() => btn.classList.remove('scale-125'), 200);
+        }
+
+        function toggleCart() {
+            if (Object.keys(cart).length === 0 && !document.getElementById('cart-drawer').classList.contains('active')) {
+                // No abrir si está vacío, mostrar mensaje
+                const btn = document.getElementById('cart-count').parentElement;
+                btn.classList.add('bg-gray-500', 'border-gray-500');
+                setTimeout(() => btn.classList.remove('bg-gray-500', 'border-gray-500'), 500);
+                return;
+            }
+            document.getElementById('cart-drawer').classList.toggle('active');
+            document.getElementById('cart-overlay').classList.toggle('hidden');
+        }
+
+        function checkout() {
+            // Siguiente Paso: Aquí conectaremos con Stripe
+            alert('Preparando pasarela de pago segura (Stripe) con cálculo de impuestos. Redirigiendo...');
+            // Resumen temporal para el backend
+            console.log("Datos de la compra:", cart);
+        }
+    </script>
 
 </body>
 </html>
