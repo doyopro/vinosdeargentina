@@ -25,21 +25,22 @@
         <div id="log"></div>
     </div>
 
-    <!-- Scripts de configuración -->
-    <script src="/assets/js/config.js"></script>
-    <script src="/assets/js/load-wines.js" type="module"></script>
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/+esm';
 
-    <script>
+        const SUPABASE_URL = 'https://pzzbvinbyzaxrshlmlcn.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB6emJ2aW5ieXpheHJzaGxtbGNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NTI5NDYsImV4cCI6MjA5MTEyODk0Nn0.YgeGDVZfyqI-nv7iAhROMsBfZbIK7BGUDyU1ERE-SFA';
+
+        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
         const logDiv = document.getElementById('log');
 
-        // Interceptar console.log para mostrar en la página
+        // Interceptar console.log
         const originalLog = console.log;
         console.log = function(...args) {
             originalLog(...args);
             const message = args.map(arg =>
                 typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
             ).join(' ');
-
             const item = document.createElement('div');
             item.className = 'log-item info';
             item.textContent = '> ' + message;
@@ -53,7 +54,6 @@
             const message = args.map(arg =>
                 typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
             ).join(' ');
-
             const item = document.createElement('div');
             item.className = 'log-item error';
             item.textContent = '✗ ' + message;
@@ -61,13 +61,56 @@
             logDiv.scrollTop = logDiv.scrollHeight;
         };
 
-        async function loadWines() {
+        // Función para cargar vinos
+        window.loadWines = async () => {
             try {
-                await window.loadWinesToSupabase();
+                console.log('Cargando wines.json...');
+                const response = await fetch('/assets/data/wines.json');
+                const wines = await response.json();
+
+                // Transformar datos para la BD
+                const winesForDB = wines.map(wine => ({
+                    id: wine.id,
+                    name: wine.name,
+                    bodega: wine.bodega,
+                    region: wine.region,
+                    type: wine.type,
+                    price_retail: wine.price,
+                    price_horeca: wine.price_horeca,
+                    aiem_rate: wine.aiem_rate,
+                    igic_rate: wine.igic_rate,
+                    box_size: wine.box,
+                    notes_es: wine.notes_es,
+                    notes_en: wine.notes_en
+                }));
+
+                console.log(`✓ ${winesForDB.length} vinos preparados`);
+                console.log('Insertando en Supabase...');
+
+                // Insertar en lotes de 10
+                const batchSize = 10;
+                let totalInserted = 0;
+
+                for (let i = 0; i < winesForDB.length; i += batchSize) {
+                    const batch = winesForDB.slice(i, i + batchSize);
+                    const { data, error } = await supabase
+                        .from('wines')
+                        .insert(batch);
+
+                    if (error) {
+                        console.error(`Error en lote ${Math.floor(i / batchSize) + 1}:`, error.message);
+                    } else {
+                        totalInserted += batch.length;
+                        const progress = Math.ceil((i + batchSize) / winesForDB.length * 100);
+                        console.log(`✓ Lote ${Math.floor(i / batchSize) + 1} insertado (${totalInserted}/${winesForDB.length})`);
+                    }
+                }
+
+                console.log(`✅ Carga completada: ${totalInserted} vinos en Supabase`);
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error:', error.message);
             }
-        }
+        };
     </script>
 </body>
 </html>
