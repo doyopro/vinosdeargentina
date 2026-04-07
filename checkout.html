@@ -219,10 +219,11 @@
         const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
         let elements;
         let paymentElement;
-    </script>
 
-    <!-- LÓGICA DE CHECKOUT -->
-    <script>
+        // ═══════════════════════════════════════════════════════════════
+        // LÓGICA DE CHECKOUT - Mismo scope que config global
+        // ═══════════════════════════════════════════════════════════════
+
         // Cargar carrito desde localStorage
         function loadCart() {
             const cartData = localStorage.getItem('deAlturaCart') || '{}';
