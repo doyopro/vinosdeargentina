@@ -137,3 +137,28 @@ WHERE oi.order_id = 'xxxx';
 ---
 
 **Status:** 🟢 LISTO PARA PRODUCCIÓN (después de completar deploy)
+
+---
+
+## ✅ STATUS - DEPLOYMENT COMPLETADO
+
+**Fecha:** 2026-04-07  
+**Token:** Supabase Access Token utilizado  
+**Resultado:** ✅ EXITOSO
+
+### Detalles del Deploy:
+- Función: `create-payment-intent`
+- Proyecto: `pzzbvinbyzaxrshlmlcn`
+- Endpoint: `https://pzzbvinbyzaxrshlmlcn.supabase.co/functions/v1/create-payment-intent`
+- CORS: ✅ Habilitado para todas las origins
+- Secrets: ✅ STRIPE_SECRET_KEY configurado
+
+### Estado Actual:
+🟢 **LISTO PARA PRODUCCIÓN**
+
+La pasarela Stripe está activa y lista para recibir:
+- ✅ Tarjetas de prueba (4242 4242 4242 4242)
+- ✅ Cálculo de impuestos (IGIC 7% + AIEM 15%)
+- ✅ Almacenamiento de órdenes en Supabase
+- ✅ Manejo de errores con feedback visual
+
