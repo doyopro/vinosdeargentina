@@ -239,40 +239,45 @@
         }
 
         if (window.currentStep === 3) {
-            // PROCESAR PEDIDO Y ENVIAR AL CRM
+            // PROCESAR PEDIDO Y GUARDAR EN SUPABASE
             document.getElementById('btn-text').style.display = 'none';
             document.getElementById('btn-loader').style.display = 'block';
             document.getElementById('btn-next').disabled = true;
 
             const orderData = {
-                orderId: 'DW-' + Math.floor(1000 + Math.random() * 9000),
-                clientName: document.getElementById('name-input').value,
-                email: document.getElementById('email-input').value,
+                customer_name: document.getElementById('name-input').value,
+                customer_email: document.getElementById('email-input').value,
+                customer_phone: document.getElementById('phone-input')?.value || '',
                 island: document.getElementById('island-select').value,
                 address: document.getElementById('address-input').value,
-                paymentMethod: window.selectedPayment,
-                paymentStatus: window.selectedPayment === 'stripe' ? 'Pagado (Stripe)' : 'Pendiente Transf.',
-                shippingStatus: 'Nuevo',
-                total: 427.57,
-                createdAt: serverTimestamp()
+                postal_code: document.getElementById('postal-input')?.value || '',
+                subtotal_amount: 0, // Será calculado desde el carrito
+                tax_amount: 0,
+                total_amount: 427.57,
+                items: window.cartItems || [],
+                payment_method: window.selectedPayment,
+                payment_status: 'pending',
+                shipping_status: 'new',
+                notes: ''
             };
 
             try {
-                if(db && auth.currentUser) {
-                    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'orders'), orderData);
-                } else {
-                    console.log("Mock Order Saved:", orderData); // Fallback local
+                const result = await APIModule.createOrder(orderData);
+                if (result.error) {
+                    throw new Error(result.error);
                 }
-                
+
+                console.log('✓ Pedido creado en Supabase:', result.order);
+
                 if(window.selectedPayment === 'transfer') {
                     document.getElementById('transfer-instructions').style.display = 'block';
                 }
-                
+
                 window.currentStep++;
                 window.updateUI();
             } catch (error) {
                 console.error("Error guardando orden:", error);
-                alert("Hubo un error procesando el pedido.");
+                alert("Hubo un error procesando el pedido: " + error.message);
             } finally {
                 document.getElementById('btn-text').style.display = 'block';
                 document.getElementById('btn-loader').style.display = 'none';

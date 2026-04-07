@@ -387,58 +387,31 @@
     </aside>
 
     <script>
-        // BASE DE DATOS DEL CATÁLOGO (44 Vinos)
-        const catalogData = [
-            // NORTE ARGENTINO
-            { id: 'llama-malbec', type: 'tinto', region: 'norte', box: 6, price: 11.48, bodega: 'Viñas en Flor · Cafayate', name: 'The Llama Malbec 2025', notes_es: 'Fruta roja y pimienta negra. Taninos sedosos de arena profunda.', notes_en: 'Red fruit and black pepper. Silky tannins from deep sand.' },
-            { id: 'llama-torrontes', type: 'blanco', region: 'norte', box: 6, price: 11.48, bodega: 'Viñas en Flor · Cafayate', name: 'The Llama Torrontés 2025', notes_es: 'Luz de montaña. Frescura vibrante y perfil floral.', notes_en: 'Mountain light. Vibrant freshness and floral profile.' },
-            { id: 'llama-rose', type: 'rosado', region: 'norte', box: 6, price: 11.48, bodega: 'Viñas en Flor · Cafayate', name: 'The Llama Rosé 2025', notes_es: 'Rosado de Syrah. Expresivo y vibrante.', notes_en: 'Syrah Rosé. Expressive and vibrant.' },
-            { id: 'dupont-punta', type: 'tinto', region: 'norte', box: 6, price: 20.25, bodega: 'Fernando Dupont · Maimará', name: 'Punta Corral 2022', notes_es: 'Blend de altura extrema. Malbec, Syrah y Cab Franc. 10 meses en roble.', notes_en: 'Extreme altitude blend. Malbec, Syrah, Cab Franc. 10 months oak.' },
-            { id: 'dupont-franc', type: 'tinto', region: 'norte', box: 6, price: 25.65, bodega: 'Fernando Dupont · Maimará', name: 'Franc Dupont 2022', notes_es: 'Pioneros en Jujuy. Frescura y complejidad aromática.', notes_en: 'Pioneers in Jujuy. Freshness and aromatic complexity.' },
-            { id: 'dupont-sikuri', type: 'tinto', region: 'norte', box: 6, price: 25.65, bodega: 'Fernando Dupont · Maimará', name: 'Sikuri Syrah 2022', notes_es: 'Gran frescura, notas de carnes ahumadas y pimienta negra.', notes_en: 'Great freshness, hints of smoked meats and black pepper.' },
-            { id: 'yaco-pasacana', type: 'tinto', region: 'norte', box: 6, price: 37.80, bodega: 'Bodega Yacochuya · Cafayate', name: 'Pasacana 2021', notes_es: 'Creación de Michel Rolland & Flia Etchart. 18 meses de barrica.', notes_en: 'Creation of Michel Rolland & Etchart Family. 18 months in barrel.' },
-            { id: 'yaco-coquena', type: 'tinto', region: 'norte', box: 6, price: 13.50, bodega: 'Bodega Yacochuya · Cafayate', name: 'Coquena Tannat 2025', notes_es: 'Potencia y frescura. Aromas de fruta negra y taninos firmes.', notes_en: 'Power and freshness. Dark fruit aromas and firm tannins.' },
-            { id: 'yaco-malbec', type: 'tinto', region: 'norte', box: 6, price: 37.80, bodega: 'Bodega Yacochuya · Cafayate', name: 'Yacochuya Malbec 2021', notes_es: 'Vino icónico de la bodega, estructurado y de gran guarda.', notes_en: 'Iconic wine of the winery, structured and for long aging.' },
-            { id: 'yaco-sanpedro', type: 'tinto', region: 'norte', box: 6, price: 24.30, bodega: 'Bodega Yacochuya · Cafayate', name: 'San Pedro de Yacochuya', notes_es: 'Elegancia clásica del valle Calchaquí.', notes_en: 'Classic elegance of the Calchaquí Valley.' },
-            { id: 'lanus-ilogico-malbec', type: 'tinto', region: 'norte', box: 6, price: 22.95, bodega: 'Agustín Lanús · Calchaquí', name: 'Ilógico Malbec 2020', notes_es: '50% roble, 50% huevos de hormigón. Fruta oscura y pimienta.', notes_en: '50% oak, 50% concrete eggs. Dark fruit and pepper.' },
-            { id: 'lanus-ilogico-criolla', type: 'tinto', region: 'norte', box: 6, price: 20.25, bodega: 'Agustín Lanús · Calchaquí', name: 'Ilógico Criolla 2022', notes_es: 'Aromas balsámicos y cereza. Frescura de extrema altura.', notes_en: 'Balsamic and cherry aromas. Extreme altitude freshness.' },
-            { id: 'lanus-atypico', type: 'tinto', region: 'norte', box: 6, price: 37.80, bodega: 'Agustín Lanús · Calchaquí', name: 'Atypico Blend 2018', notes_es: 'Malbec y Cabernet Sauvignon. Complejidad brutal.', notes_en: 'Malbec and Cabernet Sauvignon. Brutal complexity.' },
-            { id: 'lanus-sunal-malbec', type: 'tinto', region: 'norte', box: 6, price: 47.25, bodega: 'Agustín Lanús · Calchaquí', name: 'Sunal Extreme Altitude Malbec', notes_es: 'El límite de la viticultura en Argentina. Precisión extrema.', notes_en: 'The limit of viticulture in Argentina. Extreme precision.' },
-            { id: 'lanus-sunal-criolla', type: 'tinto', region: 'norte', box: 6, price: 20.25, bodega: 'Agustín Lanús · Calchaquí', name: 'Sunal Ilógico Criolla Chica 2021', notes_es: 'Cepas centenarias recuperadas. Pura identidad.', notes_en: 'Recovered century-old vines. Pure identity.' },
+        // CATÁLOGO DINÁMICO (Cargado desde Supabase)
+        let catalogData = [];
 
-            // REGIÓN DE CUYO
-            { id: 'nido-franc', type: 'tinto', region: 'cuyo', box: 6, price: 14.18, bodega: 'Nido del Tigre · San Juan', name: 'Cabernet Franc 2024', notes_es: 'Huevos de concreto, levaduras indígenas. Pimiento rojo y ciruelas.', notes_en: 'Concrete eggs, indigenous yeasts. Red bell pepper and plums.' },
-            { id: 'nido-alcaparrosa', type: 'tinto', region: 'cuyo', box: 6, price: 14.18, bodega: 'Nido del Tigre · San Juan', name: 'Alcaparrosa Ancellotta 2023', notes_es: 'Tinto fermentado sin pieles, vinificación de blanco.', notes_en: 'Red fermented without skins, white vinification.' },
-            { id: 'nido-ripasso', type: 'tinto', region: 'cuyo', box: 6, price: 14.18, bodega: 'Nido del Tigre · San Juan', name: 'Ripasso del Giardino 2024', notes_es: 'Pieles recuperadas y fermentadas con Malbec. Elegante.', notes_en: 'Recovered skins fermented with Malbec. Elegant.' },
-            { id: 'paso-orange', type: 'blanco', region: 'cuyo', box: 12, price: 14.85, bodega: 'Paso a Paso · Valle de Uco', name: 'Orange Field Blend (Orgánico)', notes_es: 'Vino de garage. Criollas co-fermentadas 90 días.', notes_en: 'Garage wine. Criollas co-fermented for 90 days.' },
-            { id: 'paso-semillon', type: 'blanco', region: 'cuyo', box: 6, price: 22.95, bodega: 'Paso a Paso · Valle de Uco', name: 'Abandonados Semillón 2022', notes_es: 'Maloláctica y crianza 8 meses en barrica. Excepcional.', notes_en: 'Malolactic and aged 8 months in barrel. Exceptional.' },
-            { id: 'paso-clarete', type: 'rosado', region: 'cuyo', box: 12, price: 12.83, bodega: 'Paso a Paso · Valle de Uco', name: 'Criolla Clarete 2025', notes_es: 'Rescate de viñedos clásicos, mínima intervención.', notes_en: 'Rescue of classic vineyards, minimal intervention.' },
-            { id: 'paso-blanca', type: 'blanco', region: 'cuyo', box: 12, price: 12.83, bodega: 'Paso a Paso · Valle de Uco', name: 'Criolla Blanca 2025', notes_es: 'Frescura notable, pura expresión de uva criolla.', notes_en: 'Notable freshness, pure expression of criolla grape.' },
-            { id: 'paso-bonarda', type: 'tinto', region: 'cuyo', box: 12, price: 14.85, bodega: 'Paso a Paso · Valle de Uco', name: 'Bonarda Vino de Garage 2023', notes_es: 'Textura aterciopelada y acidez equilibrada.', notes_en: 'Velvety texture and balanced acidity.' },
-            { id: 'paso-don-graciano', type: 'tinto', region: 'cuyo', box: 12, price: 14.85, bodega: 'Paso a Paso · Valle de Uco', name: 'Las Criollas de Don Graciano', notes_es: 'Elaboración artesanal extrema. Edición limitada.', notes_en: 'Extreme artisanal production. Limited edition.' },
-            { id: 'huentala-malbec', type: 'tinto', region: 'cuyo', box: 6, price: 17.55, bodega: 'Huentala Wines · Gualtallary', name: 'Gran Sombrerero Malbec 2023', notes_es: 'Suelo calcáreo. Estructura y tensión.', notes_en: 'Calcareous soil. Structure and tension.' },
-            { id: 'huentala-chard', type: 'blanco', region: 'cuyo', box: 6, price: 16.20, bodega: 'Huentala Wines · Gualtallary', name: 'Gran Sombrerero Chardonnay', notes_es: 'Elegante y fresco, altitud pura.', notes_en: 'Elegant and fresh, pure altitude.' },
-            { id: 'huentala-verde', type: 'tinto', region: 'cuyo', box: 6, price: 14.85, bodega: 'Huentala Wines · Gualtallary', name: 'Dreidel Malbec Mevushal Verde', notes_es: 'Línea Kosher certificada. Calidad excepcional.', notes_en: 'Certified Kosher line. Exceptional quality.' },
-            { id: 'huentala-azul', type: 'tinto', region: 'cuyo', box: 6, price: 18.90, bodega: 'Huentala Wines · Gualtallary', name: 'Dreidel Malbec No-Mevushal Azul', notes_es: 'Línea Kosher. Gran intensidad aromática.', notes_en: 'Kosher line. Great aromatic intensity.' },
-            { id: 'huentala-negro', type: 'tinto', region: 'cuyo', box: 6, price: 29.70, bodega: 'Huentala Wines · Gualtallary', name: 'Dreidel Malbec No-Mevushal Negro', notes_es: 'El tope de gama Kosher. Complejo y de larga guarda.', notes_en: 'Top of the Kosher line. Complex and for long aging.' },
-            { id: 'coloso-blanc', type: 'blanco', region: 'cuyo', box: 6, price: 12.83, bodega: 'Coloso Wines · Agrelo', name: 'Indomable Blanc de Malbec 2023', notes_es: 'Blanc de Noir. Cosecha nocturna. Floral y vivo.', notes_en: 'Blanc de Noir. Night harvest. Floral and lively.' },
-            { id: 'coloso-malbec', type: 'tinto', region: 'cuyo', box: 6, price: 12.83, bodega: 'Coloso Wines · Agrelo', name: 'Indomable Malbec Clásico', notes_es: 'Pura expresión del terruño de Agrelo.', notes_en: 'Pure expression of the Agrelo terroir.' },
-            { id: 'ba-malbec', type: 'tinto', region: 'cuyo', box: 12, price: 6.75, bodega: 'Buenos Aires · Mendoza', name: 'Malbec 2024 (Oro G&G)', notes_es: 'Sumamente afrutado, cerezas y ciruelas. Fácil de beber.', notes_en: 'Extremely fruity, cherries and plums. Easy to drink.' },
-            { id: 'ba-chard', type: 'blanco', region: 'cuyo', box: 12, price: 6.75, bodega: 'Buenos Aires · Mendoza', name: 'Chardonnay 2024', notes_es: 'Fresco y vibrante, ideal para el canal HORECA.', notes_en: 'Fresh and vibrant, ideal for the HORECA channel.' },
-            { id: 'ba-reserva', type: 'tinto', region: 'cuyo', box: 12, price: 8.78, bodega: 'Buenos Aires · Mendoza', name: 'Malbec Reserva 2022', notes_es: 'Paso por madera, estructura definida.', notes_en: 'Aged in wood, defined structure.' },
-            { id: 'ba-rose', type: 'rosado', region: 'cuyo', box: 12, price: 6.75, bodega: 'Buenos Aires · Mendoza', name: 'Rosé of Malbec', notes_es: 'Delicado, fresco y con mucha fruta roja.', notes_en: 'Delicate, fresh with lots of red fruit.' },
-            { id: 'ba-cab', type: 'tinto', region: 'cuyo', box: 12, price: 6.75, bodega: 'Buenos Aires · Mendoza', name: 'Cabernet Sauvignon 2020', notes_es: 'Oro Gilbert & Gaillard. Estructura y tipicidad.', notes_en: 'Gilbert & Gaillard Gold. Structure and typicity.' },
-            { id: 'ba-blend', type: 'tinto', region: 'cuyo', box: 12, price: 6.75, bodega: 'Buenos Aires · Mendoza', name: 'Red Blend 2020', notes_es: 'El corte perfecto de la casa. Equilibrado y goloso.', notes_en: 'The perfect house blend. Balanced and sweet.' },
-
-            // PATAGONIA
-            { id: 'desierto-merlot', type: 'tinto', region: 'patagonia', box: 6, price: 16.20, bodega: 'Bodega del Desierto · La Pampa', name: 'Merlot 2020', notes_es: 'Crianza de 9 meses en roble. Personalidad patagónica.', notes_en: '9 months in oak. Patagonian personality.' },
-            { id: 'desierto-cabfranc', type: 'tinto', region: 'patagonia', box: 6, price: 16.20, bodega: 'Bodega del Desierto · La Pampa', name: 'Cabernet Franc 2019', notes_es: 'Suelos áridos y aluviales, rico en minerales.', notes_en: 'Arid and alluvial soils, rich in minerals.' },
-            { id: 'desierto-pinot', type: 'tinto', region: 'patagonia', box: 6, price: 16.20, bodega: 'Bodega del Desierto · La Pampa', name: 'Pinot Noir 2021', notes_es: 'Elegancia y frescura extrema del desierto.', notes_en: 'Extreme elegance and freshness of the desert.' },
-            { id: 'desierto-pampeano', type: 'tinto', region: 'patagonia', box: 6, price: 13.50, bodega: 'Bodega del Desierto · La Pampa', name: 'Pampeano Pinot Noir 2024', notes_es: 'Sin madera. Frescura, fruta roja y flores blancas.', notes_en: 'No wood. Freshness, red fruit and white flowers.' },
-            { id: 'desierto-25malbec', type: 'tinto', region: 'patagonia', box: 6, price: 16.20, bodega: 'Bodega del Desierto · La Pampa', name: 'Desierto 25 Malbec', notes_es: 'El clásico patagónico de estructura plena.', notes_en: 'The Patagonian classic with full structure.' },
-            { id: 'desierto-25syrah', type: 'tinto', region: 'patagonia', box: 6, price: 16.20, bodega: 'Bodega del Desierto · La Pampa', name: 'Desierto 25 Syrah', notes_es: 'Especiado, potente y de gran carácter.', notes_en: 'Spicy, powerful and of great character.' },
-            { id: 'desierto-pampa-blend', type: 'tinto', region: 'patagonia', box: 6, price: 21.60, bodega: 'Bodega del Desierto · La Pampa', name: 'Desierto Pampa Blend', notes_es: 'El corte insignia de la bodega pampeana.', notes_en: 'The flagship blend of the Pampean winery.' }
-        ];
+        // Cargar catálogo desde Supabase
+        async function initCatalog() {
+            console.log('Cargando catálogo desde Supabase...');
+            const wines = await APIModule.getWines();
+            if (wines && wines.length > 0) {
+                catalogData = wines.map(wine => ({
+                    id: wine.id,
+                    type: wine.type,
+                    region: wine.region,
+                    box: wine.box_size || wine.box,
+                    price: wine.price_retail || wine.price,
+                    bodega: wine.bodega,
+                    name: wine.name,
+                    notes_es: wine.notes_es,
+                    notes_en: wine.notes_en
+                }));
+                console.log(`✓ ${catalogData.length} vinos cargados desde Supabase`);
+                renderCatalog();
+            } else {
+                console.error('No se pudieron cargar los vinos');
+            }
+        }
 
         // LÓGICA DE ESTADO (Estado, Filtros, Ordenación y Carrito)
         let cart = {};
@@ -694,8 +667,10 @@
                     cart = {};
                 }
             }
-            renderCatalog();
-            renderCart();
+            // Cargar catálogo desde Supabase
+            initCatalog().then(() => {
+                renderCart();
+            });
         });
     </script>
 </body>

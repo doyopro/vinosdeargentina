@@ -1,9 +1,9 @@
 // Configuración global de APIs y endpoints
 const API_CONFIG = {
-  // Variables de entorno (fallback a placeholders si no existen)
-  SUPABASE_URL: import.meta?.env?.VITE_SUPABASE_URL || '',
-  SUPABASE_KEY: import.meta?.env?.VITE_SUPABASE_KEY || '',
-  STRIPE_PUBLIC: import.meta?.env?.VITE_STRIPE_PUBLIC || '',
+  // Credenciales de Supabase (hardcoded para development, idealmente desde .env)
+  SUPABASE_URL: 'https://pzzbvinbyzaxrshlmlcn.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB6emJ2aW5ieXpheHJzaGxtbGNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NTI5NDYsImV4cCI6MjA5MTEyODk0Nn0.YgeGDVZfyqI-nv7iAhROMsBfZbIK7BGUDyU1ERE-SFA',
+  STRIPE_PUBLIC: '',
   WINES_DATA: '/assets/data/wines.json',
 
   // Configuración de rutas locales

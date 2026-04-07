@@ -82,48 +82,48 @@
 
     <script type="module">
         // INTEGRACIÓN FIREBASE PARA LEER PEDIDOS
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // Cargar órdenes desde Supabase
+        async function loadOrders() {
+            try {
+                console.log('Cargando órdenes desde Supabase...');
+                const result = await APIModule.getAllOrders();
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'de-altura-crm';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        
-        let db;
-        try {
-            const app = initializeApp(firebaseConfig);
-            const auth = getAuth(app);
-            db = getFirestore(app);
-            
-            const initAuth = async () => {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
+                if (result.error) {
+                    console.error('Error:', result.error);
+                    renderOrders([]);
+                    return;
                 }
-            };
-            initAuth();
-            
-            onAuthStateChanged(auth, (user) => {
-                if (!user) return;
 
-                // Escuchar la colección de pedidos en tiempo real
-                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'orders'), (snapshot) => {
-                    const orders = [];
-                    snapshot.forEach(doc => orders.push({ id: doc.id, ...doc.data() }));
-                    
-                    // Ordenar por más reciente
-                    orders.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
-                    renderOrders(orders);
-                }, (error) => {
-                    console.error("Error leyendo pedidos:", error);
-                });
-            });
-        } catch(e) {
-            console.log("Modo desarrollo local.");
-            renderOrders([
-                { orderId: '#DW-MOCK', clientName: 'Prueba Local', email: 'test@local.com', island: 'Tenerife', paymentMethod: 'stripe', paymentStatus: 'Pagado (Stripe)', shippingStatus: 'Nuevo', total: 427.57 }
-            ]);
+                // Transformar datos de Supabase al formato esperado
+                const orders = (result.orders || []).map(order => ({
+                    id: order.id,
+                    orderId: '#DW-' + order.id.slice(0, 8).toUpperCase(),
+                    clientName: order.customer_name,
+                    email: order.customer_email,
+                    island: order.island,
+                    paymentMethod: order.payment_method,
+                    paymentStatus: order.payment_status === 'paid' ? 'Pagado' :
+                                   order.payment_status === 'failed' ? 'Rechazado' : 'Pendiente',
+                    shippingStatus: order.shipping_status === 'shipped' ? 'Enviado' :
+                                   order.shipping_status === 'delivered' ? 'Entregado' :
+                                   order.shipping_status === 'processing' ? 'Procesando' : 'Nuevo',
+                    total: order.total_amount,
+                    created_at: order.created_at
+                }));
+
+                console.log(`✓ ${orders.length} órdenes cargadas`);
+                renderOrders(orders);
+            } catch(e) {
+                console.error("Error cargando órdenes:", e);
+                renderOrders([]);
+            }
+        }
+
+        // Cargar órdenes cuando el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadOrders);
+        } else {
+            loadOrders();
         }
 
         function renderOrders(orders) {

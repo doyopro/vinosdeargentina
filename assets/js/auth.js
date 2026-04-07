@@ -1,9 +1,11 @@
 /**
- * Auth Module - Manejo de autenticación y usuarios
- * Estructura base para integración futura con Supabase
+ * Auth Module - Manejo de autenticación con Supabase
  */
 
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/+esm';
+
 const AuthModule = (() => {
+  const supabase = createClient(API_CONFIG.SUPABASE_URL, API_CONFIG.SUPABASE_ANON_KEY);
   let currentUser = null;
   const STORAGE_KEY = 'de_altura_user';
 
@@ -29,48 +31,76 @@ const AuthModule = (() => {
   // Validar email
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  // Login simple (preparado para Supabase)
+  // Login con Supabase
   const login = async (email, password) => {
     if (!isValidEmail(email) || password.length < 6) {
       return { error: 'Credenciales inválidas' };
     }
 
-    // TODO: Conectar a Supabase
-    // const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
 
-    const user = {
-      email,
-      role: 'customer',
-      discount_percent: 0,
-      created_at: new Date().toISOString()
-    };
+      const user = {
+        id: data.user.id,
+        email: data.user.email,
+        role: 'customer',
+        discount_percent: 0
+      };
 
-    saveUser(user);
-    return { user };
+      saveUser(user);
+      return { user, session: data.session };
+    } catch (error) {
+      return { error: error.message || 'Error al iniciar sesión' };
+    }
   };
 
-  // Signup simple
+  // Signup con Supabase
   const signup = async (email, password) => {
     if (!isValidEmail(email) || password.length < 6) {
       return { error: 'Email o contraseña inválidos' };
     }
 
-    // TODO: Conectar a Supabase
-    const user = {
-      email,
-      role: 'customer',
-      discount_percent: 0,
-      created_at: new Date().toISOString()
-    };
+    try {
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      if (error) throw error;
 
-    saveUser(user);
-    return { user };
+      const user = {
+        id: data.user.id,
+        email: data.user.email,
+        role: 'customer',
+        discount_percent: 0
+      };
+
+      // Crear perfil en tabla users
+      const { error: profileError } = await supabase
+        .from('users')
+        .insert([{
+          id: data.user.id,
+          email: email,
+          role: 'customer',
+          discount_percent: 0
+        }]);
+
+      if (profileError) console.warn('Error creando perfil:', profileError);
+
+      saveUser(user);
+      return { user, session: data.session };
+    } catch (error) {
+      return { error: error.message || 'Error al registrarse' };
+    }
   };
 
   // Logout
-  const logout = () => {
-    clearUser();
-    return { success: true };
+  const logout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      clearUser();
+      return { success: true };
+    } catch (error) {
+      return { error: error.message || 'Error al cerrar sesión' };
+    }
   };
 
   // Obtener usuario actual
@@ -85,6 +115,22 @@ const AuthModule = (() => {
     return user?.discount_percent || 0;
   };
 
+  // Verificar sesión actual
+  const checkSession = async () => {
+    try {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) throw error;
+      if (data.session) {
+        currentUser = { id: data.session.user.id, email: data.session.user.email };
+        return { user: currentUser };
+      }
+      return { user: null };
+    } catch (error) {
+      console.error('Error verificando sesión:', error);
+      return { user: null };
+    }
+  };
+
   return {
     login,
     signup,
@@ -95,6 +141,8 @@ const AuthModule = (() => {
     getCurrentUser,
     isAuthenticated,
     getUserDiscount,
-    isValidEmail
+    isValidEmail,
+    checkSession,
+    supabase // Exportar para acceso directo
   };
 })();

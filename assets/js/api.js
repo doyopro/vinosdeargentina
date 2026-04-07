@@ -3,15 +3,23 @@
  * Estructura para llamadas HTTP y gestión de datos
  */
 
+// Importar cliente Supabase desde CDN
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/+esm';
+
 const APIModule = (() => {
   const config = API_CONFIG;
+  const supabase = createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
 
-  // Obtener catálogo de vinos desde JSON
+  // Obtener catálogo de vinos desde Supabase
   const getWines = async () => {
     try {
-      const response = await fetch(config.WINES_DATA);
-      if (!response.ok) throw new Error('Error cargando catálogo');
-      return await response.json();
+      const { data, error } = await supabase
+        .from('wines')
+        .select('*')
+        .order('region', { ascending: true });
+
+      if (error) throw error;
+      return data || [];
     } catch (error) {
       console.error('Error en getWines:', error);
       return [];
@@ -44,22 +52,34 @@ const APIModule = (() => {
     return wines;
   };
 
-  // Crear orden (preparado para Supabase)
+  // Crear orden en Supabase
   const createOrder = async (orderData) => {
     try {
-      // TODO: POST a Supabase
-      const order = {
-        id: crypto.randomUUID(),
-        ...orderData,
-        created_at: new Date().toISOString(),
-        status: 'pending'
-      };
+      const { data, error } = await supabase
+        .from('orders')
+        .insert([{
+          customer_name: orderData.customer_name,
+          customer_email: orderData.customer_email,
+          customer_phone: orderData.customer_phone || '',
+          island: orderData.island,
+          address: orderData.address,
+          postal_code: orderData.postal_code || '',
+          subtotal_amount: orderData.subtotal_amount || 0,
+          tax_amount: orderData.tax_amount || 0,
+          total_amount: orderData.total_amount,
+          items: orderData.items,
+          payment_method: orderData.payment_method,
+          payment_status: orderData.payment_status || 'pending',
+          shipping_status: orderData.shipping_status || 'new',
+          notes: orderData.notes || ''
+        }])
+        .select();
 
-      console.log('Orden creada (mock):', order);
-      return { order };
+      if (error) throw error;
+      return { order: data ? data[0] : null };
     } catch (error) {
       console.error('Error creando orden:', error);
-      return { error: 'No se pudo crear la orden' };
+      return { error: error.message || 'No se pudo crear la orden' };
     }
   };
 
@@ -75,14 +95,35 @@ const APIModule = (() => {
     }
   };
 
-  // Obtener órdenes del usuario (preparado para Supabase)
+  // Obtener órdenes del usuario desde Supabase
   const getUserOrders = async (userId) => {
     try {
-      // TODO: GET a Supabase
-      console.log('Órdenes obtenidas (mock) para usuario:', userId);
-      return { orders: [] };
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return { orders: data || [] };
     } catch (error) {
       console.error('Error obteniendo órdenes:', error);
+      return { error: 'No se pudieron obtener las órdenes' };
+    }
+  };
+
+  // Obtener todas las órdenes (admin)
+  const getAllOrders = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return { orders: data || [] };
+    } catch (error) {
+      console.error('Error obteniendo todas las órdenes:', error);
       return { error: 'No se pudieron obtener las órdenes' };
     }
   };
@@ -120,6 +161,8 @@ const APIModule = (() => {
     createOrder,
     createPaymentIntent,
     getUserOrders,
-    calculateTotal
+    getAllOrders,
+    calculateTotal,
+    supabase // Exportar cliente para acceso directo si es necesario
   };
 })();

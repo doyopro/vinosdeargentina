@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargar Vinos - De Altura Wines Admin</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { color: #360914; }
+        button { padding: 10px 20px; background: #360914; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #54101d; }
+        #log { margin-top: 20px; padding: 15px; background: #f9f9f9; border-left: 4px solid #360914; font-family: monospace; font-size: 12px; max-height: 400px; overflow-y: auto; }
+        .log-item { margin: 5px 0; }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .info { color: #0066cc; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>De Altura Wines - Admin</h1>
+        <p>Carga el catálogo de 44 vinos desde <code>wines.json</code> a Supabase</p>
+        <button onclick="loadWines()">Cargar Vinos en Supabase</button>
+        <div id="log"></div>
+    </div>
+
+    <!-- Scripts de configuración -->
+    <script src="/assets/js/config.js"></script>
+    <script src="/assets/js/load-wines.js" type="module"></script>
+
+    <script>
+        const logDiv = document.getElementById('log');
+
+        // Interceptar console.log para mostrar en la página
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog(...args);
+            const message = args.map(arg =>
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+
+            const item = document.createElement('div');
+            item.className = 'log-item info';
+            item.textContent = '> ' + message;
+            logDiv.appendChild(item);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        };
+
+        const originalError = console.error;
+        console.error = function(...args) {
+            originalError(...args);
+            const message = args.map(arg =>
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+
+            const item = document.createElement('div');
+            item.className = 'log-item error';
+            item.textContent = '✗ ' + message;
+            logDiv.appendChild(item);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        };
+
+        async function loadWines() {
+            try {
+                await window.loadWinesToSupabase();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
