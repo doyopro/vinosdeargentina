@@ -212,7 +212,8 @@
     <script>
         const SUPABASE_URL = 'https://pzzbvinbyzaxrshlmlcn.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB6emJ2aW5ieXpheHJzaGxtbGNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NTI5NDYsImV4cCI6MjA5MTEyODk0Nn0.YgeGDVZfyqI-nv7iAhROMsBfZbIK7BGUDyU1ERE-SFA';
-        const STRIPE_PUBLISHABLE_KEY = 'pk_test_YOUR_KEY_HERE'; // ⚠️ CAMBIAR CON KEY REAL DE NICO
+        const STRIPE_PUBLISHABLE_KEY = 'pk_test_51TJUdsQ1h6OCxVbfV0s4K3e8Ef7YxoXiKIK92Woj9NfVgJbGkKgBvKWVHuiLFPrZsEAY1auG9so9ilKGYPvcKH6300FWxEsAe5';
+        const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/create-payment-intent`;
 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
@@ -342,20 +343,16 @@
                 document.getElementById('loading-overlay').classList.add('show');
 
                 // Crear Payment Intent en Supabase (función edge)
-                const paymentIntentResponse = await fetch(
-                    `${SUPABASE_URL}/functions/v1/create-payment-intent`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            amount: Math.round(window.orderData.total * 100),
-                            description: `Pedido De Altura - ${window.orderData.items.length} vino(s)`
-                        })
-                    }
-                );
+                const paymentIntentResponse = await fetch(EDGE_FUNCTION_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        amount: window.orderData.total
+                    })
+                });
 
                 if (!paymentIntentResponse.ok) {
                     throw new Error('No se pudo crear el Payment Intent');
@@ -437,20 +434,16 @@
 
             if (Object.keys(loadCart()).length > 0) {
                 // Crear Payment Element
-                const paymentIntentResponse = await fetch(
-                    `${SUPABASE_URL}/functions/v1/create-payment-intent`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            amount: Math.round((window.orderData?.total || 0) * 100),
-                            description: 'De Altura Wines'
-                        })
-                    }
-                );
+                const paymentIntentResponse = await fetch(EDGE_FUNCTION_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        amount: window.orderData?.total || 0
+                    })
+                });
 
                 const { clientSecret } = await paymentIntentResponse.json();
 
