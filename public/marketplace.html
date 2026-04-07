@@ -206,25 +206,44 @@
 
     <style>
         body { background-color: theme('colors.stone.50'); color: theme('colors.stone.800'); }
-        
+
         /* Sistema de Idiomas */
         body.lang-en [lang="es"] { display: none !important; }
         body.lang-es [lang="en"] { display: none !important; }
-        
+
         /* Acento de Canarias */
         .canary-stripe {
             background: linear-gradient(90deg, #ffffff 0%, #ffffff 33.33%, #00a1e4 33.33%, #00a1e4 66.66%, #fcd116 66.66%, #fcd116 100%);
         }
-        
+
+        /* CRÍTICO: Asegurar visibilidad de contenedores de vinos */
+        #section-norte,
+        #section-cuyo,
+        #section-patagonia,
+        #container-norte,
+        #container-cuyo,
+        #container-patagonia,
+        #catalog-grid,
+        .wine-row,
+        .wine-card {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            height: auto !important;
+            max-height: none !important;
+            margin: revert !important;
+            padding: revert !important;
+        }
+
         /* Animaciones */
         #cart-drawer { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .drawer-open { transform: translateX(0) !important; }
         #cart-overlay { transition: opacity 0.3s ease; }
-        
+
         .wine-row { transition: all 0.3s ease; }
         .wine-row:hover { background-color: white; transform: translateY(-2px); box-shadow: theme('boxShadow.premium'); border-color: transparent; z-index: 10; position: relative; border-radius: 0.5rem; }
         .wine-row.in-cart { background-color: theme('colors.stone.100'); border-left: 4px solid theme('colors.wine.700'); }
-        
+
         .btn-pop:active { transform: scale(0.95); }
         @keyframes pop {
             0% { transform: scale(1); }
@@ -232,10 +251,10 @@
             100% { transform: scale(1); }
         }
         .animate-pop { animation: pop 0.3s ease-out forwards; }
-        
+
         .filter-btn { transition: all 0.3s ease; }
-        
-        input[type="number"]::-webkit-inner-spin-button, 
+
+        input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
@@ -682,17 +701,36 @@
                 console.error('Error inyectando en catalog-grid:', e);
             }
 
-            // 8. Gestionar visibilidad de Secciones
+            // 8. Gestionar visibilidad de Secciones (SIEMPRE VISIBLES - CSS !important lo garantiza)
             try {
                 const sectionNorte = document.getElementById('section-norte');
                 const sectionCuyo = document.getElementById('section-cuyo');
                 const sectionPatagonia = document.getElementById('section-patagonia');
                 const noResults = document.getElementById('no-results');
 
-                if (sectionNorte) sectionNorte.style.display = norte.length ? 'block' : 'none';
-                if (sectionCuyo) sectionCuyo.style.display = cuyo.length ? 'block' : 'none';
-                if (sectionPatagonia) sectionPatagonia.style.display = patagonia.length ? 'block' : 'none';
-                if (noResults) noResults.style.display = filtered.length === 0 ? 'block' : 'none';
+                // Forzar visibilidad con CSS inline
+                if (sectionNorte) {
+                    sectionNorte.style.display = 'block';
+                    sectionNorte.style.visibility = 'visible';
+                    sectionNorte.style.opacity = '1';
+                }
+                if (sectionCuyo) {
+                    sectionCuyo.style.display = 'block';
+                    sectionCuyo.style.visibility = 'visible';
+                    sectionCuyo.style.opacity = '1';
+                }
+                if (sectionPatagonia) {
+                    sectionPatagonia.style.display = 'block';
+                    sectionPatagonia.style.visibility = 'visible';
+                    sectionPatagonia.style.opacity = '1';
+                }
+
+                // Solo ocultar "no results" si no hay vinos filtrados
+                if (noResults) {
+                    noResults.style.display = filtered.length === 0 ? 'block' : 'none';
+                }
+
+                console.log(`✓ Secciones visibles: norte=${norte.length}, cuyo=${cuyo.length}, patagonia=${patagonia.length}`);
             } catch (e) {
                 console.error('Error gestionando visibilidad:', e);
             }
