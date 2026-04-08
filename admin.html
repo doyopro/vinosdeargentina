@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - De Altura Wines</title>
+    <title>SuperAdmin - De Altura Wines</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* MANTENEMOS TUS ESTILOS ORIGINALES */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Montserrat', sans-serif;
             background: linear-gradient(135deg, #360914 0%, #54101d 100%);
             min-height: 100vh;
             color: #333;
@@ -20,12 +28,17 @@
             padding: 40px 20px;
         }
 
-        .admin-header {
+        .admin-header,
+        .stat-card,
+        .orders-section {
             background: white;
-            padding: 30px;
             border-radius: 12px;
-            margin-bottom: 40px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .admin-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -34,27 +47,6 @@
         .admin-header h1 {
             color: #360914;
             font-size: 2em;
-            font-weight: 700;
-        }
-
-        .admin-header .info {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .logout-btn {
-            background: #d32f2f;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            background: #b71c1c;
         }
 
         .dashboard-grid {
@@ -64,76 +56,36 @@
             margin-bottom: 40px;
         }
 
-        .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            border-left: 4px solid #C89F5D;
-        }
-
         .stat-label {
             color: #999;
             font-size: 0.85em;
             text-transform: uppercase;
             font-weight: 600;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
         }
 
         .stat-value {
             color: #360914;
-            font-size: 2.5em;
+            font-size: 2.2em;
             font-weight: 700;
-        }
-
-        .orders-section {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-
-        .orders-section h2 {
-            color: #360914;
-            margin-bottom: 25px;
-            font-size: 1.8em;
-            border-bottom: 2px solid #C89F5D;
-            padding-bottom: 15px;
         }
 
         .orders-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.95em;
+            margin-top: 20px;
         }
 
-        .orders-table thead {
-            background: #f5f5f5;
-        }
-
-        .orders-table th {
-            padding: 15px;
-            text-align: left;
-            color: #360914;
-            font-weight: 600;
-            border-bottom: 2px solid #eee;
-        }
-
+        .orders-table th,
         .orders-table td {
             padding: 15px;
+            text-align: left;
             border-bottom: 1px solid #eee;
         }
 
-        .orders-table tbody tr:hover {
-            background: #f9f9f9;
-        }
-
         .status-badge {
-            display: inline-block;
-            padding: 6px 12px;
+            padding: 5px 12px;
             border-radius: 20px;
-            font-size: 0.85em;
+            font-size: 0.8em;
             font-weight: 600;
         }
 
@@ -147,258 +99,215 @@
             color: #e65100;
         }
 
-        .status-shipped {
-            background: #e3f2fd;
-            color: #1565c0;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border: 3px solid #eee;
-            border-top-color: #360914;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #999;
-        }
-
-        .error {
-            background: #ffebee;
-            color: #c62828;
-            padding: 20px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-        }
-
-        .filters {
-            margin-bottom: 25px;
+        /* NUEVOS ESTILOS PARA PESTAÑAS E INVENTARIO */
+        .tab-container {
             display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .filter-select {
-            padding: 10px 15px;
-            border: 1px solid #ddd;
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
             border-radius: 6px;
-            font-size: 0.95em;
             cursor: pointer;
+            background: #eee;
+            font-weight: 600;
+            transition: 0.3s;
         }
 
-        .filter-select:focus {
-            outline: none;
-            border-color: #C89F5D;
-            box-shadow: 0 0 0 3px rgba(200, 159, 93, 0.1);
+        .tab-btn.active {
+            background: #C89F5D;
+            color: white;
+        }
+
+        .inventory-input {
+            width: 70px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .save-btn {
+            background: #360914;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        .logout-btn {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
         }
     </style>
 </head>
+
 <body>
     <div class="admin-container">
-        <!-- Header -->
         <div class="admin-header">
             <div>
-                <h1>📊 Panel de Administración</h1>
-                <div class="info">De Altura Wines - Dashboard</div>
+                <h1>📊 SuperAdmin Dashboard</h1>
+                <p style="color: #666;">Control total de Ventas e Inventario</p>
+            </div>
+            <div class="tab-container">
+                <button class="tab-btn active" onclick="switchTab('orders')">📦 Órdenes</button>
+                <button class="tab-btn" onclick="switchTab('inventory')">🍷 Stock y Márgenes</button>
             </div>
             <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
         </div>
 
-        <!-- Error Message -->
-        <div id="error-message" style="display: none;"></div>
-
-        <!-- Dashboard Stats -->
-        <div class="dashboard-grid" id="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">Total de Órdenes</div>
-                <div class="stat-value" id="total-orders">-</div>
-            </div>
+        <div class="dashboard-grid">
             <div class="stat-card">
                 <div class="stat-label">Ingresos Totales</div>
-                <div class="stat-value" id="total-revenue">-</div>
+                <div class="stat-value" id="total-revenue">0.00 €</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Órdenes Pagadas</div>
-                <div class="stat-value" id="paid-orders">-</div>
+                <div class="stat-label">Ventas Pagadas</div>
+                <div class="stat-value" id="paid-orders">0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Órdenes Pendientes</div>
-                <div class="stat-value" id="pending-orders">-</div>
+                <div class="stat-label">Stock Alerta (Bajo)</div>
+                <div class="stat-value" id="stock-alert" style="color: #d32f2f;">0</div>
             </div>
         </div>
 
-        <!-- Orders Section -->
-        <div class="orders-section">
-            <h2>Historial de Órdenes</h2>
-
-            <div class="filters">
-                <select class="filter-select" id="status-filter" onchange="filterOrders()">
-                    <option value="">Todos los Estados</option>
-                    <option value="paid">Pagadas</option>
-                    <option value="pending">Pendientes</option>
-                    <option value="shipped">Enviadas</option>
-                </select>
-            </div>
-
+        <div id="section-orders" class="orders-section">
+            <h2>Historial de Órdenes Reales</h2>
             <div id="orders-container">
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <p>Cargando órdenes...</p>
-                </div>
+                <p style="padding: 20px; color: #999;">Cargando datos de Supabase...</p>
             </div>
+        </div>
+
+        <div id="section-inventory" class="orders-section" style="display: none;">
+            <h2>Inventario y Rentabilidad (Tarifas 2026)</h2>
+            <div id="inventory-container"></div>
         </div>
     </div>
 
     <script>
         const SUPABASE_URL = 'https://pzzbvinbyzaxrshlmlcn.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB6emJ2aW5ieXpheHJzaGxtbGNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NTI5NDYsImV4cCI6MjA5MTEyODk0Nn0.YgeGDVZfyqI-nv7iAhROMsBfZbIK7BGUDyU1ERE-SFA';
-
+        const SUPABASE_ANON_KEY = 'TU_KEY_AQUI'; // USA TU KEY ORIGINAL
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         let allOrders = [];
 
-        async function loadDashboard() {
-            try {
-                // Cargar órdenes
-                const { data: orders, error: ordersError } = await supabase
-                    .from('orders')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+        async function init() {
+            await loadOrders();
+            await checkStockAlerts();
+        }
 
-                if (ordersError) throw ordersError;
+        async function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
 
-                allOrders = orders || [];
-                console.log('📦 Órdenes cargadas:', allOrders.length);
-
-                // Calcular estadísticas
-                calculateStats(allOrders);
-
-                // Renderizar tabla
-                renderOrdersTable(allOrders);
-
-            } catch (error) {
-                console.error('Error cargando dashboard:', error);
-                showError('Error cargando datos: ' + error.message);
+            if (tab === 'orders') {
+                document.getElementById('section-orders').style.display = 'block';
+                document.getElementById('section-inventory').style.display = 'none';
+                loadOrders();
+            } else {
+                document.getElementById('section-orders').style.display = 'none';
+                document.getElementById('section-inventory').style.display = 'block';
+                loadInventory();
             }
         }
 
-        function calculateStats(orders) {
-            const totalOrders = orders.length;
-            const totalRevenue = orders.reduce((sum, order) => sum + (parseFloat(order.total_amount) || 0), 0);
-            const paidOrders = orders.filter(o => o.payment_status === 'paid').length;
-            const pendingOrders = orders.filter(o => o.payment_status === 'pending').length;
+        // --- LÓGICA DE ÓRDENES (RECUPERADA Y MEJORADA) ---
+        async function loadOrders() {
+            const { data: orders, error } = await supabase
+                .from('orders')
+                .select('*')
+                .order('created_at', { ascending: false });
 
-            document.getElementById('total-orders').textContent = totalOrders;
+            if (error) return console.error(error);
+            allOrders = orders;
+
+            calculateStats();
+            renderOrdersTable();
+        }
+
+        function calculateStats() {
+            const totalRevenue = allOrders
+                .filter(o => o.payment_status === 'paid')
+                .reduce((sum, o) => sum + (parseFloat(o.total_amount) || 0), 0);
+
+            const paidCount = allOrders.filter(o => o.payment_status === 'paid').length;
+
             document.getElementById('total-revenue').textContent = totalRevenue.toFixed(2) + ' €';
-            document.getElementById('paid-orders').textContent = paidOrders;
-            document.getElementById('pending-orders').textContent = pendingOrders;
+            document.getElementById('paid-orders').textContent = paidCount;
         }
 
-        function renderOrdersTable(orders) {
+        function renderOrdersTable() {
             const container = document.getElementById('orders-container');
-
-            if (orders.length === 0) {
-                container.innerHTML = '<div class="empty-state">📭 No hay órdenes aún</div>';
+            if (allOrders.length === 0) {
+                container.innerHTML = '<p>No hay órdenes registradas.</p>';
                 return;
             }
 
-            let html = `
-                <table class="orders-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Cliente</th>
-                            <th>Email</th>
-                            <th>Total</th>
-                            <th>Estado Pago</th>
-                            <th>Envío</th>
-                            <th>Isla</th>
-                            <th>Fecha</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
+            let html = `<table class="orders-table">
+                <thead><tr><th>ID</th><th>Cliente</th><th>Total</th><th>Estado</th><th>Fecha</th></tr></thead><tbody>`;
 
-            orders.forEach(order => {
-                const date = new Date(order.created_at).toLocaleDateString('es-ES');
-                const paymentStatus = order.payment_status === 'paid' ? 'Pagada' : 'Pendiente';
-                const shippingStatus = order.shipping_status === 'shipped' ? 'Enviada' : 'Pendiente';
-
-                html += `
-                    <tr>
-                        <td><strong>${order.id.slice(0, 8).toUpperCase()}</strong></td>
-                        <td>${order.customer_name}</td>
-                        <td>${order.customer_email}</td>
-                        <td><strong>${parseFloat(order.total_amount).toFixed(2)} €</strong></td>
-                        <td>
-                            <span class="status-badge status-${order.payment_status}">
-                                ${paymentStatus}
-                            </span>
-                        </td>
-                        <td>
-                            <span class="status-badge status-${order.shipping_status === 'shipped' ? 'shipped' : 'pending'}">
-                                ${shippingStatus}
-                            </span>
-                        </td>
-                        <td>${order.island || '-'}</td>
-                        <td>${date}</td>
-                    </tr>
-                `;
+            allOrders.forEach(o => {
+                html += `<tr>
+                    <td>#${o.id.slice(0, 5)}</td>
+                    <td>${o.customer_name}<br><small>${o.customer_email}</small></td>
+                    <td><strong>${parseFloat(o.total_amount).toFixed(2)} €</strong></td>
+                    <td><span class="status-badge status-${o.payment_status}">${o.payment_status}</span></td>
+                    <td>${new Date(o.created_at).toLocaleDateString()}</td>
+                </tr>`;
             });
-
-            html += `
-                    </tbody>
-                </table>
-            `;
-
-            container.innerHTML = html;
+            container.innerHTML = html + '</tbody></table>';
         }
 
-        function filterOrders() {
-            const filterValue = document.getElementById('status-filter').value;
+        // --- LÓGICA DE INVENTARIO (NUEVA) ---
+        async function loadInventory() {
+            const { data: wines } = await supabase.from('wines').select('*').order('name');
+            const container = document.getElementById('inventory-container');
 
-            if (!filterValue) {
-                renderOrdersTable(allOrders);
-                return;
+            let html = `<table class="orders-table">
+                <thead><tr><th>Vino</th><th>Región</th><th>Venta Botella</th><th>Margen Unit.</th><th>Stock (Cajas)</th><th>Acción</th></tr></thead><tbody>`;
+
+            wines.forEach(w => {
+                const margin = (w.price_retail - (w.price_horeca || 0)).toFixed(2);
+                html += `<tr>
+                    <td>${w.name}</td>
+                    <td>${w.region}</td>
+                    <td>${w.price_retail} €</td>
+                    <td style="color: green; font-weight: 600;">+${margin} €</td>
+                    <td><input type="number" class="inventory-input" id="stock-${w.id}" value="${w.stock || 0}"></td>
+                    <td><button class="save-btn" onclick="updateStock('${w.id}')">Guardar</button></td>
+                </tr>`;
+            });
+            container.innerHTML = html + '</tbody></table>';
+        }
+
+        async function updateStock(id) {
+            const newStock = document.getElementById(`stock-${id}`).value;
+            const { error } = await supabase.from('wines').update({ stock: newStock }).eq('id', id);
+            if (error) alert('Error al actualizar');
+            else {
+                alert('Stock actualizado ✅');
+                checkStockAlerts();
             }
-
-            const filtered = allOrders.filter(order => order.payment_status === filterValue);
-            renderOrdersTable(filtered);
         }
 
-        function showError(message) {
-            const errorDiv = document.getElementById('error-message');
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-            setTimeout(() => {
-                errorDiv.style.display = 'none';
-            }, 5000);
+        async function checkStockAlerts() {
+            const { data } = await supabase.from('wines').select('stock').lt('stock', 5);
+            document.getElementById('stock-alert').textContent = data ? data.length : 0;
         }
 
         function logout() {
-            localStorage.clear();
             window.location.href = 'index.html';
         }
 
-        // Cargar dashboard al iniciar
-        loadDashboard();
-
-        // Actualizar cada 30 segundos
-        setInterval(loadDashboard, 30000);
+        init();
     </script>
 </body>
+
 </html>
