@@ -111,10 +111,6 @@
                     <span>IGIC (7%):</span>
                     <span id="igic">0,00 €</span>
                 </div>
-                <div class="summary-row">
-                    <span>AIEM (15%):</span>
-                    <span id="aiem">0,00 €</span>
-                </div>
                 <div class="summary-row total">
                     <span>TOTAL:</span>
                     <span id="total">0,00 €</span>
@@ -227,10 +223,16 @@
 
         // Cargar carrito desde localStorage
         function loadCart() {
-            const cartData = localStorage.getItem('deAlturaCart') || '{}';
+            const cartData = localStorage.getItem('deAlturaCart');
+            console.log('📦 Debug LocalStorage [deAlturaCart]:', cartData);
+            if (!cartData || cartData === '{}') {
+                console.warn('⚠️ El carrito está vacío en localStorage');
+                return {};
+            }
             try {
                 return JSON.parse(cartData);
-            } catch {
+            } catch (e) {
+                console.error('❌ Error parseando carrito:', e);
                 return {};
             }
         }
@@ -274,12 +276,10 @@
 
             // Calcular totales
             const igic = subtotal * 0.07;
-            const aiem = subtotal * 0.15;
-            const total = subtotal + igic + aiem;
+            const total = Number((subtotal + igic).toFixed(2));
 
             document.getElementById('subtotal').textContent = subtotal.toFixed(2).replace('.', ',') + ' €';
             document.getElementById('igic').textContent = igic.toFixed(2).replace('.', ',') + ' €';
-            document.getElementById('aiem').textContent = aiem.toFixed(2).replace('.', ',') + ' €';
             document.getElementById('total').textContent = total.toFixed(2).replace('.', ',') + ' €';
 
             // Guardar para usar en pago
@@ -287,7 +287,6 @@
                 items: items,
                 subtotal: subtotal,
                 igic: igic,
-                aiem: aiem,
                 total: total
             };
         }
@@ -394,7 +393,7 @@
                         address: document.getElementById('address').value,
                         postal_code: document.getElementById('postal').value,
                         subtotal_amount: window.orderData.subtotal,
-                        tax_amount: window.orderData.igic + window.orderData.aiem,
+                        tax_amount: window.orderData.igic,
                         total_amount: window.orderData.total,
                         items: window.orderData.items,
                         payment_method: 'stripe',
