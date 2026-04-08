@@ -398,45 +398,54 @@
 
                 console.log('✅ Pago confirmado por Stripe');
 
-                // Guardar orden en Supabase
+                // Guardar orden en Supabase (silencioso - no bloquea si falla)
                 const paymentId = clientSecret ? clientSecret.split('_secret_')[0] : 'unknown';
-                console.log('💾 Insertando orden en Supabase con datos:', {
-                    customer_name: document.getElementById('name').value,
-                    customer_email: document.getElementById('email').value,
-                    total_amount: window.orderData.total,
-                    stripe_payment_id: paymentId
-                });
+                let orderId = null;
 
-                const { data: orderData, error: orderError } = await window.deAlturaSupabase
-                    .from('orders')
-                    .insert([{
+                try {
+                    console.log('💾 Insertando orden en Supabase con datos:', {
                         customer_name: document.getElementById('name').value,
                         customer_email: document.getElementById('email').value,
-                        customer_phone: document.getElementById('phone').value,
-                        island: document.getElementById('island').value,
-                        address: document.getElementById('address').value,
-                        postal_code: document.getElementById('postal').value,
-                        subtotal_amount: window.orderData.subtotal,
-                        tax_amount: window.orderData.igic,
                         total_amount: window.orderData.total,
-                        items: window.orderData.items,
-                        payment_method: 'stripe',
-                        payment_status: 'paid',
-                        shipping_status: 'new',
+                        postal_code: document.getElementById('postal').value,
                         stripe_payment_id: paymentId
-                    }]);
+                    });
 
-                if (orderError) {
-                    console.error('❌ Error insertando orden:', orderError);
-                    throw orderError;
+                    const { data: orderData, error: orderError } = await window.deAlturaSupabase
+                        .from('orders')
+                        .insert([{
+                            customer_name: document.getElementById('name').value,
+                            customer_email: document.getElementById('email').value,
+                            customer_phone: document.getElementById('phone').value,
+                            island: document.getElementById('island').value,
+                            address: document.getElementById('address').value,
+                            postal_code: document.getElementById('postal').value,
+                            subtotal_amount: window.orderData.subtotal,
+                            tax_amount: window.orderData.igic,
+                            total_amount: window.orderData.total,
+                            items: window.orderData.items,
+                            payment_method: 'stripe',
+                            payment_status: 'paid',
+                            shipping_status: 'new',
+                            stripe_payment_id: paymentId
+                        }]);
+
+                    if (orderError) {
+                        console.error('❌ Error insertando orden (no bloqueante):', orderError);
+                        // No bloquear - el dinero ya se cobró en Stripe
+                        orderId = `STRIPE-${paymentId}`;
+                    } else if (orderData && orderData.length > 0) {
+                        orderId = orderData[0].id;
+                        console.log('✅ Orden insertada con ID:', orderId);
+                    } else {
+                        console.warn('⚠️ Insert exitoso pero sin datos retornados');
+                        orderId = `STRIPE-${paymentId}`;
+                    }
+                } catch (e) {
+                    console.error('❌ Excepción insertando orden:', e);
+                    // Fallback: usar stripe payment ID como referencia
+                    orderId = `STRIPE-${paymentId}`;
                 }
-
-                console.log('✅ Orden insertada:', orderData);
-                if (!orderData || orderData.length === 0) {
-                    throw new Error('No se retornó el ID de la orden');
-                }
-
-                const orderId = orderData[0].id;
 
                 // Guardar items de la orden (opcional, continuar si falla)
                 try {
