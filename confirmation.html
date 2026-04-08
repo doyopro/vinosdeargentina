@@ -121,6 +121,26 @@
             box-shadow: 0 6px 20px rgba(54, 9, 20, 0.4);
         }
 
+        .btn-whatsapp {
+            display: inline-block;
+            background: linear-gradient(135deg, #25D366 0%, #1fa952 100%);
+            color: white;
+            padding: 16px 40px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 1.05em;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+        }
+
+        .btn-whatsapp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+
         .footer-note {
             color: #999;
             font-size: 0.85em;
@@ -161,9 +181,17 @@
             <p>❓ Si tienes preguntas, consulta tu email o contáctanos.</p>
         </div>
 
-        <button class="btn-return" onclick="window.location.href='index.html'">
-            ← Volver a la Tienda
-        </button>
+        <div style="margin-bottom: 30px;">
+            <button class="btn-return" onclick="window.location.href='index.html'">
+                ← Volver a la Tienda
+            </button>
+        </div>
+
+        <div style="margin-bottom: 30px;">
+            <a href="https://wa.me/34633706676?text=Hola,%20tengo%20una%20duda%20sobre%20mi%20pedido" target="_blank" class="btn-whatsapp">
+                💬 ¿Tienes dudas? Escríbenos por WhatsApp
+            </a>
+        </div>
 
         <div class="footer-note">
             De Altura Wines - Vinos Argentinos Premium para Canarias<br>
