@@ -385,6 +385,263 @@
             margin-right: 5px;
             color: var(--success);
         }
+
+        /* ═══════════════════════════════════════════════════════ */
+        /* MEDIA QUERIES - OPTIMIZACIÓN MOBILE                    */
+        /* ═══════════════════════════════════════════════════════ */
+
+        /* --- ENVOLTURA PARA TABLAS RESPONSIVAS --- */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 0;
+            margin: 0 -25px;
+            padding: 0 25px;
+        }
+
+        .table-wrapper table {
+            min-width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            /* --- LAYOUT PRINCIPAL --- */
+            body {
+                flex-direction: column;
+            }
+
+            /* --- SIDEBAR COLAPSABLE --- */
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 260px;
+                height: 100vh;
+                z-index: 200;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            /* --- TABLAS WRAPPER --- */
+            .table-wrapper {
+                margin: 0 -15px;
+                padding: 0 15px;
+            }
+
+            .top-header {
+                margin-bottom: 30px;
+                gap: 10px;
+            }
+
+            .top-header h1 {
+                font-size: 1.4rem;
+            }
+
+            /* --- MÉTRICAS GRID --- */
+            .metrics-grid {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                gap: 15px;
+                margin-bottom: 30px;
+            }
+
+            .metric-card {
+                padding: 15px;
+                gap: 10px;
+            }
+
+            .metric-info h4 {
+                font-size: 0.7rem;
+                margin-bottom: 4px;
+            }
+
+            .metric-info h2 {
+                font-size: 1.4rem;
+            }
+
+            .metric-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+
+            /* --- PANELES --- */
+            .panel {
+                padding: 15px;
+                margin-bottom: 20px;
+                border-radius: 8px;
+            }
+
+            .panel-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding-bottom: 10px;
+                margin-bottom: 15px;
+            }
+
+            .panel-header h3 {
+                font-size: 1rem;
+            }
+
+            .panel-header span {
+                font-size: 0.75rem;
+                width: 100%;
+            }
+
+            /* --- TABLAS RESPONSIVAS --- */
+            table {
+                width: 100%;
+                min-width: 900px;
+            }
+
+            /* Contenedor scrollable para tablas en móvil */
+            .panel > table {
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                width: 100%;
+            }
+
+            th {
+                padding: 10px 8px;
+                font-size: 0.7rem;
+                white-space: nowrap;
+            }
+
+            td {
+                padding: 10px 8px;
+                font-size: 0.8rem;
+            }
+
+            /* --- INPUTS Y BOTONES --- */
+            .input-stock {
+                width: 60px;
+                padding: 6px;
+                font-size: 0.8rem;
+            }
+
+            .btn-action {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+                border-radius: 4px;
+                min-height: 36px;
+                min-width: 36px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .btn-action i {
+                margin-right: 4px;
+            }
+
+            /* --- FINANCE VALUES --- */
+            .finance-value {
+                font-size: 0.75rem;
+            }
+
+            .finance-value small {
+                font-size: 0.65rem;
+                display: block;
+                color: var(--text-muted);
+                margin-top: 2px;
+            }
+
+            /* --- BADGES --- */
+            .status-badge {
+                padding: 4px 8px;
+                font-size: 0.65rem;
+            }
+
+            /* --- BOTÓN MENÚ MOBILE --- */
+            .btn-mobile-menu {
+                display: flex;
+                position: fixed;
+                top: 15px;
+                left: 15px;
+                z-index: 150;
+                background: var(--sidebar-bg);
+                color: var(--white);
+                border: none;
+                padding: 10px 12px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 1.2rem;
+                align-items: center;
+                justify-content: center;
+                width: 44px;
+                height: 44px;
+            }
+
+            .btn-mobile-menu:hover {
+                background: var(--brand-gold);
+            }
+
+            /* --- OVERLAY PARA MENÚ --- */
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 190;
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .top-header h1 {
+                font-size: 1.2rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metric-info h2 {
+                font-size: 1.2rem;
+            }
+
+            .panel-header h3 {
+                font-size: 0.95rem;
+            }
+
+            .btn-action {
+                padding: 4px 8px;
+                font-size: 0.7rem;
+            }
+
+            /* Stack vertical para valores financieros */
+            .finance-value {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+        }
+
+        /* --- SOPORTE LANDSCAPE --- */
+        @media (max-height: 500px) and (max-width: 768px) {
+            .sidebar {
+                height: auto;
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+
+            .main-content {
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 
@@ -414,6 +671,14 @@
                 Sesión</button>
         </div>
     </aside>
+
+    <!-- 📱 BOTÓN DE MENÚ MOBILE -->
+    <button class="btn-mobile-menu" id="mobile-menu-btn" onclick="app.toggleMobileMenu()" style="display: none;">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <!-- 📱 OVERLAY PARA CERRAR MENÚ -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="app.closeMobileMenu()"></div>
 
     <main class="main-content">
         <div class="top-header">
@@ -460,6 +725,7 @@
                 <div class="panel-header">
                     <h3><i class="fa-solid fa-clock-rotate-left"></i> Últimos Pedidos Recibidos</h3>
                 </div>
+                <div class="table-wrapper">
                 <table style="min-width: 800px;">
                     <thead>
                         <tr>
@@ -497,15 +763,17 @@
                     </thead>
                     <tbody id="all-orders-body"></tbody>
                 </table>
+                </div>
             </div>
         </section>
 
         <section id="view-inventory" class="section">
-            <div class="panel" style="overflow-x: auto;">
+            <div class="panel">
                 <div class="panel-header">
                     <h3><i class="fa-solid fa-calculator"></i> Desglose Financiero y Control de Stock</h3>
                     <span style="font-size: 0.85rem; color: var(--text-muted);">✅ Coste Real (price_cost_net) | Margen basado en (PVP/1.07 - Coste) | Stock Negativo = Pendiente de Reposición</span>
                 </div>
+                <div class="table-wrapper">
                 <table style="min-width: 1200px;">
                     <thead>
                         <tr>
@@ -521,14 +789,16 @@
                     </thead>
                     <tbody id="inventory-body"></tbody>
                 </table>
+                </div>
             </div>
         </section>
 
         <section id="view-crm" class="section">
-            <div class="panel" style="overflow-x: auto;">
+            <div class="panel">
                 <div class="panel-header">
                     <h3><i class="fa-solid fa-address-book"></i> Gestión de Clientes (LTV)</h3>
                 </div>
+                <div class="table-wrapper">
                 <table style="min-width: 800px;">
                     <thead>
                         <tr>
@@ -541,6 +811,7 @@
                     </thead>
                     <tbody id="crm-body"></tbody>
                 </table>
+                </div>
             </div>
         </section>
     </main>
@@ -780,8 +1051,52 @@
                 document.getElementById('crm-body').innerHTML = html || '<tr><td colspan="5" style="text-align:center;">Aún no hay clientes registrados.</td></tr>';
             },
 
+            // 📱 MÉTODOS PARA MENÚ MOBILE
+            toggleMobileMenu: function () {
+                const sidebar = document.querySelector('.sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('active');
+            },
+
+            closeMobileMenu: function () {
+                const sidebar = document.querySelector('.sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('active');
+            },
+
+            initMobileMenu: function () {
+                const menuBtn = document.getElementById('mobile-menu-btn');
+                const sidebar = document.querySelector('.sidebar');
+
+                // Mostrar botón en pantallas pequeñas
+                const showMobileMenu = () => {
+                    if (window.innerWidth <= 768) {
+                        menuBtn.style.display = 'flex';
+                        sidebar.classList.remove('mobile-open');
+                    } else {
+                        menuBtn.style.display = 'none';
+                        sidebar.classList.remove('mobile-open');
+                    }
+                };
+
+                showMobileMenu();
+                window.addEventListener('resize', showMobileMenu);
+
+                // Cerrar menú al hacer clic en un nav-item
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        if (window.innerWidth <= 768) {
+                            this.closeMobileMenu();
+                        }
+                    });
+                });
+            },
+
             start: async function () {
                 this.initDB();
+                this.initMobileMenu();
                 const { data: { session }, error } = await this.db.auth.getSession();
 
                 if (error || !session) {
