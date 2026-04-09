@@ -192,11 +192,19 @@
 
                         console.log('Orden insertada exitosamente:', orderData);
 
-                        // ✅ DESCONTAR EL STOCK EN ITERACIÓN - FIX UUID
+                        // ✅ DESCONTAR EL STOCK EN ITERACIÓN BLINDADA - VALIDACIÓN UUID
+                        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
                         for (const item of items) {
                             try {
-                                // FIX: Convertir item.id a string y hacer trim para asegurar UUID válido
+                                // Convertir item.id a string y hacer trim
                                 const productId = String(item.id).trim();
+
+                                // 🛡️ VALIDAR QUE SEA UN UUID VÁLIDO
+                                if (!uuidRegex.test(productId)) {
+                                    console.error(`⚠️ UUID INVÁLIDO: "${productId}" no es un UUID válido. Saltando este item.`);
+                                    continue;
+                                }
 
                                 const { data: product, error: fetchError } = await supabaseClient
                                     .from('products')
@@ -205,7 +213,7 @@
                                     .single();
 
                                 if (fetchError) {
-                                    console.error(`Error fetching producto ${productId}:`, fetchError);
+                                    console.error(`❌ Error fetching producto ${productId}:`, fetchError);
                                     continue;
                                 }
 
@@ -217,13 +225,14 @@
                                         .eq('id', productId);
 
                                     if (updateError) {
-                                        console.error(`Error actualizando stock de ${productId}:`, updateError);
+                                        console.error(`❌ Error actualizando stock de ${productId}:`, updateError);
                                     } else {
-                                        console.log(`Stock actualizado para ${productId}: ${newStock}`);
+                                        console.log(`✅ Stock actualizado para ${productId}: ${newStock}`);
                                     }
                                 }
                             } catch (itemError) {
-                                console.error(`Error procesando item:`, itemError);
+                                console.error(`❌ Error procesando item:`, itemError);
+                                // Continuar con el siguiente item sin romper la ejecución
                             }
                         }
 
