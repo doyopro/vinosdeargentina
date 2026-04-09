@@ -144,7 +144,10 @@
                 orderIdDisplay.innerText = shortId;
 
                 // Evitar doble confirmación refrecando la página
-                if (localStorage.getItem(`processed_${payment_intent}`)) return;
+                if (localStorage.getItem(`processed_${payment_intent}`)) {
+                    console.log('Orden ya procesada, evitando duplicado');
+                    return;
+                }
                 localStorage.setItem(`processed_${payment_intent}`, 'true');
 
                 try {
@@ -164,33 +167,75 @@
                         const igic = subtotal * 0.07;
                         const totalAmount = parseFloat((subtotal + igic).toFixed(2));
 
-                        // 1. Insertar la orden en Supabase (Solo columnas existentes y sin forzar ID)
-                        await supabaseClient.from('orders').insert([{
-                            customer_name: customer.name,
-                            customer_email: customer.email,
-                            customer_phone: customer.phone,
-                            island: customer.island,
-                            total_amount: totalAmount,
-                            payment_status: 'paid',
-                            shipping_status: 'pending'
-                        }]);
+                        // ✅ INSERTAR LA ORDEN CON COLUMNAS CORRECTAS
+                        const { data: orderData, error: orderError } = await supabaseClient
+                            .from('orders')
+                            .insert([{
+                                customer_name: customer.name,
+                                customer_email: customer.email,
+                                customer_phone: customer.phone,
+                                island: customer.island,
+                                total_amount: totalAmount,
+                                payment_status: 'paid',
+                                shipping_status: 'new',
+                                payment_method: 'stripe',
+                                items: JSON.stringify(items),
+                                address: customer.address || null,
+                                postal_code: customer.postal_code || null
+                            }])
+                            .select();
 
-                        // 2. Descontar el stock en iteración
+                        if (orderError) {
+                            console.error('Error insertando orden en BD:', orderError);
+                            throw orderError;
+                        }
+
+                        console.log('Orden insertada exitosamente:', orderData);
+
+                        // ✅ DESCONTAR EL STOCK EN ITERACIÓN
                         for (const item of items) {
-                            const { data: wine } = await supabaseClient.from('products').select('stock').eq('id', item.id).single();
-                            if (wine) {
-                                const newStock = Math.max(0, (wine.stock || 0) - item.qty);
-                                await supabaseClient.from('products').update({ stock: newStock }).eq('id', item.id);
+                            try {
+                                const { data: product, error: fetchError } = await supabaseClient
+                                    .from('products')
+                                    .select('stock')
+                                    .eq('id', item.id)
+                                    .single();
+
+                                if (fetchError) {
+                                    console.error(`Error fetching producto ${item.id}:`, fetchError);
+                                    continue;
+                                }
+
+                                if (product) {
+                                    const newStock = Math.max(0, (product.stock || 0) - (item.qty || 1));
+                                    const { error: updateError } = await supabaseClient
+                                        .from('products')
+                                        .update({ stock: newStock })
+                                        .eq('id', item.id);
+
+                                    if (updateError) {
+                                        console.error(`Error actualizando stock de ${item.id}:`, updateError);
+                                    } else {
+                                        console.log(`Stock actualizado para ${item.id}: ${newStock}`);
+                                    }
+                                }
+                            } catch (itemError) {
+                                console.error(`Error procesando item ${item.id}:`, itemError);
                             }
                         }
 
-                        // 3. Limpieza final
+                        // ✅ LIMPIEZA FINAL
                         localStorage.removeItem('deAlturaCart');
                         localStorage.removeItem('altura_cart');
                         localStorage.removeItem('altura_customer_info');
+                        console.log('Carrito y datos de cliente limpiados');
+
+                    } else {
+                        console.warn('No se encontró carrito o datos de cliente en localStorage');
                     }
-                } catch(e) {
+                } catch (e) {
                     console.error('Error procesando la orden en BD:', e);
+                    showError();
                 }
             } else {
                 showError();
@@ -202,7 +247,7 @@
             document.querySelector('h1[lang="en"]').innerText = 'Payment Failed';
             document.querySelector('p.text-stone-500 span[lang="es"]').innerText = 'Hubo un problema procesando tu pago. Por favor intenta de nuevo.';
             document.querySelector('p.text-stone-500 span[lang="en"]').innerText = 'There was a problem processing your payment. Please try again.';
-            
+
             const icon = document.querySelector('.fa-check');
             if (icon) {
                 icon.classList.replace('fa-check', 'fa-xmark');
