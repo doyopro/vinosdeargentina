@@ -167,22 +167,26 @@
                         const igic = subtotal * 0.07;
                         const totalAmount = parseFloat((subtotal + igic).toFixed(2));
 
-                        // ✅ INSERTAR LA ORDEN CON COLUMNAS CORRECTAS
+                        // ✅ INSERTAR LA ORDEN CON COLUMNAS CORRECTAS (SIN 'id' - Supabase lo genera)
+                        const orderPayload = {
+                            customer_name: customer.name,
+                            customer_email: customer.email,
+                            customer_phone: customer.phone,
+                            island: customer.island,
+                            total_amount: totalAmount,
+                            payment_status: 'paid',
+                            shipping_status: 'new',
+                            payment_method: 'stripe',
+                            items: items,
+                            address: customer.address || null,
+                            postal_code: customer.postal_code || null
+                        };
+
+                        console.log('📤 Enviando orden a Supabase (sin ID manual):', orderPayload);
+
                         const { data: orderData, error: orderError } = await supabaseClient
                             .from('orders')
-                            .insert([{
-                                customer_name: customer.name,
-                                customer_email: customer.email,
-                                customer_phone: customer.phone,
-                                island: customer.island,
-                                total_amount: totalAmount,
-                                payment_status: 'paid',
-                                shipping_status: 'new',
-                                payment_method: 'stripe',
-                                items: items,
-                                address: customer.address || null,
-                                postal_code: customer.postal_code || null
-                            }])
+                            .insert([orderPayload])
                             .select();
 
                         if (orderError) {
@@ -197,8 +201,10 @@
 
                         for (const item of items) {
                             try {
-                                // Convertir item.id a string y hacer trim - USAR UUID REAL
-                                const productId = String(item.id || item.uuid).trim();
+                                // 🔒 CONVERSIÓN EXPLÍCITA A STRING - PREVENIR CONFLICTOS DE TIPOS
+                                const rawId = item.id || item.uuid;
+                                const productId = String(rawId).trim().toLowerCase();
+                                console.log(`🔑 Item ID procesado: ${rawId} → ${productId}`);
 
                                 // 🛡️ VALIDAR QUE SEA UN UUID VÁLIDO
                                 if (!uuidRegex.test(productId)) {
@@ -206,10 +212,13 @@
                                     continue;
                                 }
 
+                                // DEBUG: Log del tipo de productId
+                                console.log(`📦 Buscando stock para productId: "${productId}" (tipo: ${typeof productId})`);
+
                                 const { data: product, error: fetchError } = await supabaseClient
                                     .from('products')
                                     .select('stock')
-                                    .eq('id', productId)
+                                    .filter('id', 'eq', productId)
                                     .single();
 
                                 if (fetchError) {
@@ -222,7 +231,7 @@
                                     const { error: updateError } = await supabaseClient
                                         .from('products')
                                         .update({ stock: newStock })
-                                        .eq('id', productId);
+                                        .filter('id', 'eq', productId);
 
                                     if (updateError) {
                                         console.error(`❌ Error actualizando stock de ${productId}:`, updateError);
@@ -236,10 +245,16 @@
                             }
                         }
 
+                        // 🔍 AUDITORÍA CRÍTICA ANTES DE LIMPIAR
+                        console.log('═══════════════════════════════════════');
+                        console.log('📊 ORDEN INSERTADA EN SUPABASE:');
+                        console.log(JSON.stringify(orderData, null, 2));
+                        console.log('═══════════════════════════════════════');
+
                         // ✅ LIMPIEZA FINAL
                         localStorage.removeItem('deAlturaCart');
                         localStorage.removeItem('altura_customer_info');
-                        console.log('Carrito y datos de cliente limpiados');
+                        console.log('✨ Carrito y datos de cliente limpiados');
 
                     } else {
                         console.warn('No se encontró carrito o datos de cliente en localStorage');
