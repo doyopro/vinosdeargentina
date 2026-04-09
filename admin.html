@@ -158,10 +158,10 @@
             font-weight: 500;
         }
 
-        /* --- METRICS CARDS --- */
+        /* --- METRICS CARDS (CORREGIDO) --- */
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 25px;
             margin-bottom: 40px;
         }
@@ -176,6 +176,8 @@
             justify-content: space-between;
             border: 1px solid #E2E8F0;
             transition: transform 0.2s;
+            gap: 15px;
+            /* Evita que el texto aplaste al icono */
         }
 
         .metric-card:hover {
@@ -189,6 +191,7 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 8px;
+            white-space: nowrap;
         }
 
         .metric-info h2 {
@@ -205,6 +208,8 @@
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
+            flex-shrink: 0;
+            /* Mantiene el icono cuadrado perfecto */
         }
 
         .icon-gold {
@@ -433,21 +438,21 @@
                         <h4>Pedidos Exitosos</h4>
                         <h2 id="metric-orders">0</h2>
                     </div>
-                    <div class="metric-icon icon-blue"><i class="fa-solid fa-box-check"></i></div>
+                    <div class="metric-icon icon-blue"><i class="fa-solid fa-clipboard-check"></i></div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-info">
-                        <h4>Impuestos (IGIC 7%)</h4>
+                        <h4>Impuestos (IGIC)</h4>
                         <h2 id="metric-tax">0.00 €</h2>
                     </div>
                     <div class="metric-icon icon-green"><i class="fa-solid fa-file-invoice-dollar"></i></div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-info">
-                        <h4>Vinos a Reponer (< 0)</h4>
-                                <h2 id="metric-alerts">0</h2>
+                        <h4>Vinos a Reponer</h4>
+                        <h2 id="metric-alerts">0</h2>
                     </div>
-                    <div class="metric-icon icon-red"><i class="fa-solid fa-truck-ramp-box"></i></div>
+                    <div class="metric-icon icon-red"><i class="fa-solid fa-boxes-stacked"></i></div>
                 </div>
             </div>
 
@@ -455,14 +460,14 @@
                 <div class="panel-header">
                     <h3><i class="fa-solid fa-clock-rotate-left"></i> Últimos Pedidos Recibidos</h3>
                 </div>
-                <table>
+                <table style="min-width: 800px;">
                     <thead>
                         <tr>
                             <th>ID / Ref</th>
                             <th>Cliente</th>
                             <th>Total</th>
-                            <th>Estado</th>
-                            <th>Fecha</th>
+                            <th>Estado Pago</th>
+                            <th>Logística (WhatsApp)</th>
                         </tr>
                     </thead>
                     <tbody id="recent-orders-body">
@@ -570,6 +575,7 @@
                 if (viewId === 'crm') this.loadCRM();
             },
 
+            // FUNCION ACTUALIZADA PARA MOSTRAR WHATSAPP EN LA VISTA GENERAL
             loadDashboardData: async function () {
                 try {
                     const { data: orders } = await this.db.from('orders').select('*').order('created_at', { ascending: false });
@@ -589,12 +595,25 @@
                             if (index < 5) {
                                 const badgeClass = o.payment_status === 'paid' ? 'badge-paid' : 'badge-pending';
                                 const statusText = o.payment_status === 'paid' ? 'Pagado' : 'Pendiente';
+
+                                // Logística añadida a la vista rápida
+                                const isShipped = o.shipping_status === 'shipped';
+                                const shipBadge = isShipped ? 'badge-paid' : 'badge-pending';
+                                const shipText = isShipped ? '<i class="fa-solid fa-check"></i> Enviado' : '<i class="fa-solid fa-truck"></i> Prep.';
+
                                 recentRows += `<tr>
                                     <td><strong style="color: var(--text-main)">#${o.id.slice(0, 8).toUpperCase()}</strong></td>
                                     <td>${o.customer_name}</td>
                                     <td><strong>${parseFloat(o.total_amount).toFixed(2)} €</strong></td>
                                     <td><span class="status-badge ${badgeClass}">${statusText}</span></td>
-                                    <td>${new Date(o.created_at).toLocaleDateString()}</td>
+                                    <td>
+                                        <span class="status-badge ${shipBadge}">${shipText}</span>
+                                        ${!isShipped && o.payment_status === 'paid' ? `
+                                            <button class="btn-action" style="margin-left:5px; padding: 4px 8px; background: #25D366; border: none;" onclick="app.markAsShipped('${o.id}', '${o.customer_phone}', '${o.customer_name}')" title="Avisar por WhatsApp">
+                                                <i class="fa-brands fa-whatsapp"></i>
+                                            </button>
+                                        ` : ''}
+                                    </td>
                                 </tr>`;
                             }
                         });
@@ -607,12 +626,10 @@
                     document.getElementById('metric-orders').textContent = paidCount;
                     document.getElementById('metric-tax').textContent = tax.toFixed(2) + ' €';
 
-                    // JIT: Solo contamos como alerta los vinos que están en NEGATIVO (< 0)
                     if (products) {
                         const itemsToOrder = products.filter(p => p.stock < 0).length;
                         document.getElementById('metric-alerts').textContent = itemsToOrder;
                     }
-
                 } catch (err) { console.error("Error en Dashboard:", err); }
             },
 
@@ -637,8 +654,8 @@
                         <td><strong>${parseFloat(o.total_amount).toFixed(2)} €</strong></td>
                         <td><span class="status-badge ${badgeClass}">${statusText}</span></td>
                         <td>
-                            <span class="status-badge ${shipBadge}" id="ship-status-${o.id}">${shipText}</span>
-                            ${!isShipped ? `
+                            <span class="status-badge ${shipBadge}">${shipText}</span>
+                            ${!isShipped && o.payment_status === 'paid' ? `
                                 <button class="btn-action" style="margin-left:5px; padding: 4px 8px; background: #25D366; border: none;" onclick="app.markAsShipped('${o.id}', '${o.customer_phone}', '${o.customer_name}')" title="Marcar envío y avisar">
                                     <i class="fa-brands fa-whatsapp"></i>
                                 </button>
@@ -657,9 +674,12 @@
                     alert('Error: ' + error.message);
                 } else {
                     const mensaje = `Hola ${name}, soy Nicolás de De Altura Wines. Tu pedido #${id.slice(0, 8).toUpperCase()} ya ha sido procesado y va de camino. ¡Que lo disfrutes! 🍷`;
-                    const cleanPhone = phone.replace(/\D/g, '');
+                    const cleanPhone = phone ? phone.replace(/\D/g, '') : '';
                     window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(mensaje)}`, '_blank');
+
+                    // Recargamos ambas tablas para que se actualice el estado
                     this.loadOrdersTable();
+                    this.loadDashboardData();
                 }
             },
 
@@ -671,37 +691,21 @@
                     const pvpTotal = parseFloat(p.price_retail || 0);
                     const precioSinIgic = pvpTotal / 1.07;
                     const igicValor = pvpTotal - precioSinIgic;
-
                     const costeNeto = parseFloat(p.price_horeca || 0);
                     const margenValor = precioSinIgic - costeNeto;
                     const margenPorcentaje = costeNeto > 0 ? (margenValor / costeNeto) * 100 : 0;
-
-                    // JIT: Clase especial si el stock es negativo (hay que pedir a Península)
                     const stockClass = p.stock < 0 ? 'negative-stock' : '';
 
                     return `<tr>
-                        <td>
-                            <strong>${p.name}</strong><br>
-                            <small style="color: var(--text-muted)">${p.bodega || p.region}</small>
-                        </td>
+                        <td><strong>${p.name}</strong><br><small style="color: var(--text-muted)">${p.bodega || p.region}</small></td>
                         <td class="finance-value">${costeNeto.toFixed(2)} €</td>
                         <td class="finance-value" style="color: var(--text-main);">
-                            <span class="math-symbol">+</span>
-                            <span class="margin-percent">${margenPorcentaje.toFixed(1)}%</span>
-                            ${margenValor.toFixed(2)} €
+                            <span class="math-symbol">+</span><span class="margin-percent">${margenPorcentaje.toFixed(1)}%</span>${margenValor.toFixed(2)} €
                         </td>
-                        <td class="finance-value" style="color: var(--tax-color);">
-                            <span class="math-symbol">+</span>${igicValor.toFixed(2)} €
-                        </td>
-                        <td class="finance-value" style="font-size: 1.1em; color: var(--text-main);">
-                            <span class="math-symbol">=</span><strong>${pvpTotal.toFixed(2)} €</strong>
-                        </td>
-                        <td style="text-align: center;">
-                            <input type="number" class="input-stock ${stockClass}" id="inv-${p.id}" value="${p.stock || 0}">
-                        </td>
-                        <td style="text-align: right;">
-                            <button class="btn-action" onclick="app.updateSingleStock('${p.id}', event)"><i class="fa-solid fa-floppy-disk"></i></button>
-                        </td>
+                        <td class="finance-value" style="color: var(--tax-color);"><span class="math-symbol">+</span>${igicValor.toFixed(2)} €</td>
+                        <td class="finance-value" style="font-size: 1.1em; color: var(--text-main);"><span class="math-symbol">=</span><strong>${pvpTotal.toFixed(2)} €</strong></td>
+                        <td style="text-align: center;"><input type="number" class="input-stock ${stockClass}" id="inv-${p.id}" value="${p.stock || 0}"></td>
+                        <td style="text-align: right;"><button class="btn-action" onclick="app.updateSingleStock('${p.id}', event)"><i class="fa-solid fa-floppy-disk"></i></button></td>
                     </tr>`;
                 }).join('');
             },
@@ -719,7 +723,7 @@
                     setTimeout(() => {
                         btn.style.background = '';
                         btn.innerHTML = originalHTML;
-                        this.loadInventoryTable(); // Recarga para actualizar colores si pasó a negativo/positivo
+                        this.loadInventoryTable();
                         this.loadDashboardData();
                     }, 1000);
                 }
@@ -734,7 +738,7 @@
 
                 const customers = {};
                 orders.forEach(o => {
-                    if (o.payment_status !== 'paid') return; // Filtramos solo pagos reales
+                    if (o.payment_status !== 'paid') return;
 
                     const email = o.customer_email;
                     if (!customers[email]) {
