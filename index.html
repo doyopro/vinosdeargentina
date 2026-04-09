@@ -420,7 +420,7 @@
                     const precioNeto = pvpConIgic / 1.07; // Le quitamos el 7%
 
                     return {
-                        id: wine.id, // ASEGURAR QUE ES EL UUID DE LA BASE DE DATOS
+                        id: wine.uuid || wine.id, // USAR UUID REAL DE SUPABASE (36 caracteres)
                         type: wine.type,
                         region: wine.region,
                         box: wine.box_size || wine.box,

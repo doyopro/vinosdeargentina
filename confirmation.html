@@ -197,8 +197,8 @@
 
                         for (const item of items) {
                             try {
-                                // Convertir item.id a string y hacer trim
-                                const productId = String(item.id).trim();
+                                // Convertir item.id a string y hacer trim - USAR UUID REAL
+                                const productId = String(item.id || item.uuid).trim();
 
                                 // 🛡️ VALIDAR QUE SEA UN UUID VÁLIDO
                                 if (!uuidRegex.test(productId)) {
