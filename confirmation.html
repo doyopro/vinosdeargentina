@@ -143,6 +143,12 @@
                         const totalAmount = parseFloat((subtotal * 1.07).toFixed(2));
 
                         // 1. INTENTO DE INSERTAR LA ORDEN
+                        // Asegurar que los IDs en items sean String
+                        const itemsWithStringIds = items.map(item => ({
+                            ...item,
+                            id: String(item.id)
+                        }));
+
                         const orderPayload = {
                             customer_name: customer.name,
                             customer_email: customer.email,
@@ -151,7 +157,7 @@
                             total_amount: totalAmount,
                             payment_status: 'paid',
                             shipping_status: 'new',
-                            items: items,
+                            items: itemsWithStringIds,
                             address: customer.address || null,
                             postal_code: customer.postal_code || null
                         };
@@ -172,15 +178,18 @@
                         console.log('✅ Orden guardada exitosamente');
 
                         // 2. ACTUALIZACIÓN DE STOCK (Independiente)
-                        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
                         for (const item of items) {
-                            const pid = item.id;
-                            if (pid && uuidRegex.test(pid)) {
-                                const { data: prod } = await supabaseClient.from('products').select('stock').eq('id', pid).single();
-                                if (prod) {
-                                    const newStock = Math.max(0, (prod.stock || 0) - (item.qty || 1));
-                                    await supabaseClient.from('products').update({ stock: newStock }).eq('id', pid);
+                            const pid = String(item.id);
+                            if (pid) {
+                                try {
+                                    const { data: prod } = await supabaseClient.from('products').select('stock').eq('id', String(pid)).single();
+                                    if (prod) {
+                                        const newStock = Math.max(0, (prod.stock || 0) - (item.qty || 1));
+                                        await supabaseClient.from('products').update({ stock: newStock }).eq('id', String(pid));
+                                        console.log(`✅ Stock actualizado para ${pid}`);
+                                    }
+                                } catch (err) {
+                                    console.warn(`⚠️ Error actualizando stock para ${pid}:`, err.message);
                                 }
                             }
                         }
