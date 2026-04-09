@@ -164,22 +164,15 @@
                         const igic = subtotal * 0.07;
                         const totalAmount = parseFloat((subtotal + igic).toFixed(2));
 
-                        // 1. Insertar la orden en Supabase
+                        // 1. Insertar la orden en Supabase (Solo columnas existentes y sin forzar ID)
                         await supabaseClient.from('orders').insert([{
-                            id: payment_intent,
                             customer_name: customer.name,
                             customer_email: customer.email,
                             customer_phone: customer.phone,
                             island: customer.island,
-                            address: customer.address,
-                            postal_code: customer.postal_code,
-                            subtotal_amount: subtotal,
-                            tax_amount: igic,
                             total_amount: totalAmount,
-                            items: items,
                             payment_status: 'paid',
-                            shipping_status: 'pending',
-                            stripe_payment_id: payment_intent
+                            shipping_status: 'pending'
                         }]);
 
                         // 2. Descontar el stock en iteración
