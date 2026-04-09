@@ -95,11 +95,7 @@
             font-size: 1.1rem;
         }
 
-        .nav-item:hover {
-            background-color: var(--sidebar-hover);
-            color: var(--white);
-        }
-
+        .nav-item:hover,
         .nav-item.active {
             background-color: var(--sidebar-hover);
             color: var(--brand-gold);
@@ -310,12 +306,20 @@
             font-family: 'Inter', sans-serif;
             font-weight: 600;
             color: var(--text-main);
+            transition: all 0.3s;
         }
 
         .input-stock:focus {
             outline: none;
             border-color: var(--brand-gold);
             box-shadow: 0 0 0 3px rgba(200, 159, 93, 0.1);
+        }
+
+        .input-stock.negative-stock {
+            border-color: var(--danger);
+            background-color: #FEF2F2;
+            color: var(--danger);
+            font-weight: 700;
         }
 
         .btn-action {
@@ -374,6 +378,7 @@
             padding: 2px 6px;
             border-radius: 4px;
             margin-right: 5px;
+            color: var(--success);
         }
     </style>
 </head>
@@ -386,27 +391,18 @@
             <span>SuperAdmin Hub</span>
         </div>
         <nav class="nav-menu">
-            <div class="nav-item active" onclick="app.switchView('dashboard', this)">
-                <i class="fa-solid fa-chart-pie"></i> Vista General
-            </div>
-            <div class="nav-item" onclick="app.switchView('orders', this)">
-                <i class="fa-solid fa-receipt"></i> Ventas & Envíos
-            </div>
-            <div class="nav-item" onclick="app.switchView('inventory', this)">
-                <i class="fa-solid fa-calculator"></i> Catálogo & Pricing
-            </div>
-            <div class="nav-item" onclick="app.switchView('crm', this)">
-                <i class="fa-solid fa-users"></i> CRM Clientes
-            </div>
-            <div class="nav-item" onclick="app.switchView('settings', this)">
-                <i class="fa-solid fa-sliders"></i> Ajustes
+            <div class="nav-item active" onclick="app.switchView('dashboard', this)"><i
+                    class="fa-solid fa-chart-pie"></i> Vista General</div>
+            <div class="nav-item" onclick="app.switchView('orders', this)"><i class="fa-solid fa-receipt"></i> Ventas &
+                Envíos</div>
+            <div class="nav-item" onclick="app.switchView('inventory', this)"><i class="fa-solid fa-calculator"></i>
+                Catálogo & Pricing</div>
+            <div class="nav-item" onclick="app.switchView('crm', this)"><i class="fa-solid fa-users"></i> CRM Clientes
             </div>
 
             <div class="nav-divider"></div>
-
-            <div class="nav-item" onclick="window.location.href='index.html'" style="color: var(--brand-gold);">
-                <i class="fa-solid fa-store"></i> Volver a la Tienda
-            </div>
+            <div class="nav-item" onclick="window.location.href='index.html'" style="color: var(--brand-gold);"><i
+                    class="fa-solid fa-store"></i> Volver a la Tienda</div>
         </nav>
         <div class="logout-container">
             <button class="btn-logout" onclick="app.logout()"><i class="fa-solid fa-right-from-bracket"></i> Cerrar
@@ -448,10 +444,10 @@
                 </div>
                 <div class="metric-card">
                     <div class="metric-info">
-                        <h4>Alertas de Stock</h4>
-                        <h2 id="metric-alerts">0</h2>
+                        <h4>Vinos a Reponer (< 0)</h4>
+                                <h2 id="metric-alerts">0</h2>
                     </div>
-                    <div class="metric-icon icon-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <div class="metric-icon icon-red"><i class="fa-solid fa-truck-ramp-box"></i></div>
                 </div>
             </div>
 
@@ -479,12 +475,11 @@
         </section>
 
         <section id="view-orders" class="section">
-            <div class="panel">
+            <div class="panel" style="overflow-x: auto;">
                 <div class="panel-header">
                     <h3><i class="fa-solid fa-list-check"></i> Gestión de Órdenes</h3>
-                    <button class="btn-action"><i class="fa-solid fa-download"></i> Exportar CSV</button>
                 </div>
-                <table>
+                <table style="min-width: 800px;">
                     <thead>
                         <tr>
                             <th>Ref. Pedido</th>
@@ -515,7 +510,7 @@
                             <th>Margen Ganancia</th>
                             <th>Impuesto (IGIC)</th>
                             <th>PVP Retail</th>
-                            <th style="text-align: center;">Stock (Cajas)</th>
+                            <th style="text-align: center;">Stock JIT</th>
                             <th style="text-align: right;">Acción</th>
                         </tr>
                     </thead>
@@ -525,19 +520,22 @@
         </section>
 
         <section id="view-crm" class="section">
-            <div class="panel">
+            <div class="panel" style="overflow-x: auto;">
                 <div class="panel-header">
-                    <h3><i class="fa-solid fa-users"></i> Base de Clientes</h3>
+                    <h3><i class="fa-solid fa-address-book"></i> Gestión de Clientes (LTV)</h3>
                 </div>
-                <p>Módulo CRM en construcción.</p>
-            </div>
-        </section>
-        <section id="view-settings" class="section">
-            <div class="panel">
-                <div class="panel-header">
-                    <h3><i class="fa-solid fa-gears"></i> Ajustes</h3>
-                </div>
-                <p>Configuración general.</p>
+                <table style="min-width: 800px;">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Email</th>
+                            <th style="text-align: center;">Pedidos</th>
+                            <th>Total Gastado</th>
+                            <th>Última Compra</th>
+                        </tr>
+                    </thead>
+                    <tbody id="crm-body"></tbody>
+                </table>
             </div>
         </section>
     </main>
@@ -559,13 +557,17 @@
             switchView: function (viewId, element) {
                 document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
                 element.classList.add('active');
-                const titles = { 'dashboard': 'Vista General', 'orders': 'Ventas & Envíos', 'inventory': 'Catálogo & Pricing', 'crm': 'CRM Clientes', 'settings': 'Ajustes' };
-                document.getElementById('page-title').textContent = titles[viewId];
+
+                const titles = { 'dashboard': 'Vista General', 'orders': 'Ventas & Envíos', 'inventory': 'Catálogo & Pricing', 'crm': 'Gestión de Clientes' };
+                document.getElementById('page-title').textContent = titles[viewId] || 'Panel';
+
                 document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
                 document.getElementById('view-' + viewId).classList.add('active');
 
+                if (viewId === 'dashboard') this.loadDashboardData();
                 if (viewId === 'orders') this.loadOrdersTable();
                 if (viewId === 'inventory') this.loadInventoryTable();
+                if (viewId === 'crm') this.loadCRM();
             },
 
             loadDashboardData: async function () {
@@ -588,7 +590,7 @@
                                 const badgeClass = o.payment_status === 'paid' ? 'badge-paid' : 'badge-pending';
                                 const statusText = o.payment_status === 'paid' ? 'Pagado' : 'Pendiente';
                                 recentRows += `<tr>
-                                    <td><strong style="color: var(--text-main)">#${o.id.slice(0, 6).toUpperCase()}</strong></td>
+                                    <td><strong style="color: var(--text-main)">#${o.id.slice(0, 8).toUpperCase()}</strong></td>
                                     <td>${o.customer_name}</td>
                                     <td><strong>${parseFloat(o.total_amount).toFixed(2)} €</strong></td>
                                     <td><span class="status-badge ${badgeClass}">${statusText}</span></td>
@@ -604,7 +606,12 @@
                     document.getElementById('metric-revenue').textContent = revenue.toFixed(2) + ' €';
                     document.getElementById('metric-orders').textContent = paidCount;
                     document.getElementById('metric-tax').textContent = tax.toFixed(2) + ' €';
-                    if (products) document.getElementById('metric-alerts').textContent = products.filter(p => p.stock < 10).length;
+
+                    // JIT: Solo contamos como alerta los vinos que están en NEGATIVO (< 0)
+                    if (products) {
+                        const itemsToOrder = products.filter(p => p.stock < 0).length;
+                        document.getElementById('metric-alerts').textContent = itemsToOrder;
+                    }
 
                 } catch (err) { console.error("Error en Dashboard:", err); }
             },
@@ -642,17 +649,16 @@
                     const margenValor = precioSinIgic - costeNeto;
                     const margenPorcentaje = costeNeto > 0 ? (margenValor / costeNeto) * 100 : 0;
 
-                    const stockWarning = p.stock < 10 ? 'border-color: var(--danger); background: #FEF2F2;' : '';
+                    // JIT: Clase especial si el stock es negativo (hay que pedir a Península)
+                    const stockClass = p.stock < 0 ? 'negative-stock' : '';
 
                     return `<tr>
                         <td>
                             <strong>${p.name}</strong><br>
                             <small style="color: var(--text-muted)">${p.bodega || p.region}</small>
                         </td>
-                        <td class="finance-value">
-                            ${costeNeto.toFixed(2)} €
-                        </td>
-                        <td class="finance-value" style="color: var(--success);">
+                        <td class="finance-value">${costeNeto.toFixed(2)} €</td>
+                        <td class="finance-value" style="color: var(--text-main);">
                             <span class="math-symbol">+</span>
                             <span class="margin-percent">${margenPorcentaje.toFixed(1)}%</span>
                             ${margenValor.toFixed(2)} €
@@ -664,16 +670,16 @@
                             <span class="math-symbol">=</span><strong>${pvpTotal.toFixed(2)} €</strong>
                         </td>
                         <td style="text-align: center;">
-                            <input type="number" class="input-stock" id="inv-${p.id}" value="${p.stock || 0}" style="${stockWarning}">
+                            <input type="number" class="input-stock ${stockClass}" id="inv-${p.id}" value="${p.stock || 0}">
                         </td>
                         <td style="text-align: right;">
-                            <button class="btn-action" onclick="app.updateSingleStock('${p.id}')"><i class="fa-solid fa-floppy-disk"></i></button>
+                            <button class="btn-action" onclick="app.updateSingleStock('${p.id}', event)"><i class="fa-solid fa-floppy-disk"></i></button>
                         </td>
                     </tr>`;
                 }).join('');
             },
 
-            updateSingleStock: async function (id) {
+            updateSingleStock: async function (id, event) {
                 const newVal = document.getElementById('inv-' + id).value;
                 const { error } = await this.db.from('products').update({ stock: newVal }).eq('id', id);
                 if (error) {
@@ -683,15 +689,61 @@
                     const originalHTML = btn.innerHTML;
                     btn.style.background = 'var(--success)';
                     btn.innerHTML = '<i class="fa-solid fa-check"></i>';
-                    setTimeout(() => { btn.style.background = ''; btn.innerHTML = originalHTML; }, 1500);
-                    this.loadDashboardData();
+                    setTimeout(() => {
+                        btn.style.background = '';
+                        btn.innerHTML = originalHTML;
+                        this.loadInventoryTable(); // Recarga para actualizar colores si pasó a negativo/positivo
+                        this.loadDashboardData();
+                    }, 1000);
                 }
+            },
+
+            loadCRM: async function () {
+                const { data: orders, error } = await this.db.from('orders').select('*');
+                if (error || !orders) {
+                    document.getElementById('crm-body').innerHTML = '<tr><td colspan="5" style="text-align:center;">Error al cargar datos.</td></tr>';
+                    return;
+                }
+
+                const customers = {};
+                orders.forEach(o => {
+                    if (o.payment_status !== 'paid') return; // Filtramos solo pagos reales
+
+                    const email = o.customer_email;
+                    if (!customers[email]) {
+                        customers[email] = {
+                            name: o.customer_name,
+                            email: email,
+                            phone: o.customer_phone || '-',
+                            totalSpent: 0,
+                            orderCount: 0,
+                            lastOrder: o.created_at
+                        };
+                    }
+                    customers[email].totalSpent += parseFloat(o.total_amount);
+                    customers[email].orderCount += 1;
+                    if (new Date(o.created_at) > new Date(customers[email].lastOrder)) {
+                        customers[email].lastOrder = o.created_at;
+                    }
+                });
+
+                const sortedCustomers = Object.values(customers).sort((a, b) => b.totalSpent - a.totalSpent);
+
+                const html = sortedCustomers.map(c => `
+                    <tr>
+                        <td><strong>${c.name}</strong><br><small style="color: var(--text-muted);">${c.phone}</small></td>
+                        <td>${c.email}</td>
+                        <td style="text-align: center;"><strong>${c.orderCount}</strong></td>
+                        <td style="color: var(--success); font-weight: 700;">${c.totalSpent.toFixed(2)} €</td>
+                        <td style="font-size: 0.9em; color: var(--text-muted);">${new Date(c.lastOrder).toLocaleDateString()}</td>
+                    </tr>
+                `).join('');
+
+                document.getElementById('crm-body').innerHTML = html || '<tr><td colspan="5" style="text-align:center;">Aún no hay clientes registrados.</td></tr>';
             },
 
             start: async function () {
                 this.initDB();
-
-                // VERIFICACIÓN DE SEGURIDAD
                 const { data: { session }, error } = await this.db.auth.getSession();
 
                 if (error || !session) {
@@ -699,10 +751,7 @@
                     return;
                 }
 
-                // Mostrar el correo del usuario logueado en la esquina superior derecha
                 document.getElementById('user-email-display').textContent = session.user.email;
-
-                // Cargar datos
                 this.loadDashboardData();
             }
         };
