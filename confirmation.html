@@ -151,7 +151,7 @@
                 localStorage.setItem(`processed_${payment_intent}`, 'true');
 
                 try {
-                    const cartStr = localStorage.getItem('deAlturaCart') || localStorage.getItem('altura_cart');
+                    const cartStr = localStorage.getItem('deAlturaCart');
                     const customerStr = localStorage.getItem('altura_customer_info');
 
                     if (cartStr && customerStr) {
@@ -229,7 +229,6 @@
 
                         // ✅ LIMPIEZA FINAL
                         localStorage.removeItem('deAlturaCart');
-                        localStorage.removeItem('altura_cart');
                         localStorage.removeItem('altura_customer_info');
                         console.log('Carrito y datos de cliente limpiados');
 
