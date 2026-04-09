@@ -63,7 +63,7 @@
         class="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden text-center p-10 md:p-14 relative">
         <div class="absolute top-0 left-0 w-full h-2 bg-gold-500"></div>
 
-        <div
+        <div id="status-icon"
             class="w-20 h-20 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-8 border border-green-100 shadow-sm">
             <i class="fa-solid fa-check text-3xl"></i>
         </div>
@@ -71,11 +71,9 @@
         <h1 class="text-3xl md:text-4xl font-serif text-wine-900 mb-4" lang="es">¡Gracias por tu compra!</h1>
         <h1 class="text-3xl md:text-4xl font-serif text-wine-900 mb-4" lang="en">Thank you for your purchase!</h1>
 
-        <p class="text-stone-500 text-sm leading-relaxed mb-8">
-            <span lang="es">Tu pedido ha sido confirmado y procesado correctamente. Recibirás un email en breve con el
-                detalle.</span>
-            <span lang="en">Your order has been confirmed and processed. You will receive an email shortly with the
-                details.</span>
+        <p id="main-message" class="text-stone-500 text-sm leading-relaxed mb-8">
+            <span lang="es">Tu pedido ha sido confirmado y procesado correctamente. Recibirás un email en breve.</span>
+            <span lang="en">Your order has been confirmed and processed. You will receive an email shortly.</span>
         </p>
 
         <div class="bg-stone-50 rounded-2xl p-6 mb-10 border border-stone-100 relative group">
@@ -84,19 +82,6 @@
             <span class="text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] block mb-2" lang="en">Order
                 Number</span>
             <code id="order-id" class="text-lg font-bold text-wine-900 tracking-tight">--------</code>
-        </div>
-
-        <div class="space-y-4 mb-10 text-xs text-stone-600 text-left px-2">
-            <div class="flex items-center gap-3">
-                <i class="fa-solid fa-box-open text-gold-500 w-5"></i>
-                <span lang="es"><strong>Tu pedido está siendo preparado</strong> en bodega.</span>
-                <span lang="en"><strong>Your order is being prepared</strong> at the winery.</span>
-            </div>
-            <div class="flex items-center gap-3">
-                <i class="fa-solid fa-truck-fast text-gold-500 w-5"></i>
-                <span lang="es">Te contactaremos para coordinar la entrega en tu isla.</span>
-                <span lang="en">We will contact you to coordinate delivery on your island.</span>
-            </div>
         </div>
 
         <div class="flex flex-col gap-4">
@@ -111,7 +96,7 @@
                 target="_blank"
                 class="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-5 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 uppercase tracking-widest text-[10px] active:scale-95">
                 <i class="fa-brands fa-whatsapp text-lg"></i>
-                <span lang="es">Atención vía WhatsApp</span>
+                <span lang="es">WhatsApp Support</span>
                 <span lang="en">WhatsApp Support</span>
             </a>
         </div>
@@ -132,22 +117,14 @@
             const redirect_status = params.get('redirect_status');
             const orderIdDisplay = document.getElementById('order-id');
 
-            // Si llegamos sin payment_intent (tal vez acceso posterior por URL directa)
-            if (!payment_intent) {
-                const order = params.get('order');
-                if (order) orderIdDisplay.innerText = order.toUpperCase();
-                return;
-            }
+            if (!payment_intent) return;
 
             if (redirect_status === 'succeeded') {
                 const shortId = payment_intent.slice(-8).toUpperCase();
                 orderIdDisplay.innerText = shortId;
 
-                // Evitar doble confirmación refrecando la página
-                if (localStorage.getItem(`processed_${payment_intent}`)) {
-                    console.log('Orden ya procesada, evitando duplicado');
-                    return;
-                }
+                // Anti-duplicado
+                if (localStorage.getItem(`processed_${payment_intent}`)) return;
                 localStorage.setItem(`processed_${payment_intent}`, 'true');
 
                 try {
@@ -157,17 +134,15 @@
                     if (cartStr && customerStr) {
                         const cart = JSON.parse(cartStr);
                         const customer = JSON.parse(customerStr);
+                        const items = Object.values(cart);
 
                         let subtotal = 0;
-                        const items = Object.values(cart);
                         items.forEach(item => {
-                            const boxSize = item.box || 1;
-                            subtotal += (item.price || 0) * (item.qty || 1) * boxSize;
+                            subtotal += (item.price || 0) * (item.qty || 1) * (item.box || 1);
                         });
-                        const igic = subtotal * 0.07;
-                        const totalAmount = parseFloat((subtotal + igic).toFixed(2));
+                        const totalAmount = parseFloat((subtotal * 1.07).toFixed(2));
 
-                        // ✅ INSERTAR LA ORDEN CON COLUMNAS CORRECTAS (SIN 'id' - Supabase lo genera)
+                        // 1. INTENTO DE INSERTAR LA ORDEN
                         const orderPayload = {
                             customer_name: customer.name,
                             customer_email: customer.email,
@@ -176,13 +151,13 @@
                             total_amount: totalAmount,
                             payment_status: 'paid',
                             shipping_status: 'new',
-                            payment_method: 'stripe',
                             items: items,
                             address: customer.address || null,
                             postal_code: customer.postal_code || null
                         };
 
-                        console.log('📤 Enviando orden a Supabase (sin ID manual):', orderPayload);
+                        console.log('📤 Intentando insertar orden...', orderPayload);
+                        console.log('📦 DATOS QUE SE VAN A INSERTAR:', JSON.stringify(orderPayload, null, 2));
 
                         const { data: orderData, error: orderError } = await supabaseClient
                             .from('orders')
@@ -190,110 +165,63 @@
                             .select();
 
                         if (orderError) {
-                            console.error('Error insertando orden en BD:', orderError);
+                            console.error('❌ ERROR TÉCNICO EN INSERT:', orderError);
                             throw orderError;
                         }
 
-                        console.log('Orden insertada exitosamente:', orderData);
+                        console.log('✅ Orden guardada exitosamente');
 
-                        // ✅ DESCONTAR EL STOCK EN ITERACIÓN BLINDADA - VALIDACIÓN UUID
+                        // 2. ACTUALIZACIÓN DE STOCK (Independiente)
                         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
                         for (const item of items) {
-                            try {
-                                // Usar directamente item.id (UUID de Supabase)
-                                const productId = item.id;
-                                console.log(`🔑 Actualizando stock para: ${productId}`);
-
-                                // 🛡️ VALIDAR QUE SEA UN UUID VÁLIDO
-                                if (!uuidRegex.test(productId)) {
-                                    console.error(`⚠️ UUID INVÁLIDO: "${productId}" no es un UUID válido. Saltando este item.`);
-                                    continue;
+                            const pid = item.id;
+                            if (pid && uuidRegex.test(pid)) {
+                                const { data: prod } = await supabaseClient.from('products').select('stock').eq('id', pid).single();
+                                if (prod) {
+                                    const newStock = Math.max(0, (prod.stock || 0) - (item.qty || 1));
+                                    await supabaseClient.from('products').update({ stock: newStock }).eq('id', pid);
                                 }
-
-                                // DEBUG: Log del tipo de productId
-                                console.log(`📦 Buscando stock para productId: "${productId}" (tipo: ${typeof productId})`);
-
-                                const { data: product, error: fetchError } = await supabaseClient
-                                    .from('products')
-                                    .select('stock')
-                                    .eq('id', productId)
-                                    .single();
-
-                                if (fetchError) {
-                                    console.error(`❌ Error fetching producto ${productId}:`, fetchError);
-                                    continue;
-                                }
-
-                                if (product) {
-                                    const newStock = Math.max(0, (product.stock || 0) - (item.qty || 1));
-                                    const { error: updateError } = await supabaseClient
-                                        .from('products')
-                                        .update({ stock: newStock })
-                                        .eq('id', productId);
-
-                                    if (updateError) {
-                                        console.error(`❌ Error actualizando stock de ${productId}:`, updateError);
-                                    } else {
-                                        console.log(`✅ Stock actualizado para ${productId}: ${newStock}`);
-                                    }
-                                }
-                            } catch (itemError) {
-                                console.error(`❌ Error procesando item:`, itemError);
-                                // Continuar con el siguiente item sin romper la ejecución
                             }
                         }
 
-                        // 🔍 AUDITORÍA CRÍTICA ANTES DE LIMPIAR
-                        console.log('═══════════════════════════════════════');
-                        console.log('📊 ORDEN INSERTADA EN SUPABASE:');
-                        console.log(JSON.stringify(orderData, null, 2));
-                        console.log('═══════════════════════════════════════');
-
-                        // ✅ LIMPIEZA FINAL
+                        // 3. LIMPIEZA
                         localStorage.removeItem('deAlturaCart');
                         localStorage.removeItem('altura_customer_info');
-                        console.log('✨ Carrito y datos de cliente limpiados');
-
-                    } else {
-                        console.warn('No se encontró carrito o datos de cliente en localStorage');
                     }
                 } catch (e) {
-                    console.error('Error procesando la orden en BD:', e);
-                    showError();
+                    console.error('❌ ERROR TÉCNICO DETALLADO:', {
+                        message: e.message,
+                        details: e.details,
+                        hint: e.hint,
+                        code: e.code,
+                        fullError: e
+                    });
+                    showError(e.message || 'Database connection error');
                 }
             } else {
-                showError();
+                showError('Payment not completed');
             }
         }
 
-        function showError() {
-            document.querySelector('h1[lang="es"]').innerText = 'Error en el Pago';
-            document.querySelector('h1[lang="en"]').innerText = 'Payment Failed';
-            document.querySelector('p.text-stone-500 span[lang="es"]').innerText = 'Hubo un problema procesando tu pago. Por favor intenta de nuevo.';
-            document.querySelector('p.text-stone-500 span[lang="en"]').innerText = 'There was a problem processing your payment. Please try again.';
+        function showError(msg) {
+            console.error('Mostrando error al usuario:', msg);
+            document.querySelector('h1[lang="es"]').innerText = 'Atención';
+            document.querySelector('#main-message span[lang="es"]').innerText = 'El pago fue realizado, pero hubo un error al sincronizar con la base de datos. Por favor contacta con soporte.';
 
-            const icon = document.querySelector('.fa-check');
-            if (icon) {
-                icon.classList.replace('fa-check', 'fa-xmark');
-                const container = icon.parentElement;
-                container.classList.replace('bg-green-50', 'bg-red-50');
-                container.classList.replace('text-green-600', 'text-red-500');
-            }
+            const icon = document.querySelector('#status-icon');
+            icon.classList.replace('bg-green-50', 'bg-red-50');
+            icon.classList.replace('text-green-600', 'text-red-500');
+            icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-3xl"></i>';
         }
 
-        // Ejecutar procesamiento al cargar
         processOrder();
 
-        // Sistema de Idioma
         function setLang(lang) {
             document.getElementById('body-tag').className = `antialiased flex items-center justify-center min-h-screen py-12 px-4 lang-${lang}`;
             localStorage.setItem('deAlturaLang', lang);
         }
-
-        // Cargar idioma preferido
-        const savedLang = localStorage.getItem('deAlturaLang') || 'es';
-        setLang(savedLang);
+        setLang(localStorage.getItem('deAlturaLang') || 'es');
     </script>
 </body>
 
