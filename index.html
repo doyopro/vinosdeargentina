@@ -467,6 +467,7 @@
             });
 
             renderCart();
+            renderCatalog();
         }
 
         function renderCatalog() {
@@ -499,7 +500,7 @@
                     const price = w.price.toFixed(2).replace('.', ',');
                     const inCartCls = cart[w.id] ? 'ring-2 ring-gold-500' : '';
                     const cartQty = cart[w.id] ? cart[w.id].qty : 0;
-                    const notes = currentLang === 'en' ? (w.notes_en || '') : (w.notes_es || '');
+                    const notes = currentLang === 'en' ? (w.notes_en || w.notes_es) : w.notes_es;
 
                     const imgSrc = (w.image_url ? w.image_url + '?v=1.1' : 'https://images.unsplash.com/photo-1510850402719-e4c670846019?auto=format&fit=crop&q=80&w=800');
 
