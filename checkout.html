@@ -292,15 +292,10 @@
         const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
         let elements, paymentElement;
 
-        const CONFIG_PROMOS = {
-            minimoDesc: 200,
-            porcentaje: 0.10,
-            codigos: { "JUAN_ALTURA": "RESELLER", "PROMO20": 0.20 }
-        };
-
         let promoAplicado = { codigo: null, tipo: null, descuento: 0 };
+        let autoPromoConfig = { minCartAmount: 0, discountValue: 0 };
 
-        function applyPromo() {
+        async function applyPromo() {
             const codigo = document.getElementById('promo_code').value.trim().toUpperCase();
             const msgEl = document.getElementById('promo-message');
             promoAplicado = { codigo: null, tipo: null, descuento: 0 };
@@ -312,28 +307,48 @@
                 return;
             }
 
-            const subtotal = window.orderData?.subtotal || 0;
-            const esReseller = CONFIG_PROMOS.codigos[codigo] === "RESELLER";
-            const esPromo = CONFIG_PROMOS.codigos[codigo] && typeof CONFIG_PROMOS.codigos[codigo] === 'number';
+            try {
+                // Buscar en promociones
+                const { data: promo, error: promoError } = await window.deAlturaSupabase
+                    .from('promotions')
+                    .select('*')
+                    .ilike('code', codigo)
+                    .eq('is_active', true)
+                    .single();
 
-            if (esReseller) {
-                promoAplicado = { codigo, tipo: "RESELLER", descuento: 0 };
-                msgEl.innerText = `✓ Código RESELLER aplicado (${codigo})`;
-                msgEl.className = 'text-[10px] mt-2 font-medium text-green-600';
-            } else if (esPromo) {
-                const pct = CONFIG_PROMOS.codigos[codigo];
-                promoAplicado = { codigo, tipo: "CODIGO", descuento: pct };
-                msgEl.innerText = `✓ Descuento ${(pct * 100).toFixed(0)}% aplicado`;
-                msgEl.className = 'text-[10px] mt-2 font-medium text-green-600';
-            } else if (subtotal > CONFIG_PROMOS.minimoDesc) {
-                promoAplicado = { codigo: null, tipo: "AUTO", descuento: CONFIG_PROMOS.porcentaje };
-                msgEl.innerText = `✓ Descuento automático 10% por compra > 200€`;
-                msgEl.className = 'text-[10px] mt-2 font-medium text-blue-600';
-            } else {
+                if (promo) {
+                    promoAplicado = { codigo, tipo: "CODIGO", descuento: promo.discount_value / 100 };
+                    msgEl.innerText = `✓ Descuento ${promo.discount_value}% aplicado`;
+                    msgEl.className = 'text-[10px] mt-2 font-medium text-green-600';
+                    renderCartSummary();
+                    return;
+                }
+
+                // Buscar en resellers
+                const { data: reseller } = await window.deAlturaSupabase
+                    .from('resellers')
+                    .select('*')
+                    .ilike('code', codigo)
+                    .eq('is_active', true)
+                    .single();
+
+                if (reseller) {
+                    promoAplicado = { codigo, tipo: "RESELLER", descuento: 0 };
+                    msgEl.innerText = `✓ Código SOCIO aplicado (${codigo})`;
+                    msgEl.className = 'text-[10px] mt-2 font-medium text-green-600';
+                    renderCartSummary();
+                    return;
+                }
+
                 msgEl.innerText = `Código inválido o no aplica`;
                 msgEl.className = 'text-[10px] mt-2 font-medium text-red-600';
+                renderCartSummary();
+            } catch (err) {
+                console.error('Error validando código:', err);
+                msgEl.innerText = `Error validando código`;
+                msgEl.className = 'text-[10px] mt-2 font-medium text-red-600';
+                renderCartSummary();
             }
-            renderCartSummary();
         }
 
         function setLanguage(lang) {
@@ -379,8 +394,8 @@
             let descuentoAplicado = 0;
             let tipoDescuento = '';
 
-            if (subtotal > CONFIG_PROMOS.minimoDesc && !promoAplicado.codigo) {
-                descuentoAplicado = CONFIG_PROMOS.porcentaje;
+            if (subtotal >= autoPromoConfig.minCartAmount && autoPromoConfig.minCartAmount > 0 && !promoAplicado.codigo) {
+                descuentoAplicado = autoPromoConfig.discountValue / 100;
                 tipoDescuento = 'Auto 10%';
             } else if (promoAplicado.descuento > 0) {
                 descuentoAplicado = promoAplicado.descuento;
@@ -475,6 +490,25 @@
         }
 
         async function init() {
+            // Cargar configuración de auto-promo desde Supabase
+            try {
+                const { data: autoPromo } = await window.deAlturaSupabase
+                    .from('promotions')
+                    .select('*')
+                    .eq('type', 'AUTO')
+                    .eq('is_active', true)
+                    .single();
+
+                if (autoPromo) {
+                    autoPromoConfig = {
+                        minCartAmount: autoPromo.minimum_cart || 0,
+                        discountValue: autoPromo.discount_value || 0
+                    };
+                }
+            } catch (err) {
+                console.log('No auto-promo configurada:', err.message);
+            }
+
             renderCartSummary();
             const cart = loadCart();
             if (Object.keys(cart).length > 0) {

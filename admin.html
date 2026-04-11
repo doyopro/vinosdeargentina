@@ -1180,11 +1180,11 @@
                     const html = promos.map(p => {
                         const statusBadge = p.is_active ? 'badge-paid' : 'badge-pending';
                         const statusText = p.is_active ? 'Activo' : 'Inactivo';
-                        const discountDisplay = p.discount_type === 'percentage' ? `${p.discount_value}%` : `${p.discount_value}€`;
+                        const discountDisplay = p.type === 'percentage' ? `${p.discount_value}%` : `${p.discount_value}€`;
 
                         return `<tr>
                             <td><strong>${p.code}</strong></td>
-                            <td>${p.discount_type === 'percentage' ? 'Porcentaje' : 'Cantidad Fija'}</td>
+                            <td>${p.type === 'percentage' ? 'Porcentaje' : 'Cantidad Fija'}</td>
                             <td>${discountDisplay}</td>
                             <td>${p.minimum_cart ? p.minimum_cart + '€' : 'Sin mínimo'}</td>
                             <td><span class="status-badge ${statusBadge}">${statusText}</span></td>
@@ -1234,7 +1234,7 @@
                         return `<tr>
                             <td><strong>${r.code}</strong></td>
                             <td>${r.name}</td>
-                            <td>${r.commission_percentage || 0}%</td>
+                            <td>${r.commission_rate || 0}%</td>
                             <td>${r.total_sales ? r.total_sales.toFixed(2) + '€' : '0.00€'}</td>
                             <td><span class="status-badge ${statusBadge}">${statusText}</span></td>
                             <td style="display: flex; gap: 8px;">
@@ -1285,7 +1285,7 @@
                 if (data) {
                     document.getElementById('promo-id').value = data.id || '';
                     document.getElementById('promo-code').value = data.code || '';
-                    document.getElementById('promo-type').value = data.discount_type || '';
+                    document.getElementById('promo-type').value = data.type || '';
                     document.getElementById('promo-value').value = data.discount_value || '';
                     document.getElementById('promo-min-cart').value = data.minimum_cart || '';
                 }
@@ -1312,7 +1312,7 @@
                     document.getElementById('reseller-id').value = data.id || '';
                     document.getElementById('reseller-code').value = data.code || '';
                     document.getElementById('reseller-name').value = data.name || '';
-                    document.getElementById('reseller-commission').value = data.commission_percentage || '';
+                    document.getElementById('reseller-commission').value = data.commission_rate || '';
                 }
 
                 modal.style.display = 'flex';
@@ -1341,9 +1341,9 @@
                 try {
                     const payload = {
                         code,
-                        discount_type: type,
-                        discount_value: value,
-                        minimum_cart: minCart,
+                        type,
+                        discount_value: parseFloat(value),
+                        minimum_cart: minCart ? parseFloat(minCart) : null,
                         is_active: true
                     };
 
@@ -1384,7 +1384,7 @@
                     const payload = {
                         code,
                         name,
-                        commission_percentage: commission,
+                        commission_rate: parseFloat(commission),
                         is_active: true
                     };
 
