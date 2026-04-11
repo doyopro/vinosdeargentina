@@ -1384,14 +1384,15 @@
                 const value = parseFloat(document.getElementById('promo-value').value);
                 const minCart = document.getElementById('promo-min-cart').value ? parseFloat(document.getElementById('promo-min-cart').value) : null;
 
-                if (!code || !type || isNaN(value)) {
-                    alert('Por favor completa todos los campos obligatorios.');
+                // MOTOR DE REGLAS: Validar solo campos obligatorios (code es opcional)
+                if (!type || isNaN(value)) {
+                    alert('Por favor completa Tipo y Valor del Descuento.');
                     return;
                 }
 
                 try {
                     const payload = {
-                        code,
+                        code: code || null,  // Motor de Reglas: null si está vacío (promoción automática)
                         type,
                         discount_value: parseFloat(value),
                         min_cart_amount: minCart ? parseFloat(minCart) : null,

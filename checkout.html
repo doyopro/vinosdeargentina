@@ -297,7 +297,7 @@
         let elements, paymentElement;
 
         let promoAplicado = { codigo: null, tipo: null, descuento: 0, codigoNombre: '' };
-        let autoPromoConfig = { minCartAmount: 0, discountValue: 0 };
+        let allPromotions = []; // Motor de Reglas: todas las promociones activas
 
         async function applyPromo() {
             const codigo = document.getElementById('promo_code').value.trim().toUpperCase();
@@ -312,14 +312,8 @@
             }
 
             try {
-                // 1. BUSCAR EN PROMOCIONES (DISCOUNT)
-                const { data: promo } = await window.deAlturaSupabase
-                    .from('promotions')
-                    .select('*')
-                    .ilike('code', codigo)
-                    .eq('type', 'DISCOUNT')
-                    .eq('is_active', true)
-                    .single();
+                // MOTOR DE REGLAS: Buscar cupón en promociones con código
+                const promo = allPromotions.find(p => p.code && p.code.toUpperCase() === codigo);
 
                 if (promo) {
                     let rawVal = parseFloat(promo.discount_value);
@@ -331,7 +325,7 @@
                     return;
                 }
 
-                // 2. BUSCAR EN RESELLERS
+                // Buscar en RESELLERS
                 const { data: reseller } = await window.deAlturaSupabase
                     .from('resellers')
                     .select('*')
@@ -340,7 +334,6 @@
                     .single();
 
                 if (reseller) {
-                    // RESELLER: mantiene AUTO + etiqueta al socio
                     promoAplicado = { codigo, tipo: "RESELLER", descuento: 0, codigoNombre: reseller.name };
                     msgEl.innerText = `✓ Código SOCIO aplicado: ${reseller.name}`;
                     msgEl.className = 'text-[10px] mt-2 font-medium text-green-600';
@@ -398,43 +391,46 @@
             });
             document.getElementById('cart-items').innerHTML = html;
 
-            // LÓGICA HÍBRIDA: Comparar descuento automático vs código (mejor precio)
+            // MOTOR DE REGLAS DINÁMICO: Evaluar todas las promociones aplicables
             let descuentoAplicado = 0;
             let labelDescuento = '';
 
-            // 1. Calcular descuento automático si aplica
-            let descuentoAuto = 0;
-            let autoEligible = false;
-            if (subtotal >= autoPromoConfig.minCartAmount && autoPromoConfig.minCartAmount > 0) {
-                let rawVal = parseFloat(autoPromoConfig.discountValue);
-                descuentoAuto = rawVal > 1 ? rawVal / 100 : rawVal;
-                autoEligible = true;
+            // 1. Buscar promociones automáticas (code IS NULL)
+            const autoPromos = allPromotions.filter(p => !p.code && subtotal >= (p.min_cart_amount || 0));
+            let mejorDescuentoAuto = 0;
+            if (autoPromos.length > 0) {
+                const promoAuto = autoPromos.reduce((best, p) => {
+                    const rawVal = parseFloat(p.discount_value);
+                    const pct = rawVal > 1 ? rawVal / 100 : rawVal;
+                    return pct > best.pct ? { ...p, pct } : best;
+                }, { pct: 0 });
+                mejorDescuentoAuto = promoAuto.pct || 0;
             }
 
-            // 2. Resolver conflictos: RESELLER vs CODIGO vs AUTO
+            // 2. Buscar promoción de cupón ingresada (code NOT NULL)
+            let mejorDescuentoCupon = 0;
+            if (promoAplicado.tipo === 'CODIGO') {
+                mejorDescuentoCupon = promoAplicado.descuento;
+            }
+
+            // 3. Resolver: mejor descuento entre AUTO y CUPÓN
             if (promoAplicado.tipo === 'RESELLER') {
-                // RESELLER: Mantener descuento automático + etiquetar socio
-                descuentoAplicado = descuentoAuto;
-                labelDescuento = descuentoAuto > 0
-                    ? `Socio: ${promoAplicado.codigoNombre} + Auto ${(descuentoAuto * 100).toFixed(0)}%`
-                    : `Socio: ${promoAplicado.codigoNombre}`;
-            } else if (promoAplicado.tipo === 'CODIGO') {
-                // CODIGO: Comparar con AUTO y aplicar el mejor (MEJOR PRECIO PARA EL CLIENTE)
-                if (promoAplicado.descuento > descuentoAuto) {
-                    descuentoAplicado = promoAplicado.descuento;
-                    labelDescuento = `Cupón ${promoAplicado.codigoNombre} ${(promoAplicado.descuento * 100).toFixed(0)}%`;
-                } else if (descuentoAuto > 0) {
-                    descuentoAplicado = descuentoAuto;
-                    labelDescuento = `Auto ${(descuentoAuto * 100).toFixed(0)}%`;
+                // RESELLER: Mantener mejor descuento + etiquetar socio
+                descuentoAplicado = Math.max(mejorDescuentoAuto, mejorDescuentoCupon);
+                if (descuentoAplicado > 0) {
+                    const descPct = (descuentoAplicado * 100).toFixed(0);
+                    labelDescuento = `Socio: ${promoAplicado.codigoNombre} + ${descuentoAplicado === mejorDescuentoAuto ? 'Auto' : 'Cupón'} ${descPct}%`;
                 } else {
-                    descuentoAplicado = promoAplicado.descuento;
-                    labelDescuento = `Cupón ${promoAplicado.codigoNombre} ${(promoAplicado.descuento * 100).toFixed(0)}%`;
+                    labelDescuento = `Socio: ${promoAplicado.codigoNombre}`;
                 }
             } else {
-                // SIN CÓDIGO: Aplicar solo descuento automático si aplica
-                descuentoAplicado = descuentoAuto;
-                if (descuentoAuto > 0) {
-                    labelDescuento = `Auto ${(descuentoAuto * 100).toFixed(0)}%`;
+                // SIN RESELLER: Aplicar el mejor descuento disponible
+                if (mejorDescuentoCupon > mejorDescuentoAuto) {
+                    descuentoAplicado = mejorDescuentoCupon;
+                    labelDescuento = `Cupón ${promoAplicado.codigoNombre} ${(mejorDescuentoCupon * 100).toFixed(0)}%`;
+                } else if (mejorDescuentoAuto > 0) {
+                    descuentoAplicado = mejorDescuentoAuto;
+                    labelDescuento = `Auto ${(mejorDescuentoAuto * 100).toFixed(0)}%`;
                 }
             }
 
@@ -530,23 +526,19 @@
         }
 
         async function init() {
-            // Cargar configuración de auto-promo desde Supabase
+            // MOTOR DE REGLAS: Cargar TODAS las promociones activas
             try {
-                const { data: autoPromo } = await window.deAlturaSupabase
+                const { data: promos } = await window.deAlturaSupabase
                     .from('promotions')
                     .select('*')
-                    .eq('type', 'AUTO')
-                    .eq('is_active', true)
-                    .single();
+                    .eq('is_active', true);
 
-                if (autoPromo) {
-                    autoPromoConfig = {
-                        minCartAmount: autoPromo.min_cart_amount || 0,
-                        discountValue: autoPromo.discount_value || 0
-                    };
+                if (promos && promos.length > 0) {
+                    allPromotions = promos;
+                    console.log('Motor de Reglas: ' + promos.length + ' promociones cargadas');
                 }
             } catch (err) {
-                console.log('No auto-promo configurada:', err.message);
+                console.log('Error cargando promociones:', err.message);
             }
 
             renderCartSummary();
