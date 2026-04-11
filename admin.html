@@ -772,7 +772,7 @@
             <div class="panel">
                 <div class="panel-header">
                     <h3 data-i18n="promos_title"><i class="fa-solid fa-tags"></i> Cupones y Promociones</h3>
-                    <button class="btn-action" onclick="app.openPromoModal()" style="margin-left: auto; background: var(--brand-gold); color: var(--text-main); border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">
+                    <button class="btn-action" onclick="app.openPromoModal()" data-i18n="btn_new_promo" style="margin-left: auto; background: var(--brand-gold); color: var(--text-main); border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">
                         <i class="fa-solid fa-plus"></i> Nuevo Cupón
                     </button>
                 </div>
@@ -798,7 +798,7 @@
             <div class="panel">
                 <div class="panel-header">
                     <h3 data-i18n="resellers_title"><i class="fa-solid fa-handshake"></i> Gestión de Resellers (Socios)</h3>
-                    <button class="btn-action" onclick="app.openResellerModal()" style="margin-left: auto; background: var(--brand-gold); color: var(--text-main); border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">
+                    <button class="btn-action" onclick="app.openResellerModal()" data-i18n="btn_new_reseller" style="margin-left: auto; background: var(--brand-gold); color: var(--text-main); border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">
                         <i class="fa-solid fa-plus"></i> Nuevo Socio
                     </button>
                 </div>
@@ -855,7 +855,16 @@
                     table_reseller_code: 'Código Socio', table_reseller_name: 'Nombre', table_commission: 'Comisión %', table_total_sales: 'Ventas Totales',
                     table_base_sales: 'Base Ventas (€)', table_total_commission: 'Total Comisiones (€)',
                     no_promos_data: 'No hay promociones registradas.', no_resellers_data: 'No hay socios registrados.',
-                    toggle_active: 'Activar/Desactivar'
+                    toggle_active: 'Activar/Desactivar',
+                    btn_new_promo: 'Nuevo Cupón', btn_new_reseller: 'Nuevo Socio', btn_save: 'Guardar', btn_cancel: 'Cancelar',
+                    modal_promo_title: 'Gestionar Cupón', modal_reseller_title: 'Gestionar Socio',
+                    label_promo_code: 'Código del Cupón', label_promo_type: 'Tipo de Descuento', label_promo_value: 'Valor del Descuento',
+                    label_promo_min_cart: 'Mínimo de Carrito (€)', label_reseller_code: 'Código del Socio', label_reseller_name: 'Nombre del Socio',
+                    label_reseller_commission: 'Comisión (%)', option_select_type: 'Seleccionar tipo...', option_percentage: 'Porcentaje (%)',
+                    option_fixed: 'Cantidad Fija (€)', confirm_delete_promo: '¿Estás seguro de que deseas eliminar este cupón?',
+                    confirm_delete_reseller: '¿Estás seguro de que deseas eliminar este socio?', toast_promo_deleted: 'Cupón eliminado',
+                    toast_reseller_deleted: 'Socio eliminado', error_promo_validation: 'Por favor completa Tipo y Valor del Descuento.',
+                    error_reseller_validation: 'Por favor completa Código, Nombre y Comisión del Socio.'
                 },
                 en: {
                     nav_dashboard: 'Dashboard', nav_orders: 'Sales & Shipping', nav_inventory: 'Catalog & Pricing', nav_crm: 'Customer CRM', nav_promos: 'Coupons & Promos', nav_resellers: 'Resellers (Partners)',
@@ -885,7 +894,16 @@
                     table_reseller_code: 'Partner Code', table_reseller_name: 'Name', table_commission: 'Commission %', table_total_sales: 'Total Sales',
                     table_base_sales: 'Base Sales (€)', table_total_commission: 'Total Commissions (€)',
                     no_promos_data: 'No promotions registered.', no_resellers_data: 'No partners registered.',
-                    toggle_active: 'Toggle Active/Inactive'
+                    toggle_active: 'Toggle Active/Inactive',
+                    btn_new_promo: 'New Coupon', btn_new_reseller: 'New Partner', btn_save: 'Save', btn_cancel: 'Cancel',
+                    modal_promo_title: 'Manage Coupon', modal_reseller_title: 'Manage Partner',
+                    label_promo_code: 'Coupon Code', label_promo_type: 'Discount Type', label_promo_value: 'Discount Value',
+                    label_promo_min_cart: 'Min Cart Amount (€)', label_reseller_code: 'Partner Code', label_reseller_name: 'Partner Name',
+                    label_reseller_commission: 'Commission (%)', option_select_type: 'Select type...', option_percentage: 'Percentage (%)',
+                    option_fixed: 'Fixed Amount (€)', confirm_delete_promo: 'Are you sure you want to delete this coupon?',
+                    confirm_delete_reseller: 'Are you sure you want to delete this partner?', toast_promo_deleted: 'Coupon deleted',
+                    toast_reseller_deleted: 'Partner deleted', error_promo_validation: 'Please complete Discount Type and Value.',
+                    error_reseller_validation: 'Please complete Partner Code, Name, and Commission.'
                 }
             },
 
@@ -1226,14 +1244,14 @@
             },
 
             deletePromo: async function (id) {
-                if (!confirm('¿Estás seguro de que deseas eliminar este cupón?')) return;
+                if (!confirm(this.adminTranslations[this.currentLang].confirm_delete_promo)) return;
 
                 try {
                     const { error } = await this.db.from('promotions').delete().eq('id', id);
                     if (error) {
                         alert('Error al eliminar: ' + error.message);
                     } else {
-                        this.showToast('Cupón eliminado');
+                        this.showToast(this.adminTranslations[this.currentLang].toast_promo_deleted);
                         this.loadPromos();
                     }
                 } catch (err) {
@@ -1299,14 +1317,14 @@
             },
 
             deleteReseller: async function (id) {
-                if (!confirm('¿Estás seguro de que deseas eliminar este socio?')) return;
+                if (!confirm(this.adminTranslations[this.currentLang].confirm_delete_reseller)) return;
 
                 try {
                     const { error } = await this.db.from('resellers').delete().eq('id', id);
                     if (error) {
                         alert('Error al eliminar: ' + error.message);
                     } else {
-                        this.showToast('Socio eliminado');
+                        this.showToast(this.adminTranslations[this.currentLang].toast_reseller_deleted);
                         this.loadResellers();
                     }
                 } catch (err) {
@@ -1386,7 +1404,7 @@
 
                 // MOTOR DE REGLAS: Validar solo campos obligatorios (code es opcional)
                 if (!type || isNaN(value)) {
-                    alert('Por favor completa Tipo y Valor del Descuento.');
+                    alert(this.adminTranslations[this.currentLang].error_promo_validation);
                     return;
                 }
 
@@ -1428,7 +1446,7 @@
                 const commission = document.getElementById('reseller-commission').value ? parseFloat(document.getElementById('reseller-commission').value) : 0;
 
                 if (!code || !name) {
-                    alert('Por favor completa todos los campos obligatorios.');
+                    alert(this.adminTranslations[this.currentLang].error_reseller_validation);
                     return;
                 }
 
@@ -1551,40 +1569,40 @@
     <!-- Modal Promociones -->
     <div id="modal-promo" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
         <div style="background: white; border-radius: 12px; padding: 32px; max-width: 500px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
-            <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; color: #2B0710; font-family: 'Playfair Display', serif;">Gestionar Cupón</h2>
+            <h2 data-i18n="modal_promo_title" style="font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; color: #2B0710; font-family: 'Playfair Display', serif;">Gestionar Cupón</h2>
 
             <form id="form-promo" onsubmit="app.savePromo(event)" style="display: flex; flex-direction: column; gap: 16px;">
                 <input type="hidden" id="promo-id">
 
                 <div style="display: flex; flex-direction: column;">
-                    <label style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Código del Cupón</label>
+                    <label data-i18n="label_promo_code" style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Código del Cupón</label>
                     <input type="text" id="promo-code" style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; font-family: monospace;">
                 </div>
 
                 <div style="display: flex; flex-direction: column;">
-                    <label style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Tipo de Descuento *</label>
+                    <label data-i18n="label_promo_type" style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Tipo de Descuento *</label>
                     <select id="promo-type" required style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
-                        <option value="">Seleccionar tipo...</option>
-                        <option value="percentage">Porcentaje (%)</option>
-                        <option value="fixed">Cantidad Fija (€)</option>
+                        <option value="" data-i18n="option_select_type">Seleccionar tipo...</option>
+                        <option value="percentage" data-i18n="option_percentage">Porcentaje (%)</option>
+                        <option value="fixed" data-i18n="option_fixed">Cantidad Fija (€)</option>
                     </select>
                 </div>
 
                 <div style="display: flex; flex-direction: column;">
-                    <label style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Valor del Descuento *</label>
+                    <label data-i18n="label_promo_value" style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Valor del Descuento *</label>
                     <input type="number" id="promo-value" required step="0.01" min="0" style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
                 </div>
 
                 <div style="display: flex; flex-direction: column;">
-                    <label style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Mínimo de Carrito (€)</label>
+                    <label data-i18n="label_promo_min_cart" style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Mínimo de Carrito (€)</label>
                     <input type="number" id="promo-min-cart" step="0.01" min="0" style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
                 </div>
 
                 <div style="display: flex; gap: 12px; margin-top: 24px;">
-                    <button type="button" onclick="app.closeModals()" style="flex: 1; padding: 12px; border: 2px solid #cbd5e1; background: transparent; border-radius: 8px; font-weight: 600; cursor: pointer; color: #64748b; transition: all 0.3s;">
+                    <button type="button" onclick="app.closeModals()" data-i18n="btn_cancel" style="flex: 1; padding: 12px; border: 2px solid #cbd5e1; background: transparent; border-radius: 8px; font-weight: 600; cursor: pointer; color: #64748b; transition: all 0.3s;">
                         Cancelar
                     </button>
-                    <button type="submit" style="flex: 1; padding: 12px; background: #C89F5D; color: #2B0710; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                    <button type="submit" data-i18n="btn_save" style="flex: 1; padding: 12px; background: #C89F5D; color: #2B0710; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
                         Guardar
                     </button>
                 </div>
@@ -1595,31 +1613,31 @@
     <!-- Modal Resellers -->
     <div id="modal-reseller" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
         <div style="background: white; border-radius: 12px; padding: 32px; max-width: 500px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
-            <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; color: #2B0710; font-family: 'Playfair Display', serif;">Gestionar Socio</h2>
+            <h2 data-i18n="modal_reseller_title" style="font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; color: #2B0710; font-family: 'Playfair Display', serif;">Gestionar Socio</h2>
 
             <form id="form-reseller" onsubmit="app.saveReseller(event)" style="display: flex; flex-direction: column; gap: 16px;">
                 <input type="hidden" id="reseller-id">
 
                 <div style="display: flex; flex-direction: column;">
-                    <label style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Código del Socio *</label>
+                    <label data-i18n="label_reseller_code" style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Código del Socio *</label>
                     <input type="text" id="reseller-code" required style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; font-family: monospace;">
                 </div>
 
                 <div style="display: flex; flex-direction: column;">
-                    <label style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Nombre del Socio *</label>
+                    <label data-i18n="label_reseller_name" style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Nombre del Socio *</label>
                     <input type="text" id="reseller-name" required style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
                 </div>
 
                 <div style="display: flex; flex-direction: column;">
-                    <label style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Comisión (%)</label>
+                    <label data-i18n="label_reseller_commission" style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Comisión (%)</label>
                     <input type="number" id="reseller-commission" step="0.01" min="0" max="100" style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
                 </div>
 
                 <div style="display: flex; gap: 12px; margin-top: 24px;">
-                    <button type="button" onclick="app.closeModals()" style="flex: 1; padding: 12px; border: 2px solid #cbd5e1; background: transparent; border-radius: 8px; font-weight: 600; cursor: pointer; color: #64748b; transition: all 0.3s;">
+                    <button type="button" onclick="app.closeModals()" data-i18n="btn_cancel" style="flex: 1; padding: 12px; border: 2px solid #cbd5e1; background: transparent; border-radius: 8px; font-weight: 600; cursor: pointer; color: #64748b; transition: all 0.3s;">
                         Cancelar
                     </button>
-                    <button type="submit" style="flex: 1; padding: 12px; background: #C89F5D; color: #2B0710; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                    <button type="submit" data-i18n="btn_save" style="flex: 1; padding: 12px; background: #C89F5D; color: #2B0710; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
                         Guardar
                     </button>
                 </div>
