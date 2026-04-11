@@ -1186,7 +1186,7 @@
                             <td><strong>${p.code}</strong></td>
                             <td>${p.type === 'percentage' ? 'Porcentaje' : 'Cantidad Fija'}</td>
                             <td>${discountDisplay}</td>
-                            <td>${p.minimum_cart ? p.minimum_cart + '€' : 'Sin mínimo'}</td>
+                            <td>${p.min_cart_amount ? p.min_cart_amount + '€' : 'Sin mínimo'}</td>
                             <td><span class="status-badge ${statusBadge}">${statusText}</span></td>
                             <td style="display: flex; gap: 8px;">
                                 <button class="btn-action" onclick="app.openPromoModal(${JSON.stringify(p).replace(/"/g, '&quot;')})" title="Editar" style="padding: 4px 8px; background: var(--brand-gold); border: none;">
@@ -1287,7 +1287,9 @@
                     document.getElementById('promo-code').value = data.code || '';
                     document.getElementById('promo-type').value = data.type || '';
                     document.getElementById('promo-value').value = data.discount_value || '';
-                    document.getElementById('promo-min-cart').value = data.minimum_cart || '';
+                    document.getElementById('promo-min-cart').value = data.min_cart_amount || '';
+                } else {
+                    document.getElementById('promo-id').value = '';
                 }
 
                 modal.style.display = 'flex';
@@ -1313,6 +1315,8 @@
                     document.getElementById('reseller-code').value = data.code || '';
                     document.getElementById('reseller-name').value = data.name || '';
                     document.getElementById('reseller-commission').value = data.commission_rate || '';
+                } else {
+                    document.getElementById('reseller-id').value = '';
                 }
 
                 modal.style.display = 'flex';
@@ -1343,12 +1347,12 @@
                         code,
                         type,
                         discount_value: parseFloat(value),
-                        minimum_cart: minCart ? parseFloat(minCart) : null,
+                        min_cart_amount: minCart ? parseFloat(minCart) : null,
                         is_active: true
                     };
 
                     let result;
-                    if (id) {
+                    if (id && id.trim()) {
                         result = await this.db.from('promotions').update(payload).eq('id', id);
                     } else {
                         result = await this.db.from('promotions').insert([payload]);
@@ -1389,7 +1393,7 @@
                     };
 
                     let result;
-                    if (id) {
+                    if (id && id.trim()) {
                         result = await this.db.from('resellers').update(payload).eq('id', id);
                     } else {
                         result = await this.db.from('resellers').insert([payload]);
