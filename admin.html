@@ -569,6 +569,24 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        #modal-promo[style*="flex"],
+        #modal-reseller[style*="flex"] {
+            display: flex !important;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
 </head>
 
@@ -588,6 +606,8 @@
                 Catálogo & Pricing</div>
             <div class="nav-item" onclick="app.switchView('crm', this)" data-i18n="nav_crm"><i class="fa-solid fa-users"></i> CRM Clientes
             </div>
+            <div class="nav-item" onclick="app.switchView('promos', this)" data-i18n="nav_promos"><i class="fa-solid fa-tags"></i> Cupones y Promos</div>
+            <div class="nav-item" onclick="app.switchView('resellers', this)" data-i18n="nav_resellers"><i class="fa-solid fa-handshake"></i> Resellers (Socios)</div>
 
             <div class="nav-divider"></div>
             <div class="nav-item" onclick="window.location.href='index.html'" style="color: var(--brand-gold);" data-i18n="nav_store"><i
@@ -747,6 +767,58 @@
                 </div>
             </div>
         </section>
+
+        <section id="view-promos" class="section">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3 data-i18n="promos_title"><i class="fa-solid fa-tags"></i> Cupones y Promociones</h3>
+                    <button class="btn-action" onclick="app.openPromoModal()" style="margin-left: auto; background: var(--brand-gold); color: var(--text-main); border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">
+                        <i class="fa-solid fa-plus"></i> Nuevo Cupón
+                    </button>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-i18n="table_promo_code">Código</th>
+                                <th data-i18n="table_promo_type">Tipo</th>
+                                <th data-i18n="table_discount_value">Descuento</th>
+                                <th data-i18n="table_min_cart">Mínimo Carrito</th>
+                                <th data-i18n="table_status">Estado</th>
+                                <th data-i18n="table_action">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="promos-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-resellers" class="section">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3 data-i18n="resellers_title"><i class="fa-solid fa-handshake"></i> Gestión de Resellers (Socios)</h3>
+                    <button class="btn-action" onclick="app.openResellerModal()" style="margin-left: auto; background: var(--brand-gold); color: var(--text-main); border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">
+                        <i class="fa-solid fa-plus"></i> Nuevo Socio
+                    </button>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-i18n="table_reseller_code">Código Socio</th>
+                                <th data-i18n="table_reseller_name">Nombre</th>
+                                <th data-i18n="table_commission">Comisión %</th>
+                                <th data-i18n="table_total_sales">Ventas Totales</th>
+                                <th data-i18n="table_status">Estado</th>
+                                <th data-i18n="table_action">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resellers-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
     </main>
 
     <script>
@@ -755,7 +827,7 @@
             currentLang: 'es',
             adminTranslations: {
                 es: {
-                    nav_dashboard: 'Vista General', nav_orders: 'Ventas & Envíos', nav_inventory: 'Catálogo & Pricing', nav_crm: 'CRM Clientes',
+                    nav_dashboard: 'Vista General', nav_orders: 'Ventas & Envíos', nav_inventory: 'Catálogo & Pricing', nav_crm: 'CRM Clientes', nav_promos: 'Cupones y Promos', nav_resellers: 'Resellers (Socios)',
                     nav_store: 'Volver a la Tienda', nav_logout: 'Cerrar Sesión', loading: 'Cargando...',
                     metric_revenue: 'Ingresos Netos', metric_orders: 'Pedidos Exitosos', metric_tax: 'Impuestos (IGIC)', metric_alerts: 'Vinos a Reponer',
                     recent_orders_title: 'Últimos Pedidos Recibidos', table_id: 'ID / Ref', table_customer: 'Cliente', table_total: 'Total',
@@ -776,10 +848,15 @@
                     error_stock_update: 'Error al actualizar el stock: ',
                     cost_net_label: 'Coste Neto', horeca_label: 'HORECA', retail_label: 'Retail', margin_label: 'Margen', tax_label: 'IGIC 7%',
                     table_margin_horeca: '↗ Mg. HORECA', table_tax_horeca: '+ IGIC HORECA',
-                    table_margin_retail: '↗ Mg. Retail', table_tax_retail: '+ IGIC Retail'
+                    table_margin_retail: '↗ Mg. Retail', table_tax_retail: '+ IGIC Retail',
+                    promos_title: 'Cupones y Promociones', table_promo_code: 'Código', table_promo_type: 'Tipo', table_discount_value: 'Descuento',
+                    table_min_cart: 'Mínimo Carrito', table_status: 'Estado', resellers_title: 'Gestión de Resellers (Socios)',
+                    table_reseller_code: 'Código Socio', table_reseller_name: 'Nombre', table_commission: 'Comisión %', table_total_sales: 'Ventas Totales',
+                    no_promos_data: 'No hay promociones registradas.', no_resellers_data: 'No hay socios registrados.',
+                    toggle_active: 'Activar/Desactivar'
                 },
                 en: {
-                    nav_dashboard: 'Dashboard', nav_orders: 'Sales & Shipping', nav_inventory: 'Catalog & Pricing', nav_crm: 'Customer CRM',
+                    nav_dashboard: 'Dashboard', nav_orders: 'Sales & Shipping', nav_inventory: 'Catalog & Pricing', nav_crm: 'Customer CRM', nav_promos: 'Coupons & Promos', nav_resellers: 'Resellers (Partners)',
                     nav_store: 'Back to Store', nav_logout: 'Logout', loading: 'Loading...',
                     metric_revenue: 'Net Revenue', metric_orders: 'Successful Orders', metric_tax: 'Taxes (IGIC)', metric_alerts: 'Wines to Restock',
                     recent_orders_title: 'Recent Orders Received', table_id: 'ID / Ref', table_customer: 'Customer', table_total: 'Total',
@@ -800,7 +877,12 @@
                     error_stock_update: 'Error updating stock: ',
                     cost_net_label: 'Net Cost', horeca_label: 'HORECA', retail_label: 'Retail', margin_label: 'Margin', tax_label: 'IGIC 7%',
                     table_margin_horeca: '↗ Mg. HORECA', table_tax_horeca: '+ IGIC HORECA',
-                    table_margin_retail: '↗ Mg. Retail', table_tax_retail: '+ IGIC Retail'
+                    table_margin_retail: '↗ Mg. Retail', table_tax_retail: '+ IGIC Retail',
+                    promos_title: 'Coupons & Promotions', table_promo_code: 'Code', table_promo_type: 'Type', table_discount_value: 'Discount',
+                    table_min_cart: 'Min Cart', table_status: 'Status', resellers_title: 'Resellers Management (Partners)',
+                    table_reseller_code: 'Partner Code', table_reseller_name: 'Name', table_commission: 'Commission %', table_total_sales: 'Total Sales',
+                    no_promos_data: 'No promotions registered.', no_resellers_data: 'No partners registered.',
+                    toggle_active: 'Toggle Active/Inactive'
                 }
             },
 
@@ -867,6 +949,8 @@
                 if (viewId === 'orders') this.loadOrdersTable();
                 if (viewId === 'inventory') this.loadInventoryTable();
                 if (viewId === 'crm') this.loadCRM();
+                if (viewId === 'promos') this.loadPromos();
+                if (viewId === 'resellers') this.loadResellers();
             },
 
             loadDashboardData: async function () {
@@ -1085,6 +1169,253 @@
                 document.getElementById('crm-body').innerHTML = html || `<tr><td colspan="5" style="text-align:center;">${this.adminTranslations[this.currentLang].no_customers_recorded}</td></tr>`;
             },
 
+            loadPromos: async function () {
+                try {
+                    const { data: promos, error } = await this.db.from('promotions').select('*').order('created_at', { ascending: false });
+                    if (error || !promos) {
+                        document.getElementById('promos-body').innerHTML = `<tr><td colspan="6" style="text-align:center;">${this.adminTranslations[this.currentLang].no_promos_data}</td></tr>`;
+                        return;
+                    }
+
+                    const html = promos.map(p => {
+                        const statusBadge = p.is_active ? 'badge-paid' : 'badge-pending';
+                        const statusText = p.is_active ? 'Activo' : 'Inactivo';
+                        const discountDisplay = p.discount_type === 'percentage' ? `${p.discount_value}%` : `${p.discount_value}€`;
+
+                        return `<tr>
+                            <td><strong>${p.code}</strong></td>
+                            <td>${p.discount_type === 'percentage' ? 'Porcentaje' : 'Cantidad Fija'}</td>
+                            <td>${discountDisplay}</td>
+                            <td>${p.minimum_cart ? p.minimum_cart + '€' : 'Sin mínimo'}</td>
+                            <td><span class="status-badge ${statusBadge}">${statusText}</span></td>
+                            <td style="display: flex; gap: 8px;">
+                                <button class="btn-action" onclick="app.openPromoModal(${JSON.stringify(p).replace(/"/g, '&quot;')})" title="Editar" style="padding: 4px 8px; background: var(--brand-gold); border: none;">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="btn-action" onclick="app.togglePromoStatus('${p.id}', ${!p.is_active})" title="Toggle" style="padding: 4px 8px;">
+                                    <i class="fa-solid fa-toggle-${p.is_active ? 'on' : 'off'}"></i>
+                                </button>
+                            </td>
+                        </tr>`;
+                    }).join('');
+
+                    document.getElementById('promos-body').innerHTML = html;
+                } catch (err) {
+                    console.error("Error cargando promociones:", err);
+                    document.getElementById('promos-body').innerHTML = `<tr><td colspan="6" style="text-align:center;">${this.adminTranslations[this.currentLang].error_loading_data}</td></tr>`;
+                }
+            },
+
+            togglePromoStatus: async function (id, newStatus) {
+                try {
+                    const { error } = await this.db.from('promotions').update({ is_active: newStatus }).eq('id', id);
+                    if (error) {
+                        alert('Error: ' + error.message);
+                    } else {
+                        this.loadPromos();
+                    }
+                } catch (err) {
+                    console.error("Error cambiando estado de promo:", err);
+                }
+            },
+
+            loadResellers: async function () {
+                try {
+                    const { data: resellers, error } = await this.db.from('resellers').select('*').order('created_at', { ascending: false });
+                    if (error || !resellers) {
+                        document.getElementById('resellers-body').innerHTML = `<tr><td colspan="6" style="text-align:center;">${this.adminTranslations[this.currentLang].no_resellers_data}</td></tr>`;
+                        return;
+                    }
+
+                    const html = resellers.map(r => {
+                        const statusBadge = r.is_active ? 'badge-paid' : 'badge-pending';
+                        const statusText = r.is_active ? 'Activo' : 'Inactivo';
+
+                        return `<tr>
+                            <td><strong>${r.code}</strong></td>
+                            <td>${r.name}</td>
+                            <td>${r.commission_percentage || 0}%</td>
+                            <td>${r.total_sales ? r.total_sales.toFixed(2) + '€' : '0.00€'}</td>
+                            <td><span class="status-badge ${statusBadge}">${statusText}</span></td>
+                            <td style="display: flex; gap: 8px;">
+                                <button class="btn-action" onclick="app.openResellerModal(${JSON.stringify(r).replace(/"/g, '&quot;')})" title="Editar" style="padding: 4px 8px; background: var(--brand-gold); border: none;">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="btn-action" onclick="app.toggleResellerStatus('${r.id}', ${!r.is_active})" title="Toggle" style="padding: 4px 8px;">
+                                    <i class="fa-solid fa-toggle-${r.is_active ? 'on' : 'off'}"></i>
+                                </button>
+                            </td>
+                        </tr>`;
+                    }).join('');
+
+                    document.getElementById('resellers-body').innerHTML = html;
+                } catch (err) {
+                    console.error("Error cargando resellers:", err);
+                    document.getElementById('resellers-body').innerHTML = `<tr><td colspan="6" style="text-align:center;">${this.adminTranslations[this.currentLang].error_loading_data}</td></tr>`;
+                }
+            },
+
+            toggleResellerStatus: async function (id, newStatus) {
+                try {
+                    const { error } = await this.db.from('resellers').update({ is_active: newStatus }).eq('id', id);
+                    if (error) {
+                        alert('Error: ' + error.message);
+                    } else {
+                        this.loadResellers();
+                    }
+                } catch (err) {
+                    console.error("Error cambiando estado de reseller:", err);
+                }
+            },
+
+            openPromoModal: function (data) {
+                const modal = document.getElementById('modal-promo');
+                const form = document.getElementById('form-promo');
+                form.reset();
+
+                if (data && typeof data === 'string') {
+                    try {
+                        data = JSON.parse(data);
+                    } catch (e) {
+                        console.error("Error parsing promo data:", e);
+                        data = null;
+                    }
+                }
+
+                if (data) {
+                    document.getElementById('promo-id').value = data.id || '';
+                    document.getElementById('promo-code').value = data.code || '';
+                    document.getElementById('promo-type').value = data.discount_type || '';
+                    document.getElementById('promo-value').value = data.discount_value || '';
+                    document.getElementById('promo-min-cart').value = data.minimum_cart || '';
+                }
+
+                modal.style.display = 'flex';
+                document.getElementById('promo-code').focus();
+            },
+
+            openResellerModal: function (data) {
+                const modal = document.getElementById('modal-reseller');
+                const form = document.getElementById('form-reseller');
+                form.reset();
+
+                if (data && typeof data === 'string') {
+                    try {
+                        data = JSON.parse(data);
+                    } catch (e) {
+                        console.error("Error parsing reseller data:", e);
+                        data = null;
+                    }
+                }
+
+                if (data) {
+                    document.getElementById('reseller-id').value = data.id || '';
+                    document.getElementById('reseller-code').value = data.code || '';
+                    document.getElementById('reseller-name').value = data.name || '';
+                    document.getElementById('reseller-commission').value = data.commission_percentage || '';
+                }
+
+                modal.style.display = 'flex';
+                document.getElementById('reseller-code').focus();
+            },
+
+            closeModals: function () {
+                document.getElementById('modal-promo').style.display = 'none';
+                document.getElementById('modal-reseller').style.display = 'none';
+            },
+
+            savePromo: async function (event) {
+                event.preventDefault();
+
+                const id = document.getElementById('promo-id').value;
+                const code = document.getElementById('promo-code').value.trim();
+                const type = document.getElementById('promo-type').value;
+                const value = parseFloat(document.getElementById('promo-value').value);
+                const minCart = document.getElementById('promo-min-cart').value ? parseFloat(document.getElementById('promo-min-cart').value) : null;
+
+                if (!code || !type || isNaN(value)) {
+                    alert('Por favor completa todos los campos obligatorios.');
+                    return;
+                }
+
+                try {
+                    const payload = {
+                        code,
+                        discount_type: type,
+                        discount_value: value,
+                        minimum_cart: minCart,
+                        is_active: true
+                    };
+
+                    let result;
+                    if (id) {
+                        result = await this.db.from('promotions').update(payload).eq('id', id);
+                    } else {
+                        result = await this.db.from('promotions').insert([payload]);
+                    }
+
+                    if (result.error) {
+                        alert('Error: ' + result.error.message);
+                    } else {
+                        this.closeModals();
+                        this.showToast(id ? 'Cupón actualizado' : 'Cupón creado');
+                        this.loadPromos();
+                    }
+                } catch (err) {
+                    console.error('Error guardando promo:', err);
+                    alert('Error al guardar: ' + err.message);
+                }
+            },
+
+            saveReseller: async function (event) {
+                event.preventDefault();
+
+                const id = document.getElementById('reseller-id').value;
+                const code = document.getElementById('reseller-code').value.trim();
+                const name = document.getElementById('reseller-name').value.trim();
+                const commission = document.getElementById('reseller-commission').value ? parseFloat(document.getElementById('reseller-commission').value) : 0;
+
+                if (!code || !name) {
+                    alert('Por favor completa todos los campos obligatorios.');
+                    return;
+                }
+
+                try {
+                    const payload = {
+                        code,
+                        name,
+                        commission_percentage: commission,
+                        is_active: true
+                    };
+
+                    let result;
+                    if (id) {
+                        result = await this.db.from('resellers').update(payload).eq('id', id);
+                    } else {
+                        result = await this.db.from('resellers').insert([payload]);
+                    }
+
+                    if (result.error) {
+                        alert('Error: ' + result.error.message);
+                    } else {
+                        this.closeModals();
+                        this.showToast(id ? 'Socio actualizado' : 'Socio creado');
+                        this.loadResellers();
+                    }
+                } catch (err) {
+                    console.error('Error guardando reseller:', err);
+                    alert('Error al guardar: ' + err.message);
+                }
+            },
+
+            showToast: function (msg) {
+                const toast = document.createElement('div');
+                toast.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 12px 20px; border-radius: 8px; z-index: 10000; font-weight: 600; animation: slideIn 0.3s ease;';
+                toast.textContent = '✓ ' + msg;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            },
+
             toggleMobileMenu: function () {
                 const sidebar = document.querySelector('.sidebar');
                 const overlay = document.getElementById('sidebar-overlay');
@@ -1125,9 +1456,26 @@
                 });
             },
 
+            initModals: function () {
+                const modalPromo = document.getElementById('modal-promo');
+                const modalReseller = document.getElementById('modal-reseller');
+
+                modalPromo.addEventListener('click', (e) => {
+                    if (e.target === modalPromo) this.closeModals();
+                });
+                modalReseller.addEventListener('click', (e) => {
+                    if (e.target === modalReseller) this.closeModals();
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') this.closeModals();
+                });
+            },
+
             start: async function () {
                 this.initDB();
                 this.initMobileMenu();
+                this.initModals();
 
                 // Initialize language
                 const savedLang = localStorage.getItem('admin_lang') || 'es';
@@ -1147,6 +1495,86 @@
 
         document.addEventListener('DOMContentLoaded', () => app.start());
     </script>
+
+    <!-- Modal Promociones -->
+    <div id="modal-promo" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: white; border-radius: 12px; padding: 32px; max-width: 500px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+            <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; color: #2B0710; font-family: 'Playfair Display', serif;">Gestionar Cupón</h2>
+
+            <form id="form-promo" onsubmit="app.savePromo(event)" style="display: flex; flex-direction: column; gap: 16px;">
+                <input type="hidden" id="promo-id">
+
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Código del Cupón *</label>
+                    <input type="text" id="promo-code" required style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; font-family: monospace;">
+                </div>
+
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Tipo de Descuento *</label>
+                    <select id="promo-type" required style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                        <option value="">Seleccionar tipo...</option>
+                        <option value="percentage">Porcentaje (%)</option>
+                        <option value="fixed">Cantidad Fija (€)</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Valor del Descuento *</label>
+                    <input type="number" id="promo-value" required step="0.01" min="0" style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                </div>
+
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Mínimo de Carrito (€)</label>
+                    <input type="number" id="promo-min-cart" step="0.01" min="0" style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button type="button" onclick="app.closeModals()" style="flex: 1; padding: 12px; border: 2px solid #cbd5e1; background: transparent; border-radius: 8px; font-weight: 600; cursor: pointer; color: #64748b; transition: all 0.3s;">
+                        Cancelar
+                    </button>
+                    <button type="submit" style="flex: 1; padding: 12px; background: #C89F5D; color: #2B0710; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Resellers -->
+    <div id="modal-reseller" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: white; border-radius: 12px; padding: 32px; max-width: 500px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+            <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; color: #2B0710; font-family: 'Playfair Display', serif;">Gestionar Socio</h2>
+
+            <form id="form-reseller" onsubmit="app.saveReseller(event)" style="display: flex; flex-direction: column; gap: 16px;">
+                <input type="hidden" id="reseller-id">
+
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Código del Socio *</label>
+                    <input type="text" id="reseller-code" required style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; font-family: monospace;">
+                </div>
+
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Nombre del Socio *</label>
+                    <input type="text" id="reseller-name" required style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                </div>
+
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Comisión (%)</label>
+                    <input type="number" id="reseller-commission" step="0.01" min="0" max="100" style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button type="button" onclick="app.closeModals()" style="flex: 1; padding: 12px; border: 2px solid #cbd5e1; background: transparent; border-radius: 8px; font-weight: 600; cursor: pointer; color: #64748b; transition: all 0.3s;">
+                        Cancelar
+                    </button>
+                    <button type="submit" style="flex: 1; padding: 12px; background: #C89F5D; color: #2B0710; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </body>
 
 </html>

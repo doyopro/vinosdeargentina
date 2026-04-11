@@ -199,6 +199,23 @@
                         <div id="stripe-error" class="mt-4 text-red-500 text-sm font-medium"></div>
                     </div>
 
+                    <div class="mb-8">
+                        <label class="text-xs font-bold text-stone-500 uppercase tracking-wider mb-3 block">
+                            <span lang="es">¿Tienes un código de socio o descuento?</span>
+                            <span lang="en">Do you have a partner or discount code?</span>
+                        </label>
+                        <div class="flex gap-2">
+                            <input type="text" id="promo_code" placeholder="Código..."
+                                class="flex-1 p-3 border border-stone-200 rounded-lg focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 outline-none transition-all text-sm">
+                            <button type="button" onclick="applyPromo()"
+                                class="px-6 py-3 bg-gold-500 hover:bg-gold-600 text-wine-900 font-bold rounded-lg transition-all text-[10px] uppercase tracking-widest shadow-sm">
+                                <span lang="es">Aplicar</span>
+                                <span lang="en">Apply</span>
+                            </button>
+                        </div>
+                        <div id="promo-message" class="text-[10px] mt-2 font-medium"></div>
+                    </div>
+
                     <button id="btn-pay"
                         class="w-full bg-wine-900 hover:bg-wine-800 text-white font-bold py-5 rounded-lg transition-all shadow-xl hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3 uppercase tracking-widest text-sm">
                         <i class="fa-solid fa-lock text-gold-500"></i>
@@ -224,6 +241,13 @@
                         <div class="flex justify-between text-stone-400 text-sm">
                             <span lang="es">Subtotal Neto</span><span lang="en">Net Subtotal</span>
                             <span id="subtotal" class="text-white font-semibold">0,00 €</span>
+                        </div>
+                        <div id="discount-row" class="flex justify-between text-gold-500 text-sm font-medium" style="display: none;">
+                            <div>
+                                <span lang="es">Descuento</span><span lang="en">Discount</span>
+                                <span id="discount-label" class="text-stone-400 text-xs ml-1"></span>
+                            </div>
+                            <span id="discount-amount" class="font-bold">0,00 €</span>
                         </div>
                         <div class="flex justify-between text-stone-400 text-sm">
                             <span lang="es">Impuestos (IGIC 7%)</span><span lang="en">Taxes (7% IGIC)</span>
@@ -268,6 +292,50 @@
         const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
         let elements, paymentElement;
 
+        const CONFIG_PROMOS = {
+            minimoDesc: 200,
+            porcentaje: 0.10,
+            codigos: { "JUAN_ALTURA": "RESELLER", "PROMO20": 0.20 }
+        };
+
+        let promoAplicado = { codigo: null, tipo: null, descuento: 0 };
+
+        function applyPromo() {
+            const codigo = document.getElementById('promo_code').value.trim().toUpperCase();
+            const msgEl = document.getElementById('promo-message');
+            promoAplicado = { codigo: null, tipo: null, descuento: 0 };
+
+            if (!codigo) {
+                msgEl.innerText = '';
+                msgEl.className = 'text-[10px] mt-2 font-medium';
+                renderCartSummary();
+                return;
+            }
+
+            const subtotal = window.orderData?.subtotal || 0;
+            const esReseller = CONFIG_PROMOS.codigos[codigo] === "RESELLER";
+            const esPromo = CONFIG_PROMOS.codigos[codigo] && typeof CONFIG_PROMOS.codigos[codigo] === 'number';
+
+            if (esReseller) {
+                promoAplicado = { codigo, tipo: "RESELLER", descuento: 0 };
+                msgEl.innerText = `✓ Código RESELLER aplicado (${codigo})`;
+                msgEl.className = 'text-[10px] mt-2 font-medium text-green-600';
+            } else if (esPromo) {
+                const pct = CONFIG_PROMOS.codigos[codigo];
+                promoAplicado = { codigo, tipo: "CODIGO", descuento: pct };
+                msgEl.innerText = `✓ Descuento ${(pct * 100).toFixed(0)}% aplicado`;
+                msgEl.className = 'text-[10px] mt-2 font-medium text-green-600';
+            } else if (subtotal > CONFIG_PROMOS.minimoDesc) {
+                promoAplicado = { codigo: null, tipo: "AUTO", descuento: CONFIG_PROMOS.porcentaje };
+                msgEl.innerText = `✓ Descuento automático 10% por compra > 200€`;
+                msgEl.className = 'text-[10px] mt-2 font-medium text-blue-600';
+            } else {
+                msgEl.innerText = `Código inválido o no aplica`;
+                msgEl.className = 'text-[10px] mt-2 font-medium text-red-600';
+            }
+            renderCartSummary();
+        }
+
         function setLanguage(lang) {
             document.body.className = `antialiased lang-${lang}`;
             document.getElementById('btn-es').className = lang === 'es' ? 'px-3 py-1 text-[10px] font-bold rounded-full bg-wine-900 text-white transition-all' : 'px-3 py-1 text-[10px] font-bold rounded-full text-stone-500 transition-all';
@@ -306,12 +374,38 @@
                     </div>`;
             });
             document.getElementById('cart-items').innerHTML = html;
-            const igic = subtotal * 0.07;
-            const total = (subtotal + igic).toFixed(2);
+
+            // Calcular descuento aplicado
+            let descuentoAplicado = 0;
+            let tipoDescuento = '';
+
+            if (subtotal > CONFIG_PROMOS.minimoDesc && !promoAplicado.codigo) {
+                descuentoAplicado = CONFIG_PROMOS.porcentaje;
+                tipoDescuento = 'Auto 10%';
+            } else if (promoAplicado.descuento > 0) {
+                descuentoAplicado = promoAplicado.descuento;
+                tipoDescuento = promoAplicado.codigo || 'Código';
+            }
+
+            // Mostrar/ocultar fila de descuento
+            const discountRow = document.getElementById('discount-row');
+            const discountAmount = subtotal * descuentoAplicado;
+
+            if (descuentoAplicado > 0) {
+                discountRow.style.display = 'flex';
+                document.getElementById('discount-label').innerText = `(${tipoDescuento})`;
+                document.getElementById('discount-amount').innerText = `-${discountAmount.toFixed(2)} €`;
+            } else {
+                discountRow.style.display = 'none';
+            }
+
+            const subtotalConDesc = subtotal * (1 - descuentoAplicado);
+            const igic = subtotalConDesc * 0.07;
+            const total = (subtotalConDesc + igic).toFixed(2);
             document.getElementById('subtotal').innerText = subtotal.toFixed(2) + ' €';
             document.getElementById('igic').innerText = igic.toFixed(2) + ' €';
             document.getElementById('total').innerText = total + ' €';
-            window.orderData = { items, subtotal, igic, total: parseFloat(total) };
+            window.orderData = { items, subtotal, igic, total: parseFloat(total), descuentoAplicado, promoAplicado };
         }
 
         function validateForm() {
@@ -345,7 +439,9 @@
                     phone: document.getElementById('phone').value,
                     island: document.getElementById('island').value,
                     address: document.getElementById('address').value,
-                    postal_code: document.getElementById('postal').value
+                    postal_code: document.getElementById('postal').value,
+                    promo_code: promoAplicado.codigo || 'SIN CODIGO',
+                    promo_type: promoAplicado.tipo || 'NINGUNO'
                 };
                 localStorage.setItem('altura_customer_info', JSON.stringify(customerInfo));
 
