@@ -32,7 +32,9 @@ export default function Home() {
   useEffect(() => {
     let active = true;
     (async () => {
-      const { data, error } = await supabase.from("products").select("*");
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, sku, name, price_retail, created_at, bodega, region, type, box_size, aiem_rate, igic_rate, notes_es, notes_en, stock, image_url");
       if (error) {
         console.error("Error getWines:", error);
         return;

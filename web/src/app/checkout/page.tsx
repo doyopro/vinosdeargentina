@@ -131,7 +131,7 @@ export default function CheckoutPage() {
 
       const { data: reseller } = await supabase
         .from("resellers")
-        .select("*")
+        .select("id, code, name, is_active")
         .ilike("code", codigo)
         .eq("is_active", true)
         .single();

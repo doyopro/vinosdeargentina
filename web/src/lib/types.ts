@@ -9,14 +9,12 @@ export interface Product {
   region: Region;
   type: WineType;
   price_retail: number;
-  price_horeca: number;
   aiem_rate: number;
   igic_rate: number;
   box_size: number;
   notes_es: string | null;
   notes_en: string | null;
   stock: number;
-  price_cost_net: number;
   image_url: string | null;
   created_at: string;
 }
