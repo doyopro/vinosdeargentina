@@ -201,10 +201,9 @@
 
                         console.log('📤 Insertando orden en BD (background)...');
 
-                        const { data: orderData, error: orderError } = await supabaseClient
+                        const { error: orderError } = await supabaseClient
                             .from('orders')
-                            .insert([orderPayload])
-                            .select();
+                            .insert([orderPayload]);
 
                         if (orderError) {
                             console.error('❌ Error al insertar orden (silencioso):', orderError);
