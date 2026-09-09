@@ -3,7 +3,6 @@
 import { useTranslations } from "next-intl";
 import { useLocaleSwitch } from "@/lib/i18n";
 import { CatalogWine } from "@/lib/types";
-import { isOutOfStock } from "@/lib/bodegaProvincia";
 
 interface Props {
   wine: CatalogWine;
@@ -18,7 +17,7 @@ export function WineCard({ wine, qty, onChangeQty }: Props) {
   const unitGross = (wine.price * 1.07).toFixed(2).replace(".", ",");
   const totalGross = (wine.price * 1.07 * wine.box).toFixed(2).replace(".", ",");
   const inCartCls = qty > 0 ? "ring-2 ring-gold-500" : "";
-  const outOfStock = isOutOfStock(wine.name);
+  const outOfStock = !wine.is_available;
 
   const rawNotes = (locale === "en" ? wine.notes_en : wine.notes_es) || "";
   const notes = rawNotes.split(". ").join(".\n");

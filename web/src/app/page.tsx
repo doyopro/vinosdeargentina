@@ -34,7 +34,7 @@ export default function Home() {
     (async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, sku, name, price_retail, created_at, bodega, region, type, box_size, aiem_rate, igic_rate, notes_es, notes_en, stock, image_url");
+        .select("id, sku, name, price_retail, created_at, bodega, region, type, box_size, aiem_rate, igic_rate, notes_es, notes_en, stock, image_url, is_available");
       if (error) {
         console.error("Error getWines:", error);
         return;
@@ -53,6 +53,7 @@ export default function Home() {
           notes_es: p.notes_es,
           notes_en: p.notes_en,
           image_url: p.image_url,
+          is_available: p.is_available,
         }))
         .sort((a, b) => {
           if (a.bodega === "Buenos Aires" && b.bodega !== "Buenos Aires") return -1;

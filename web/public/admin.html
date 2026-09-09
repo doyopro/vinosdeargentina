@@ -774,6 +774,7 @@
                                 <th data-i18n="table_margin_retail">↗ Mg. Retail</th>
                                 <th data-i18n="table_tax_retail">+ IGIC Retail</th>
                                 <th style="text-align: center;" data-i18n="table_stock">Stock JIT</th>
+                                <th style="text-align: center;" data-i18n="table_available">Disponible</th>
                                 <th style="text-align: right;" data-i18n="table_action">Acción</th>
                             </tr>
                         </thead>
@@ -878,6 +879,7 @@
                     inventory_subtitle: '✅ Coste Real (price_cost_net) | Margen basado en (PVP/1.07 - Coste) | Stock Negativo = Pendiente de Reposición',
                     table_product: 'Producto (Bodega)', table_net_cost: '💰 Coste Neto', table_horeca: '🍽️ PVP HORECA',
                     table_retail: '🛍️ PVP Retail', table_margin: '↗ Margen %', table_tax_short: '+ IGIC 7%', table_stock: 'Stock JIT',
+                    table_available: 'Disponible', error_availability_update: 'Error al actualizar la disponibilidad: ',
                     table_action: 'Acción', crm_title: 'Gestión de Clientes (LTV)', table_orders_count: 'Pedidos',
                     table_total_spent: 'Total Gastado', table_last_purchase: 'Última Compra',
                     status_paid: 'Pagado', status_pending: 'Pendiente', status_shipped: 'Enviado', status_preparing: 'Prep.',
@@ -922,6 +924,7 @@
                     inventory_subtitle: '✅ Real Cost (price_cost_net) | Margin based on (RRP/1.07 - Cost) | Negative Stock = Pending Restock',
                     table_product: 'Product (Winery)', table_net_cost: '💰 Net Cost', table_horeca: '🍽️ HORECA Price',
                     table_retail: '🛍️ Retail Price', table_margin: '↗ Margin %', table_tax_short: '+ IGIC 7%', table_stock: 'JIT Stock',
+                    table_available: 'Available', error_availability_update: 'Error updating availability: ',
                     table_action: 'Action', crm_title: 'Customer Management (LTV)', table_orders_count: 'Orders',
                     table_total_spent: 'Total Spent', table_last_purchase: 'Last Purchase',
                     status_paid: 'Paid', status_pending: 'Pending', status_shipped: 'Shipped', status_preparing: 'Prep.',
@@ -1255,6 +1258,11 @@
                         <td class="finance-value" style="color: var(--tax-color);"><span class="math-symbol">+</span>${igicRetail.toFixed(2)} €<br><small>IGIC Retail</small></td>
 
                         <td style="text-align: center;"><input type="number" class="input-stock ${stockClass}" id="inv-${p.id}" value="${p.stock || 0}"></td>
+                        <td style="text-align: center;">
+                            <button class="btn-action" onclick="app.toggleAvailability('${p.id}', ${!p.is_available})" title="${this.adminTranslations[this.currentLang].table_available}" style="padding: 4px 8px; background: var(--sidebar-hover); border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                                <i class="fa-solid fa-toggle-${p.is_available ? 'on' : 'off'}"></i>
+                            </button>
+                        </td>
                         <td style="text-align: right;"><button class="btn-action" onclick="app.updateSingleStock('${p.id}', event)"><i class="fa-solid fa-floppy-disk"></i></button></td>
                     </tr>`;
                 }).join('');
@@ -1276,6 +1284,15 @@
                         this.loadInventoryTable();
                         this.loadDashboardData();
                     }, 1000);
+                }
+            },
+
+            toggleAvailability: async function (id, newStatus) {
+                const { error } = await this.db.from('products').update({ is_available: newStatus }).eq('id', id);
+                if (error) {
+                    alert(this.adminTranslations[this.currentLang].error_availability_update + error.message);
+                } else {
+                    this.loadInventoryTable();
                 }
             },
 

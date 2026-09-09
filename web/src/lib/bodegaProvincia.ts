@@ -19,8 +19,3 @@ const BODEGA_PROVINCIA_MAP: Record<string, string> = {
 
 export const getProvinciaBodega = (bodega: string): string =>
   BODEGA_PROVINCIA_MAP[bodega] || "Desconocida";
-
-// Ported verbatim from index.html renderCatalog (hardcoded out-of-stock names)
-const NO_STOCK_NAMES = ["Pasacana", "Orange", "Bonarda"];
-export const isOutOfStock = (name: string): boolean =>
-  NO_STOCK_NAMES.some((n) => name.includes(n));
