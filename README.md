@@ -5,19 +5,15 @@ Plataforma de e-commerce premium para la distribución de vinos argentinos en Ca
 ## 📁 Estructura del Proyecto
 
 ```
-├── public/                    # Páginas web (HTMLs)
-│   ├── marketplace.html       # Catálogo y carrito de compra
-│   ├── checkout.html          # Proceso de pago
-│   ├── crm.html               # Dashboard administrativo
-│   └── login.html             # Autenticación
+├── index.html                 # Catálogo y carrito de compra
+├── checkout.html              # Proceso de pago
+├── admin.html                 # Dashboard administrativo (incluye vista CRM)
+├── login.html                 # Autenticación
 │
 ├── assets/                    # Recursos estáticos
 │   ├── images/                # Imágenes (antes en /imagenes)
-│   ├── css/                   # Estilos compartidos (próximamente)
-│   ├── js/                    # Scripts modulares
-│   │   ├── config.js          # Variables globales de APIs
-│   │   ├── auth.js            # Gestión de usuarios
-│   │   └── api.js             # Llamadas a servicios
+│   ├── js/
+│   │   └── load-wines.js      # Carga wines.json a Supabase (usado por admin/load-wines.html)
 │   └── data/
 │       └── wines.json         # Catálogo de 44 vinos
 │
@@ -48,60 +44,7 @@ python -m http.server 8000
 npx http-server
 ```
 
-Accede a `http://localhost:8000/public/marketplace.html`
-
-## 🔧 API Configuration
-
-### config.js
-Define URLs de APIs y configuraciones globales. Soporta importación desde `.env`:
-
-```javascript
-API_CONFIG = {
-  SUPABASE_URL: 'https://xxxxx.supabase.co',
-  SUPABASE_KEY: 'eyJhbGc...',
-  STRIPE_PUBLIC: 'pk_test_...',
-  WINES_DATA: '/assets/data/wines.json'
-}
-```
-
-### auth.js
-Módulo de autenticación preparado para Supabase:
-
-```javascript
-// Login
-const result = await AuthModule.login('user@example.com', 'password123');
-
-// Obtener usuario actual
-const user = AuthModule.getCurrentUser();
-
-// Logout
-AuthModule.logout();
-```
-
-### api.js
-Funciones para interactuar con base de datos y pagos:
-
-```javascript
-// Obtener catálogo
-const wines = await APIModule.getWines();
-
-// Filtrar vinos
-const filtered = await APIModule.filterWines({
-  type: ['tinto', 'blanco'],
-  region: ['norte', 'cuyo'],
-  priceMax: 30
-});
-
-// Crear orden
-const order = await APIModule.createOrder({
-  customer_email: 'user@example.com',
-  items: [...],
-  total_amount: 150.00
-});
-
-// Calcular total con impuestos
-const total = APIModule.calculateTotal(items, userDiscount);
-```
+Accede a `http://localhost:8000/index.html`
 
 ## 📊 Datos de Vinos
 
@@ -144,12 +87,12 @@ Ver `supabase/schema.sql` para detalles completos.
 ## 💳 Integración de Pagos
 
 ### Stripe
-- Implementar en `api.js` → `createPaymentIntent()`
-- Usar Stripe.js en `public/checkout.html`
+- `create-payment-intent` Edge Function en `supabase/functions/`
+- Stripe.js en `checkout.html`
 
 ### Transferencia Bancaria
 - Tabla `bank_transfers` para almacenar referencias
-- Validación manual de pagos en CRM
+- Validación manual de pagos en el admin (`admin.html`)
 
 ## 🔐 Autenticación
 

@@ -1,8 +1,9 @@
 # De Altura Wines — storefront (Next.js)
 
 Next.js port of the public storefront (catalog, checkout, confirmation) for De Altura Wines.
-Admin (`admin.html`) and CRM (`crm.html`) are intentionally out of scope — they stay as static
-HTML until replaced by a separate Doyo OS module.
+Admin (`admin.html`, served from `public/`) is intentionally out of scope for the Next.js
+port — it stays static HTML until replaced by a separate Doyo OS module. `crm.html` was
+removed; its CRM view is superseded by the `view-crm` section already in `admin.html`.
 
 ## Development
 

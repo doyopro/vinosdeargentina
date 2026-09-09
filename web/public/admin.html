@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperAdmin | De Altura Wines</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            corePlugins: { preflight: false } // Evita que Tailwind rompa tus estilos personalizados
+        }
+    </script>
+
+    <style>
+        :root {
+            --sidebar-bg: #2B0710;
+            --sidebar-hover: #3E0C18;
+            --brand-gold: #C89F5D;
+            --bg-light: #F4F7F6;
+            --text-main: #2C3E50;
+            --text-muted: #7F8C8D;
+            --white: #FFFFFF;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --tax-color: #8B5CF6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            color: var(--white);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .lang-toggle {
+            background: #e9ecef;
+            border: 1px solid #dee2e6;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--sidebar-bg);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .lang-toggle:hover {
+            background: #dee2e6;
+            transform: translateY(-1px);
+        }
+
+        .lang-toggle:active {
+            transform: translateY(0);
+        }
+
+        .brand {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .brand h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.4rem;
+            color: var(--brand-gold);
+            letter-spacing: 1px;
+        }
+
+        .brand span {
+            font-size: 0.8rem;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            color: #A0AEC0;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item i {
+            width: 25px;
+            font-size: 1.1rem;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background-color: var(--sidebar-hover);
+            color: var(--brand-gold);
+            border-left: 3px solid var(--brand-gold);
+        }
+
+        .nav-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.05);
+            margin: 15px 20px;
+        }
+
+        .logout-container {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-logout {
+            width: 100%;
+            padding: 12px;
+            background: rgba(239, 68, 68, 0.1);
+            color: #FCA5A5;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-logout:hover {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 40px;
+            width: calc(100% - 260px);
+            max-width: 100%;
+            overflow-x: hidden;
+            box-sizing: border-box;
+            transition: margin-left 0.3s ease, width 0.3s ease;
+        }
+
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .top-header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            color: var(--text-main);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* --- PANELS & TABLES --- */
+        .panel {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            border: 1px solid #E2E8F0;
+            padding: 25px;
+            margin-bottom: 30px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #E2E8F0;
+            padding-bottom: 15px;
+        }
+
+        .panel-header h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2rem;
+            color: var(--text-main);
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+            background-color: var(--white);
+        }
+
+        th {
+            text-align: left;
+            padding: 15px;
+            font-size: 0.80rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #E2E8F0;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 18px 15px;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #F1F5F9;
+            color: var(--text-main);
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        tr:hover td {
+            background-color: #F8FAFC;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+
+        .badge-paid {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .badge-pending {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .input-stock {
+            width: 70px;
+            padding: 8px;
+            border: 1px solid #CBD5E1;
+            border-radius: 6px;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            color: var(--text-main);
+            transition: all 0.3s;
+        }
+
+        .input-stock:focus {
+            outline: none;
+            border-color: var(--brand-gold);
+            box-shadow: 0 0 0 3px rgba(200, 159, 93, 0.1);
+        }
+
+        .input-stock.negative-stock {
+            border-color: var(--danger);
+            background-color: #FEF2F2;
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .btn-action {
+            background: var(--sidebar-bg);
+            color: var(--white);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-action:hover {
+            background: var(--brand-gold);
+            color: var(--white);
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .math-symbol {
+            color: #CBD5E1;
+            font-weight: 300;
+            margin: 0 5px;
+            font-size: 0.9em;
+        }
+
+        .finance-value {
+            font-family: 'Inter', monospace;
+            font-weight: 500;
+        }
+
+        .margin-percent {
+            font-size: 0.85em;
+            background: rgba(16, 185, 129, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 5px;
+            color: var(--success);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 90;
+            backdrop-filter: blur(2px);
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* --- MOBILE QUERIES --- */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+                width: 100%;
+                margin-top: 50px;
+            }
+
+            .table-wrapper {
+                margin: 0;
+                padding: 0;
+            }
+
+            .top-header {
+                margin-bottom: 25px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .user-profile {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .lang-toggle {
+                margin-right: 5px;
+                padding: 8px 16px;
+                font-size: 0.8rem;
+            }
+
+            .top-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .panel {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+
+            .panel-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding-bottom: 10px;
+            }
+
+            th,
+            td {
+                padding: 12px 10px;
+                font-size: 0.85rem;
+            }
+
+            .input-stock {
+                width: 60px;
+                padding: 6px;
+            }
+
+            .btn-action {
+                min-height: 36px;
+                min-width: 36px;
+                padding: 6px 12px;
+            }
+
+            .btn-mobile-menu {
+                display: flex !important;
+                position: fixed;
+                top: 15px;
+                left: 15px;
+                z-index: 150;
+                background: var(--sidebar-bg);
+                color: var(--white);
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 1.2rem;
+                align-items: center;
+                justify-content: center;
+                width: 44px;
+                height: 44px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            [style*="grid-template-columns: 2fr 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <div class="brand">
+            <h2>DE ALTURA</h2>
+            <span>SuperAdmin Hub</span>
+        </div>
+        <nav class="nav-menu">
+            <div class="nav-item active" onclick="app.switchView('dashboard', this)" data-i18n="nav_dashboard"><i
+                    class="fa-solid fa-chart-pie"></i> Vista General</div>
+            <div class="nav-item" onclick="app.switchView('orders', this)" data-i18n="nav_orders"><i
+                    class="fa-solid fa-receipt"></i> Ventas & Envíos</div>
+            <div class="nav-item" onclick="app.switchView('inventory', this)" data-i18n="nav_inventory"><i
+                    class="fa-solid fa-calculator"></i> Catálogo & Pricing</div>
+            <div class="nav-item" onclick="app.switchView('crm', this)" data-i18n="nav_crm"><i
+                    class="fa-solid fa-users"></i> CRM Clientes</div>
+            <div class="nav-item" onclick="app.switchView('promos', this)" data-i18n="nav_promos"><i
+                    class="fa-solid fa-tags"></i> Cupones y Promos</div>
+            <div class="nav-item" onclick="app.switchView('resellers', this)" data-i18n="nav_resellers"><i
+                    class="fa-solid fa-handshake"></i> Resellers (Socios)</div>
+
+            <div class="nav-divider"></div>
+            <div class="nav-item" onclick="window.location.href='index.html'" style="color: var(--brand-gold);"
+                data-i18n="nav_store"><i class="fa-solid fa-store"></i> Volver a la Tienda</div>
+        </nav>
+        <div class="logout-container">
+            <button class="btn-logout" onclick="app.logout()" data-i18n="nav_logout"><i
+                    class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</button>
+        </div>
+    </aside>
+
+    <button class="btn-mobile-menu" id="mobile-menu-btn" onclick="app.toggleMobileMenu()" style="display: none;">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="app.closeMobileMenu()"></div>
+
+    <main class="main-content">
+        <div class="top-header">
+            <h1 id="page-title" data-i18n="nav_dashboard">Vista General</h1>
+            <div class="user-profile">
+                <button onclick="app.toggleLanguage()" id="lang-toggle-btn" class="lang-toggle">🇬🇧 EN</button>
+                <i class="fa-solid fa-circle-user fa-2x" style="color: var(--brand-gold);"></i>
+                <span id="user-email-display" data-i18n="loading">Cargando...</span>
+            </div>
+        </div>
+
+        <section id="view-dashboard" class="section active">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+
+                <div
+                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-start justify-between gap-2 mb-4">
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
+                            data-i18n="metric_gross_sales">Ventas Brutas</h4>
+                        <div
+                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-2 mt-auto">
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-gross-sales">0.00 €</h2>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-start justify-between gap-2 mb-4">
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
+                            data-i18n="metric_discounts">Descuentos</h4>
+                        <div
+                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-percent"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-2 mt-auto">
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-discounts">0.00 €</h2>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-start justify-between gap-2 mb-4">
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
+                            data-i18n="metric_net_income">Neto</h4>
+                        <div
+                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-euro-sign"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-2 mt-auto">
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-net-income">0.00 €</h2>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-start justify-between gap-2 mb-4">
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
+                            data-i18n="metric_tax">IGIC</h4>
+                        <div
+                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-2 mt-auto">
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-tax">0.00 €</h2>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-start justify-between gap-2 mb-4">
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
+                            data-i18n="metric_partner_commissions">Comisiones</h4>
+                        <div
+                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-handshake"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-2 mt-auto">
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-commissions">0.00 €</h2>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-start justify-between gap-2 mb-4">
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
+                            data-i18n="metric_orders">Pedidos</h4>
+                        <div
+                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-clipboard-check"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-2 mt-auto">
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-orders">0</h2>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-start justify-between gap-2 mb-4">
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
+                            data-i18n="metric_boxes_sold">Cajas</h4>
+                        <div
+                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-2 mt-auto">
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-boxes">0</h2>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-start justify-between gap-2 mb-4">
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
+                            data-i18n="metric_total_cogs">COGS</h4>
+                        <div
+                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-2 mt-auto">
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-cogs">0.00 €</h2>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-start justify-between gap-2 mb-4">
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
+                            data-i18n="metric_gross_margin">Margen</h4>
+                        <div
+                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-2 mt-auto">
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-margin-amount">0.00 €</h2>
+                        <span class="px-2 py-1 text-[11px] font-bold text-green-700 bg-green-100 rounded-md"
+                            id="metric-margin-percent">0%</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 25px; margin-bottom: 40px;">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 data-i18n="recent_orders_title"><i class="fa-solid fa-clock-rotate-left"></i> Últimos
+                            Pedidos Recibidos</h3>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th data-i18n="table_id">ID / Ref</th>
+                                    <th data-i18n="table_customer">Cliente</th>
+                                    <th data-i18n="table_origin_promo">Origen / Promo</th>
+                                    <th data-i18n="table_total">Total</th>
+                                    <th data-i18n="table_payment_status">Estado Pago</th>
+                                    <th data-i18n="table_logistics">Logística (WhatsApp)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-orders-body">
+                                <tr>
+                                    <td colspan="6" style="text-align:center;" data-i18n="loading">Cargando...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 data-i18n="top_wines_title"><i class="fa-solid fa-wine-glass"></i> Top Vinos Más Vendidos
+                        </h3>
+                    </div>
+                    <div id="top-wines-body" style="padding: 20px;">
+                        <div style="text-align: center; color: var(--text-muted);" data-i18n="loading">Cargando...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-orders" class="section">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3 data-i18n="orders_mgmt_title"><i class="fa-solid fa-list-check"></i> Gestión de Órdenes</h3>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-i18n="table_ref">Ref. Pedido</th>
+                                <th data-i18n="table_customer_info">Cliente info</th>
+                                <th data-i18n="table_destination">Destino</th>
+                                <th data-i18n="table_amount">Importe</th>
+                                <th data-i18n="table_payment_status">Estado Pago</th>
+                                <th data-i18n="table_logistics_short">Logística</th>
+                            </tr>
+                        </thead>
+                        <tbody id="all-orders-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-inventory" class="section">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3 data-i18n="inventory_title"><i class="fa-solid fa-calculator"></i> Desglose Financiero y Control
+                        de Stock</h3>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="inventory_subtitle">✅ Coste
+                        Real (price_cost_net) | Margen basado en (PVP/1.07 - Coste) | Stock Negativo = Pendiente de
+                        Reposición</span>
+                </div>
+                <div class="table-wrapper">
+                    <table style="min-width: 1400px;">
+                        <thead>
+                            <tr>
+                                <th data-i18n="table_product">Producto (Bodega)</th>
+                                <th data-i18n="table_net_cost">💰 Coste Neto</th>
+                                <th data-i18n="table_horeca">🍽️ PVP HORECA</th>
+                                <th data-i18n="table_margin_horeca">↗ Mg. HORECA</th>
+                                <th data-i18n="table_tax_horeca">+ IGIC HORECA</th>
+                                <th data-i18n="table_retail">🛍️ PVP Retail</th>
+                                <th data-i18n="table_margin_retail">↗ Mg. Retail</th>
+                                <th data-i18n="table_tax_retail">+ IGIC Retail</th>
+                                <th style="text-align: center;" data-i18n="table_stock">Stock JIT</th>
+                                <th style="text-align: right;" data-i18n="table_action">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-crm" class="section">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3 data-i18n="crm_title"><i class="fa-solid fa-address-book"></i> Gestión de Clientes (LTV)</h3>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-i18n="table_customer">Cliente</th>
+                                <th>Email</th>
+                                <th style="text-align: center;" data-i18n="table_orders_count">Pedidos</th>
+                                <th data-i18n="table_total_spent">Total Gastado</th>
+                                <th data-i18n="table_last_purchase">Última Compra</th>
+                            </tr>
+                        </thead>
+                        <tbody id="crm-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-promos" class="section">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3 data-i18n="promos_title"><i class="fa-solid fa-tags"></i> Cupones y Promociones</h3>
+                    <button class="btn-action" onclick="app.openPromoModal()" data-i18n="btn_new_promo"
+                        style="margin-left: auto; background: var(--brand-gold); color: var(--text-main); border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">
+                        <i class="fa-solid fa-plus"></i> Nuevo Cupón
+                    </button>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-i18n="table_promo_code">Código</th>
+                                <th data-i18n="table_promo_type">Tipo</th>
+                                <th data-i18n="table_discount_value">Descuento</th>
+                                <th data-i18n="table_min_cart">Mínimo Carrito</th>
+                                <th data-i18n="table_status">Estado</th>
+                                <th data-i18n="table_action">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="promos-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-resellers" class="section">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3 data-i18n="resellers_title"><i class="fa-solid fa-handshake"></i> Gestión de Resellers (Socios)
+                    </h3>
+                    <button class="btn-action" onclick="app.openResellerModal()" data-i18n="btn_new_reseller"
+                        style="margin-left: auto; background: var(--brand-gold); color: var(--text-main); border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">
+                        <i class="fa-solid fa-plus"></i> Nuevo Socio
+                    </button>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-i18n="table_reseller_code">Código Socio</th>
+                                <th data-i18n="table_reseller_name">Nombre</th>
+                                <th data-i18n="table_base_sales">Base Ventas (€)</th>
+                                <th data-i18n="table_commission">% Comisión</th>
+                                <th data-i18n="table_total_commission">Total Comisiones (€)</th>
+                                <th data-i18n="table_status">Estado</th>
+                                <th data-i18n="table_action">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resellers-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const app = {
+            db: null,
+            currentLang: 'es',
+            adminTranslations: {
+                es: {
+                    nav_dashboard: 'Vista General', nav_orders: 'Ventas & Envíos', nav_inventory: 'Catálogo & Pricing', nav_crm: 'CRM Clientes', nav_promos: 'Cupones y Promos', nav_resellers: 'Resellers (Socios)',
+                    nav_store: 'Volver a la Tienda', nav_logout: 'Cerrar Sesión', loading: 'Cargando...',
+                    metric_revenue: 'Ingresos Netos', metric_orders: 'Pedidos Exitosos', metric_tax: 'Impuestos (IGIC)', metric_alerts: 'Vinos a Reponer',
+                    recent_orders_title: 'Últimos Pedidos Recibidos', table_id: 'ID / Ref', table_customer: 'Cliente', table_total: 'Total',
+                    table_payment_status: 'Estado Pago', table_logistics: 'Logística (WhatsApp)', orders_mgmt_title: 'Gestión de Órdenes',
+                    table_ref: 'Ref. Pedido', table_customer_info: 'Cliente info', table_destination: 'Destino', table_amount: 'Importe',
+                    table_logistics_short: 'Logística', inventory_title: 'Desglose Financiero y Control de Stock',
+                    inventory_subtitle: '✅ Coste Real (price_cost_net) | Margen basado en (PVP/1.07 - Coste) | Stock Negativo = Pendiente de Reposición',
+                    table_product: 'Producto (Bodega)', table_net_cost: '💰 Coste Neto', table_horeca: '🍽️ PVP HORECA',
+                    table_retail: '🛍️ PVP Retail', table_margin: '↗ Margen %', table_tax_short: '+ IGIC 7%', table_stock: 'Stock JIT',
+                    table_action: 'Acción', crm_title: 'Gestión de Clientes (LTV)', table_orders_count: 'Pedidos',
+                    table_total_spent: 'Total Gastado', table_last_purchase: 'Última Compra',
+                    status_paid: 'Pagado', status_pending: 'Pendiente', status_shipped: 'Enviado', status_preparing: 'Prep.',
+                    shipped_upper: 'ENVIADO', preparing_upper: 'PREPARANDO', paid_upper: 'PAGADO', pending_upper: 'PENDIENTE',
+                    no_sales_recorded: 'No hay ventas registradas.', no_order_data: 'No hay datos de pedidos.',
+                    no_customers_recorded: 'Aún no hay clientes registrados.', error_loading_data: 'Error al cargar datos.',
+                    confirm_shipment: '¿Confirmar envío y avisar al cliente por WhatsApp?',
+                    whatsapp_msg: "Hola {name}, soy Nicolás de De Altura Wines. Tu pedido #{id} ya ha sido procesado y va de camino. ¡Que lo disfrutes! 🍷",
+                    error_stock_update: 'Error al actualizar el stock: ',
+                    cost_net_label: 'Coste Neto', horeca_label: 'HORECA', retail_label: 'Retail', margin_label: 'Margen', tax_label: 'IGIC 7%',
+                    table_margin_horeca: '↗ Mg. HORECA', table_tax_horeca: '+ IGIC HORECA',
+                    table_margin_retail: '↗ Mg. Retail', table_tax_retail: '+ IGIC Retail',
+                    promos_title: 'Cupones y Promociones', table_promo_code: 'Código', table_promo_type: 'Tipo', table_discount_value: 'Descuento',
+                    table_min_cart: 'Mínimo Carrito', table_status: 'Estado', resellers_title: 'Gestión de Resellers (Socios)',
+                    table_reseller_code: 'Código Socio', table_reseller_name: 'Nombre', table_commission: 'Comisión %', table_total_sales: 'Ventas Totales',
+                    table_base_sales: 'Base Ventas (€)', table_total_commission: 'Total Comisiones (€)',
+                    no_promos_data: 'No hay promociones registradas.', no_resellers_data: 'No hay socios registrados.',
+                    toggle_active: 'Activar/Desactivar',
+                    btn_new_promo: 'Nuevo Cupón', btn_new_reseller: 'Nuevo Socio', btn_save: 'Guardar', btn_cancel: 'Cancelar',
+                    modal_promo_title: 'Gestionar Cupón', modal_reseller_title: 'Gestionar Socio',
+                    label_promo_code: 'Código del Cupón', label_promo_type: 'Tipo de Descuento', label_promo_value: 'Valor del Descuento',
+                    label_promo_min_cart: 'Mínimo de Carrito (€)', label_reseller_code: 'Código del Socio', label_reseller_name: 'Nombre del Socio',
+                    label_reseller_commission: 'Comisión (%)', option_select_type: 'Seleccionar tipo...', option_percentage: 'Porcentaje (%)',
+                    option_fixed: 'Cantidad Fija (€)', confirm_delete_promo: '¿Estás seguro de que deseas eliminar este cupón?',
+                    confirm_delete_reseller: '¿Estás seguro de que deseas eliminar este socio?', toast_promo_deleted: 'Cupón eliminado',
+                    toast_reseller_deleted: 'Socio eliminado', error_promo_validation: 'Por favor completa Tipo y Valor del Descuento.',
+                    error_reseller_validation: 'Por favor completa Código, Nombre y Comisión del Socio.',
+                    metric_gross_sales: 'Ventas Brutas', metric_discounts: 'Descuentos Aplicados', metric_net_income: 'Ingresos Netos',
+                    metric_partner_commissions: 'Comisiones a Socios', table_origin_promo: 'Origen / Promo', origin_organic: 'Orgánico',
+                    origin_coupon: 'Cupón', origin_partner: 'Socio',
+                    metric_boxes_sold: 'Cajas Vendidas', metric_total_cogs: 'Coste Total (COGS)', metric_gross_margin: 'Margen Bruto',
+                    top_wines_title: 'Top Vinos Más Vendidos', top_wine_name: 'Vino', top_wine_boxes: 'Cajas', top_wine_revenue: 'Ingreso'
+                },
+                en: {
+                    nav_dashboard: 'Dashboard', nav_orders: 'Sales & Shipping', nav_inventory: 'Catalog & Pricing', nav_crm: 'Customer CRM', nav_promos: 'Coupons & Promos', nav_resellers: 'Resellers (Partners)',
+                    nav_store: 'Back to Store', nav_logout: 'Logout', loading: 'Loading...',
+                    metric_revenue: 'Net Revenue', metric_orders: 'Successful Orders', metric_tax: 'Taxes (IGIC)', metric_alerts: 'Wines to Restock',
+                    recent_orders_title: 'Recent Orders Received', table_id: 'ID / Ref', table_customer: 'Customer', table_total: 'Total',
+                    table_payment_status: 'Payment Status', table_logistics: 'Logistics (WhatsApp)', orders_mgmt_title: 'Order Management',
+                    table_ref: 'Order Ref.', table_customer_info: 'Customer info', table_destination: 'Destination', table_amount: 'Amount',
+                    table_logistics_short: 'Logistics', inventory_title: 'Financial Breakdown & Stock Control',
+                    inventory_subtitle: '✅ Real Cost (price_cost_net) | Margin based on (RRP/1.07 - Cost) | Negative Stock = Pending Restock',
+                    table_product: 'Product (Winery)', table_net_cost: '💰 Net Cost', table_horeca: '🍽️ HORECA Price',
+                    table_retail: '🛍️ Retail Price', table_margin: '↗ Margin %', table_tax_short: '+ IGIC 7%', table_stock: 'JIT Stock',
+                    table_action: 'Action', crm_title: 'Customer Management (LTV)', table_orders_count: 'Orders',
+                    table_total_spent: 'Total Spent', table_last_purchase: 'Last Purchase',
+                    status_paid: 'Paid', status_pending: 'Pending', status_shipped: 'Shipped', status_preparing: 'Prep.',
+                    shipped_upper: 'SHIPPED', preparing_upper: 'PREPARING', paid_upper: 'PAID', pending_upper: 'PENDING',
+                    no_sales_recorded: 'No sales recorded.', no_order_data: 'No order data.',
+                    no_customers_recorded: 'No customers registered yet.', error_loading_data: 'Error loading data.',
+                    confirm_shipment: 'Confirm shipment and notify customer via WhatsApp?',
+                    whatsapp_msg: "Hello {name}, this is Nicolas from De Altura Wines. Your order #{id} has been processed and is on its way. Enjoy! 🍷",
+                    error_stock_update: 'Error updating stock: ',
+                    cost_net_label: 'Net Cost', horeca_label: 'HORECA', retail_label: 'Retail', margin_label: 'Margin', tax_label: 'IGIC 7%',
+                    table_margin_horeca: '↗ Mg. HORECA', table_tax_horeca: '+ IGIC HORECA',
+                    table_margin_retail: '↗ Mg. Retail', table_tax_retail: '+ IGIC Retail',
+                    promos_title: 'Coupons & Promotions', table_promo_code: 'Code', table_promo_type: 'Type', table_discount_value: 'Discount',
+                    table_min_cart: 'Min Cart', table_status: 'Status', resellers_title: 'Resellers Management (Partners)',
+                    table_reseller_code: 'Partner Code', table_reseller_name: 'Name', table_commission: 'Commission %', table_total_sales: 'Total Sales',
+                    table_base_sales: 'Base Sales (€)', table_total_commission: 'Total Commissions (€)',
+                    no_promos_data: 'No promotions registered.', no_resellers_data: 'No partners registered.',
+                    toggle_active: 'Toggle Active/Inactive',
+                    btn_new_promo: 'New Coupon', btn_new_reseller: 'New Partner', btn_save: 'Save', btn_cancel: 'Cancel',
+                    modal_promo_title: 'Manage Coupon', modal_reseller_title: 'Manage Partner',
+                    label_promo_code: 'Coupon Code', label_promo_type: 'Discount Type', label_promo_value: 'Discount Value',
+                    label_promo_min_cart: 'Min Cart Amount (€)', label_reseller_code: 'Partner Code', label_reseller_name: 'Partner Name',
+                    label_reseller_commission: 'Commission (%)', option_select_type: 'Select type...', option_percentage: 'Percentage (%)',
+                    option_fixed: 'Fixed Amount (€)', confirm_delete_promo: 'Are you sure you want to delete this coupon?',
+                    confirm_delete_reseller: 'Are you sure you want to delete this partner?', toast_promo_deleted: 'Coupon deleted',
+                    toast_reseller_deleted: 'Partner deleted', error_promo_validation: 'Please complete Discount Type and Value.',
+                    error_reseller_validation: 'Please complete Partner Code, Name, and Commission.',
+                    metric_gross_sales: 'Gross Sales', metric_discounts: 'Discounts Applied', metric_net_income: 'Net Revenue',
+                    metric_partner_commissions: 'Partner Commissions', table_origin_promo: 'Source / Promo', origin_organic: 'Organic',
+                    origin_coupon: 'Coupon', origin_partner: 'Partner',
+                    metric_boxes_sold: 'Boxes Sold', metric_total_cogs: 'Total Cost (COGS)', metric_gross_margin: 'Gross Margin',
+                    top_wines_title: 'Top Wines Sold', top_wine_name: 'Wine', top_wine_boxes: 'Boxes', top_wine_revenue: 'Revenue'
+                }
+            },
+
+            toggleLanguage: function () {
+                const nextLang = this.currentLang === 'es' ? 'en' : 'es';
+                this.changeLanguage(nextLang);
+            },
+
+            changeLanguage: function (lang) {
+                this.currentLang = lang;
+                localStorage.setItem('admin_lang', lang);
+
+                const btn = document.getElementById('lang-toggle-btn');
+                if (btn) {
+                    btn.innerHTML = lang === 'es' ? '🇬🇧 EN' : '🇪🇸 ES';
+                }
+
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    const translation = this.adminTranslations[lang][key];
+                    if (translation) {
+                        const icon = el.querySelector('i');
+                        if (icon) {
+                            el.innerHTML = '';
+                            el.appendChild(icon);
+                            el.appendChild(document.createTextNode(' ' + translation));
+                        } else {
+                            el.textContent = translation;
+                        }
+                    }
+                });
+
+                // Update page title if it's dynamic
+                const activeNav = document.querySelector('.nav-item.active');
+                if (activeNav) {
+                    const viewId = activeNav.getAttribute('onclick').match(/'([^']+)'/)[1];
+                    const titleKey = 'nav_' + viewId;
+                    document.getElementById('page-title').textContent = this.adminTranslations[lang][titleKey];
+                }
+            },
+
+            initDB: function () {
+                const URL = 'https://pzzbvinbyzaxrshlmlcn.supabase.co';
+                const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB6emJ2aW5ieXpheHJzaGxtbGNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NTI5NDYsImV4cCI6MjA5MTEyODk0Nn0.YgeGDVZfyqI-nv7iAhROMsBfZbIK7BGUDyU1ERE-SFA';
+                this.db = window.supabase.createClient(URL, KEY);
+            },
+
+            logout: async function () {
+                await this.db.auth.signOut();
+                window.location.href = 'login.html';
+            },
+
+            switchView: function (viewId, element) {
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                element.classList.add('active');
+
+                const titleKey = 'nav_' + viewId;
+                document.getElementById('page-title').textContent = this.adminTranslations[this.currentLang][titleKey] || 'Panel';
+
+                document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+                document.getElementById('view-' + viewId).classList.add('active');
+
+                if (viewId === 'dashboard') this.loadDashboardData();
+                if (viewId === 'orders') this.loadOrdersTable();
+                if (viewId === 'inventory') this.loadInventoryTable();
+                if (viewId === 'crm') this.loadCRM();
+                if (viewId === 'promos') this.loadPromos();
+                if (viewId === 'resellers') this.loadResellers();
+            },
+
+            loadDashboardData: async function () {
+                try {
+                    const { data: orders } = await this.db.from('orders').select('*').order('created_at', { ascending: false });
+                    const { data: resellers } = await this.db.from('resellers').select('*');
+                    const { data: products } = await this.db.from('products').select('*');
+
+                    // KPI TOTALS
+                    let grossSales = 0, discounts = 0, netIncome = 0, taxes = 0, commissions = 0;
+                    let totalBoxes = 0, totalCOGS = 0;
+                    let paidCount = 0;
+                    let recentRows = '';
+
+                    // TOP PRODUCTS TRACKING
+                    const productSales = {}; // { productName: { boxes: N, revenue: X } }
+
+                    if (orders && orders.length > 0) {
+                        orders.forEach((o, index) => {
+                            if (o.payment_status === 'paid') {
+                                // MOTOR DE REGLAS: Extraer valores guardados en la orden
+                                const subtotal = parseFloat(o.subtotal_bruto || o.total_amount / 1.07);
+                                const descuento = parseFloat(o.valor_descuento || 0);
+                                const baseImponible = parseFloat(o.base_imponible || (o.total_amount / 1.07 - descuento));
+                                const igic = parseFloat(o.igic_amount || o.total_amount - baseImponible);
+
+                                grossSales += subtotal;
+                                discounts += descuento;
+                                netIncome += baseImponible;
+                                taxes += igic;
+                                paidCount++;
+
+                                // PROCESAR ITEMS: Cajas, COGS, Top Productos
+                                if (o.items && Array.isArray(o.items)) {
+                                    o.items.forEach(item => {
+                                        const qty = parseInt(item.qty) || 1;
+                                        const boxSize = parseInt(item.box) || 1;
+                                        const totalBoxes_item = qty * boxSize;
+                                        totalBoxes += totalBoxes_item;
+
+                                        // COSTE: Asumir 50% del precio si no hay dato real
+                                        const itemPrice = parseFloat(item.price) || 0;
+                                        const itemCost = itemPrice * 0.5;
+                                        const itemCOGS = itemCost * qty;
+                                        totalCOGS += itemCOGS;
+
+                                        // TOP PRODUCTOS: Agrupar por nombre
+                                        const productName = item.name || 'Unknown';
+                                        if (!productSales[productName]) {
+                                            productSales[productName] = { boxes: 0, revenue: 0 };
+                                        }
+                                        productSales[productName].boxes += totalBoxes_item;
+                                        productSales[productName].revenue += itemPrice * qty;
+                                    });
+                                }
+
+                                // COMISIONES: Si es tipo RESELLER, buscar commission_rate
+                                if (o.promo_type === 'RESELLER' && o.promo_code && resellers) {
+                                    const reseller = resellers.find(r => r.code && r.code.toUpperCase() === o.promo_code.toUpperCase());
+                                    if (reseller && reseller.commission_rate) {
+                                        const commission = baseImponible * (reseller.commission_rate / 100);
+                                        commissions += commission;
+                                    }
+                                }
+                            }
+
+                            // TABLA RECIENTE (primeros 5 pedidos, sin filtro de pagado)
+                            if (index < 5) {
+                                const badgeClass = o.payment_status === 'paid' ? 'badge-paid' : 'badge-pending';
+                                const statusText = o.payment_status === 'paid' ? this.adminTranslations[this.currentLang].paid_upper : this.adminTranslations[this.currentLang].pending_upper;
+
+                                const isShipped = o.shipping_status === 'shipped';
+                                const shipBadge = isShipped ? 'badge-paid' : 'badge-pending';
+                                const shipText = isShipped ? `<i class="fa-solid fa-check"></i> ${this.adminTranslations[this.currentLang].shipped_upper}` : `<i class="fa-solid fa-truck"></i> ${this.adminTranslations[this.currentLang].preparing_upper}`;
+
+                                // ORIGEN / PROMO
+                                let originHtml = `<span style="color: var(--text-muted);">-</span>`;
+                                if (o.promo_type === 'CODIGO' && o.promo_code) {
+                                    originHtml = `<span style="color: var(--brand-gold); font-weight: 600;"><i class="fa-solid fa-tag"></i> ${o.promo_code}</span>`;
+                                } else if (o.promo_type === 'RESELLER' && o.promo_code) {
+                                    originHtml = `<span style="color: var(--brand-gold); font-weight: 600;"><i class="fa-solid fa-handshake"></i> ${o.promo_code}</span>`;
+                                }
+
+                                recentRows += `<tr>
+                                    <td><strong style="color: var(--text-main)">#${o.id.slice(0, 8).toUpperCase()}</strong></td>
+                                    <td>${o.customer_name}</td>
+                                    <td>${originHtml}</td>
+                                    <td><strong>${parseFloat(o.total_amount).toFixed(2)} €</strong></td>
+                                    <td><span class="status-badge ${badgeClass}">${statusText}</span></td>
+                                    <td>
+                                        <span class="status-badge ${shipBadge}">${shipText}</span>
+                                        ${!isShipped && o.payment_status === 'paid' ? `
+                                            <button class="btn-action" style="margin-left:5px; padding: 4px 8px; background: #25D366; border: none;" onclick="app.markAsShipped('${o.id}', '${o.customer_phone}', '${o.customer_name}')" title="Avisar por WhatsApp">
+                                                <i class="fa-brands fa-whatsapp"></i>
+                                            </button>
+                                        ` : ''}
+                                    </td>
+                                </tr>`;
+                            }
+                        });
+                        document.getElementById('recent-orders-body').innerHTML = recentRows;
+                    } else {
+                        document.getElementById('recent-orders-body').innerHTML = `<tr><td colspan="6" style="text-align:center;">${this.adminTranslations[this.currentLang].no_sales_recorded}</td></tr>`;
+                    }
+
+                    // CALCULAR MARGEN BRUTO
+                    const marginAmount = netIncome - totalCOGS;
+                    const marginPercent = netIncome > 0 ? ((marginAmount / netIncome) * 100).toFixed(1) : 0;
+
+                    // ACTUALIZAR KPIs
+                    document.getElementById('metric-gross-sales').textContent = grossSales.toFixed(2) + ' €';
+                    document.getElementById('metric-discounts').textContent = discounts.toFixed(2) + ' €';
+                    document.getElementById('metric-net-income').textContent = netIncome.toFixed(2) + ' €';
+                    document.getElementById('metric-tax').textContent = taxes.toFixed(2) + ' €';
+                    document.getElementById('metric-commissions').textContent = commissions.toFixed(2) + ' €';
+                    document.getElementById('metric-orders').textContent = paidCount;
+                    document.getElementById('metric-boxes').textContent = totalBoxes;
+                    document.getElementById('metric-cogs').textContent = totalCOGS.toFixed(2) + ' €';
+                    document.getElementById('metric-margin-amount').textContent = marginAmount.toFixed(2) + ' €';
+                    document.getElementById('metric-margin-percent').textContent = marginPercent + '%';
+
+                    // TOP VINOS RANKING
+                    const topVinos = Object.entries(productSales)
+                        .map(([name, data]) => ({ name, ...data }))
+                        .sort((a, b) => b.boxes - a.boxes)
+                        .slice(0, 5);
+
+                    const topVinosHtml = topVinos.length > 0
+                        ? topVinos.map((vino, idx) => `
+                            <div style="padding: 12px 0; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: var(--text-main); font-size: 0.9rem;">${idx + 1}. ${vino.name}</div>
+                                    <small style="color: var(--text-muted); font-size: 0.8rem;">${vino.boxes} ${this.adminTranslations[this.currentLang].top_wine_boxes}</small>
+                                </div>
+                                <div style="text-align: right; color: var(--brand-gold); font-weight: 600; font-size: 0.9rem;">${vino.revenue.toFixed(2)} €</div>
+                            </div>
+                        `).join('')
+                        : `<div style="padding: 20px; text-align: center; color: var(--text-muted);">${this.adminTranslations[this.currentLang].no_sales_recorded}</div>`;
+
+                    document.getElementById('top-wines-body').innerHTML = topVinosHtml;
+                } catch (err) { console.error("Error en Dashboard:", err); }
+            },
+
+            loadOrdersTable: async function () {
+                const { data: orders } = await this.db.from('orders').select('*').order('created_at', { ascending: false });
+                if (!orders || orders.length === 0) {
+                    document.getElementById('all-orders-body').innerHTML = `<tr><td colspan="6" style="text-align:center;">${this.adminTranslations[this.currentLang].no_order_data}</td></tr>`;
+                    return;
+                }
+                document.getElementById('all-orders-body').innerHTML = orders.map(o => {
+                    const badgeClass = o.payment_status === 'paid' ? 'badge-paid' : 'badge-pending';
+                    const statusText = o.payment_status === 'paid' ? this.adminTranslations[this.currentLang].paid_upper : this.adminTranslations[this.currentLang].pending_upper;
+
+                    const isShipped = o.shipping_status === 'shipped';
+                    const shipBadge = isShipped ? 'badge-paid' : 'badge-pending';
+                    const shipText = isShipped ? `<i class="fa-solid fa-check"></i> ${this.adminTranslations[this.currentLang].shipped_upper}` : `<i class="fa-solid fa-truck"></i> ${this.adminTranslations[this.currentLang].preparing_upper}`;
+
+                    return `<tr>
+                        <td><strong>#${o.id.slice(0, 8).toUpperCase()}</strong><br><small>${new Date(o.created_at).toLocaleDateString()}</small></td>
+                        <td>${o.customer_name}<br><small style="color: var(--text-muted)">${o.customer_email}</small></td>
+                        <td>${o.island || 'N/A'}</td>
+                        <td><strong>${parseFloat(o.total_amount).toFixed(2)} €</strong></td>
+                        <td><span class="status-badge ${badgeClass}">${statusText}</span></td>
+                        <td>
+                            <span class="status-badge ${shipBadge}">${shipText}</span>
+                            ${!isShipped && o.payment_status === 'paid' ? `
+                                <button class="btn-action" style="margin-left:5px; padding: 4px 8px; background: #25D366; border: none;" onclick="app.markAsShipped('${o.id}', '${o.customer_phone}', '${o.customer_name}')" title="Marcar envío y avisar">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </button>
+                            ` : ''}
+                        </td>
+                    </tr>`;
+                }).join('');
+            },
+
+            markAsShipped: async function (id, phone, name) {
+                if (!confirm(this.adminTranslations[this.currentLang].confirm_shipment)) return;
+
+                const { error } = await this.db.from('orders').update({ shipping_status: 'shipped' }).eq('id', id);
+
+                if (error) {
+                    alert('Error: ' + error.message);
+                } else {
+                    const msgTemplate = this.adminTranslations[this.currentLang].whatsapp_msg;
+                    const mensaje = msgTemplate.replace('{name}', name).replace('{id}', id.slice(0, 8).toUpperCase());
+                    const cleanPhone = phone ? phone.replace(/\D/g, '') : '';
+                    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(mensaje)}`, '_blank');
+
+                    this.loadOrdersTable();
+                    this.loadDashboardData();
+                }
+            },
+
+            loadInventoryTable: async function () {
+                const { data: products } = await this.db.from('products').select('*').order('name');
+                if (!products) return;
+
+                document.getElementById('inventory-body').innerHTML = products.map(p => {
+                    const costNet = parseFloat(p.price_cost_net || 0);
+
+                    // HORECA Calculations
+                    const priceHorecaTotal = parseFloat(p.price_horeca || 0);
+                    const netPriceHoreca = priceHorecaTotal / 1.07;
+                    const igicHoreca = priceHorecaTotal - netPriceHoreca;
+                    const marginHoreca = netPriceHoreca - costNet;
+                    const marginPercentHoreca = costNet > 0 ? (marginHoreca / costNet) * 100 : 0;
+
+                    // RETAIL Calculations
+                    const priceRetailTotal = parseFloat(p.price_retail || 0);
+                    const netPriceRetail = priceRetailTotal / 1.07;
+                    const igicRetail = priceRetailTotal - netPriceRetail;
+                    const marginRetail = netPriceRetail - costNet;
+                    const marginPercentRetail = costNet > 0 ? (marginRetail / costNet) * 100 : 0;
+
+                    const stockClass = p.stock < 0 ? 'negative-stock' : '';
+
+                    return `<tr>
+                        <td><strong>${p.name}</strong><br><small style="color: var(--text-muted)">${p.bodega || p.region}</small></td>
+                        <td class="finance-value" style="color: var(--text-muted);">💰 ${costNet.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].cost_net_label}</small></td>
+                        
+                        <td class="finance-value" style="color: var(--text-muted);">🍽️ ${priceHorecaTotal.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].horeca_label}</small></td>
+                        <td class="finance-value" style="color: var(--text-main);">
+                            <span class="math-symbol">↗</span><span class="margin-percent">${marginPercentHoreca.toFixed(1)}%</span>${marginHoreca.toFixed(2)} €<br><small>Mg. HORECA</small>
+                        </td>
+                        <td class="finance-value" style="color: var(--tax-color);"><span class="math-symbol">+</span>${igicHoreca.toFixed(2)} €<br><small>IGIC HORECA</small></td>
+
+                        <td class="finance-value" style="color: var(--brand-gold);">🛍️ ${priceRetailTotal.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].retail_label}</small></td>
+                        <td class="finance-value" style="color: var(--text-main);">
+                            <span class="math-symbol">↗</span><span class="margin-percent">${marginPercentRetail.toFixed(1)}%</span>${marginRetail.toFixed(2)} €<br><small>Mg. Retail</small>
+                        </td>
+                        <td class="finance-value" style="color: var(--tax-color);"><span class="math-symbol">+</span>${igicRetail.toFixed(2)} €<br><small>IGIC Retail</small></td>
+
+                        <td style="text-align: center;"><input type="number" class="input-stock ${stockClass}" id="inv-${p.id}" value="${p.stock || 0}"></td>
+                        <td style="text-align: right;"><button class="btn-action" onclick="app.updateSingleStock('${p.id}', event)"><i class="fa-solid fa-floppy-disk"></i></button></td>
+                    </tr>`;
+                }).join('');
+            },
+
+            updateSingleStock: async function (id, event) {
+                const newVal = document.getElementById('inv-' + id).value;
+                const { error } = await this.db.from('products').update({ stock: newVal }).eq('id', id);
+                if (error) {
+                    alert(this.adminTranslations[this.currentLang].error_stock_update + error.message);
+                } else {
+                    const btn = event.currentTarget;
+                    const originalHTML = btn.innerHTML;
+                    btn.style.background = 'var(--success)';
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                    setTimeout(() => {
+                        btn.style.background = '';
+                        btn.innerHTML = originalHTML;
+                        this.loadInventoryTable();
+                        this.loadDashboardData();
+                    }, 1000);
+                }
+            },
+
+            loadCRM: async function () {
+                const { data: orders, error } = await this.db.from('orders').select('*');
+                if (error || !orders) {
+                    document.getElementById('crm-body').innerHTML = `<tr><td colspan="5" style="text-align:center;">${this.adminTranslations[this.currentLang].error_loading_data}</td></tr>`;
+                    return;
+                }
+
+                const customers = {};
+                orders.forEach(o => {
+                    if (o.payment_status !== 'paid') return;
+
+                    const email = o.customer_email;
+                    if (!customers[email]) {
+                        customers[email] = {
+                            name: o.customer_name,
+                            email: email,
+                            phone: o.customer_phone || '-',
+                            totalSpent: 0,
+                            orderCount: 0,
+                            lastOrder: o.created_at
+                        };
+                    }
+                    customers[email].totalSpent += parseFloat(o.total_amount);
+                    customers[email].orderCount += 1;
+                    if (new Date(o.created_at) > new Date(customers[email].lastOrder)) {
+                        customers[email].lastOrder = o.created_at;
+                    }
+                });
+
+                const sortedCustomers = Object.values(customers).sort((a, b) => b.totalSpent - a.totalSpent);
+
+                const html = sortedCustomers.map(c => `
+                    <tr>
+                        <td><strong>${c.name}</strong><br><small style="color: var(--text-muted);">${c.phone}</small></td>
+                        <td>${c.email}</td>
+                        <td style="text-align: center;"><strong>${c.orderCount}</strong></td>
+                        <td style="color: var(--success); font-weight: 700;">${c.totalSpent.toFixed(2)} €</td>
+                        <td style="font-size: 0.9em; color: var(--text-muted);">${new Date(c.lastOrder).toLocaleDateString()}</td>
+                    </tr>
+                `).join('');
+
+                document.getElementById('crm-body').innerHTML = html || `<tr><td colspan="5" style="text-align:center;">${this.adminTranslations[this.currentLang].no_customers_recorded}</td></tr>`;
+            },
+
+            loadPromos: async function () {
+                try {
+                    const { data: promos, error } = await this.db.from('promotions').select('*').order('created_at', { ascending: false });
+                    if (error || !promos) {
+                        document.getElementById('promos-body').innerHTML = `<tr><td colspan="6" style="text-align:center;">${this.adminTranslations[this.currentLang].no_promos_data}</td></tr>`;
+                        return;
+                    }
+
+                    const html = promos.map(p => {
+                        const statusBadge = p.is_active ? 'badge-paid' : 'badge-pending';
+                        const statusText = p.is_active ? 'Activo' : 'Inactivo';
+                        const discountDisplay = p.type === 'percentage' ? `${p.discount_value}%` : `${p.discount_value}€`;
+
+                        return `<tr>
+                            <td><strong>${p.code || '(Automática)'}</strong></td>
+                            <td>${p.type === 'percentage' ? 'Porcentaje' : 'Cantidad Fija'}</td>
+                            <td>${discountDisplay}</td>
+                            <td>${p.min_cart_amount ? p.min_cart_amount + '€' : 'Sin mínimo'}</td>
+                            <td><span class="status-badge ${statusBadge}">${statusText}</span></td>
+                            <td style="display: flex; gap: 6px; align-items: center;">
+                                <button class="btn-action" onclick='app.openPromoModal(${JSON.stringify(p).replace(/"/g, '&quot;')})' title="Editar" style="padding: 4px 8px; background: var(--brand-gold); border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="btn-action" onclick="app.togglePromoStatus('${p.id}', ${!p.is_active})" title="Toggle" style="padding: 4px 8px; background: var(--sidebar-hover); border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                                    <i class="fa-solid fa-toggle-${p.is_active ? 'on' : 'off'}"></i>
+                                </button>
+                                <button class="btn-action" onclick="app.deletePromo('${p.id}')" title="Eliminar" style="padding: 4px 8px; background: var(--danger); color: white; border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>`;
+                    }).join('');
+
+                    document.getElementById('promos-body').innerHTML = html;
+                } catch (err) {
+                    console.error("Error cargando promociones:", err);
+                    document.getElementById('promos-body').innerHTML = `<tr><td colspan="6" style="text-align:center;">${this.adminTranslations[this.currentLang].error_loading_data}</td></tr>`;
+                }
+            },
+
+            togglePromoStatus: async function (id, newStatus) {
+                try {
+                    const { error } = await this.db.from('promotions').update({ is_active: newStatus }).eq('id', id);
+                    if (error) {
+                        alert('Error: ' + error.message);
+                    } else {
+                        this.loadPromos();
+                    }
+                } catch (err) {
+                    console.error("Error cambiando estado de promo:", err);
+                }
+            },
+
+            deletePromo: async function (id) {
+                if (!confirm(this.adminTranslations[this.currentLang].confirm_delete_promo)) return;
+
+                try {
+                    const { error } = await this.db.from('promotions').delete().eq('id', id);
+                    if (error) {
+                        alert('Error al eliminar: ' + error.message);
+                    } else {
+                        this.showToast(this.adminTranslations[this.currentLang].toast_promo_deleted);
+                        this.loadPromos();
+                    }
+                } catch (err) {
+                    console.error('Error eliminando promo:', err);
+                    alert('Error al eliminar: ' + err.message);
+                }
+            },
+
+            loadResellers: async function () {
+                try {
+                    const { data: resellers, error } = await this.db.from('resellers').select('*').order('created_at', { ascending: false });
+                    if (error || !resellers) {
+                        document.getElementById('resellers-body').innerHTML = `<tr><td colspan="7" style="text-align:center;">${this.adminTranslations[this.currentLang].no_resellers_data}</td></tr>`;
+                        return;
+                    }
+
+                    const html = resellers.map(r => {
+                        const statusBadge = r.is_active ? 'badge-paid' : 'badge-pending';
+                        const statusText = r.is_active ? 'Activo' : 'Inactivo';
+                        const baseSales = r.total_sales || 0;
+                        const commissionRate = r.commission_rate || 0;
+                        const totalCommission = baseSales * (commissionRate / 100);
+
+                        return `<tr>
+                            <td><strong>${r.code}</strong></td>
+                            <td>${r.name}</td>
+                            <td><strong style="color: var(--success);">${baseSales.toFixed(2)} €</strong></td>
+                            <td>${commissionRate.toFixed(2)}%</td>
+                            <td><strong style="color: var(--brand-gold);">${totalCommission.toFixed(2)} €</strong></td>
+                            <td><span class="status-badge ${statusBadge}">${statusText}</span></td>
+                            <td style="display: flex; gap: 6px; align-items: center;">
+                                <button class="btn-action" onclick='app.openResellerModal(${JSON.stringify(r).replace(/"/g, '&quot;')})' title="Editar" style="padding: 4px 8px; background: var(--brand-gold); border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="btn-action" onclick="app.toggleResellerStatus('${r.id}', ${!r.is_active})" title="Toggle" style="padding: 4px 8px; background: var(--sidebar-hover); border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                                    <i class="fa-solid fa-toggle-${r.is_active ? 'on' : 'off'}"></i>
+                                </button>
+                                <button class="btn-action" onclick="app.deleteReseller('${r.id}')" title="Eliminar" style="padding: 4px 8px; background: var(--danger); color: white; border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>`;
+                    }).join('');
+
+                    document.getElementById('resellers-body').innerHTML = html;
+                } catch (err) {
+                    console.error("Error cargando resellers:", err);
+                    document.getElementById('resellers-body').innerHTML = `<tr><td colspan="7" style="text-align:center;">${this.adminTranslations[this.currentLang].error_loading_data}</td></tr>`;
+                }
+            },
+
+            toggleResellerStatus: async function (id, newStatus) {
+                try {
+                    const { error } = await this.db.from('resellers').update({ is_active: newStatus }).eq('id', id);
+                    if (error) {
+                        alert('Error: ' + error.message);
+                    } else {
+                        this.loadResellers();
+                    }
+                } catch (err) {
+                    console.error("Error cambiando estado de reseller:", err);
+                }
+            },
+
+            deleteReseller: async function (id) {
+                if (!confirm(this.adminTranslations[this.currentLang].confirm_delete_reseller)) return;
+
+                try {
+                    const { error } = await this.db.from('resellers').delete().eq('id', id);
+                    if (error) {
+                        alert('Error al eliminar: ' + error.message);
+                    } else {
+                        this.showToast(this.adminTranslations[this.currentLang].toast_reseller_deleted);
+                        this.loadResellers();
+                    }
+                } catch (err) {
+                    console.error('Error eliminando reseller:', err);
+                    alert('Error al eliminar: ' + err.message);
+                }
+            },
+
+            openPromoModal: function (data) {
+                const modal = document.getElementById('modal-promo');
+                const form = document.getElementById('form-promo');
+                form.reset();
+
+                if (data && typeof data === 'string') {
+                    try {
+                        data = JSON.parse(data);
+                    } catch (e) {
+                        console.error("Error parsing promo data:", e);
+                        data = null;
+                    }
+                }
+
+                if (data) {
+                    document.getElementById('promo-id').value = data.id || '';
+                    document.getElementById('promo-code').value = data.code || '';
+                    document.getElementById('promo-type').value = data.type || '';
+                    document.getElementById('promo-value').value = data.discount_value || '';
+                    document.getElementById('promo-min-cart').value = data.min_cart_amount || '';
+                } else {
+                    document.getElementById('promo-id').value = '';
+                }
+
+                modal.style.display = 'flex';
+                document.getElementById('promo-code').focus();
+            },
+
+            openResellerModal: function (data) {
+                const modal = document.getElementById('modal-reseller');
+                const form = document.getElementById('form-reseller');
+                form.reset();
+
+                if (data && typeof data === 'string') {
+                    try {
+                        data = JSON.parse(data);
+                    } catch (e) {
+                        console.error("Error parsing reseller data:", e);
+                        data = null;
+                    }
+                }
+
+                if (data) {
+                    document.getElementById('reseller-id').value = data.id || '';
+                    document.getElementById('reseller-code').value = data.code || '';
+                    document.getElementById('reseller-name').value = data.name || '';
+                    document.getElementById('reseller-commission').value = data.commission_rate || '';
+                } else {
+                    document.getElementById('reseller-id').value = '';
+                }
+
+                modal.style.display = 'flex';
+                document.getElementById('reseller-code').focus();
+            },
+
+            closeModals: function () {
+                document.getElementById('modal-promo').style.display = 'none';
+                document.getElementById('modal-reseller').style.display = 'none';
+            },
+
+            savePromo: async function (event) {
+                event.preventDefault();
+
+                const id = document.getElementById('promo-id').value;
+                const code = document.getElementById('promo-code').value.trim();
+                const type = document.getElementById('promo-type').value;
+                const value = parseFloat(document.getElementById('promo-value').value);
+                const minCart = document.getElementById('promo-min-cart').value ? parseFloat(document.getElementById('promo-min-cart').value) : null;
+
+                if (!type || isNaN(value)) {
+                    alert(this.adminTranslations[this.currentLang].error_promo_validation);
+                    return;
+                }
+
+                try {
+                    const payload = {
+                        code: code || null,
+                        type,
+                        discount_value: parseFloat(value),
+                        min_cart_amount: minCart ? parseFloat(minCart) : null,
+                        is_active: true
+                    };
+
+                    let result;
+                    if (id && id.trim()) {
+                        result = await this.db.from('promotions').update(payload).eq('id', id);
+                    } else {
+                        result = await this.db.from('promotions').insert([payload]);
+                    }
+
+                    if (result.error) {
+                        alert('Error: ' + result.error.message);
+                    } else {
+                        this.closeModals();
+                        this.showToast(id ? 'Cupón actualizado' : 'Cupón creado');
+                        this.loadPromos();
+                    }
+                } catch (err) {
+                    console.error('Error guardando promo:', err);
+                    alert('Error al guardar: ' + err.message);
+                }
+            },
+
+            saveReseller: async function (event) {
+                event.preventDefault();
+
+                const id = document.getElementById('reseller-id').value;
+                const code = document.getElementById('reseller-code').value.trim();
+                const name = document.getElementById('reseller-name').value.trim();
+                const commission = document.getElementById('reseller-commission').value ? parseFloat(document.getElementById('reseller-commission').value) : 0;
+
+                if (!code || !name) {
+                    alert(this.adminTranslations[this.currentLang].error_reseller_validation);
+                    return;
+                }
+
+                try {
+                    const payload = {
+                        code,
+                        name,
+                        commission_rate: parseFloat(commission),
+                        is_active: true
+                    };
+
+                    let result;
+                    if (id && id.trim()) {
+                        result = await this.db.from('resellers').update(payload).eq('id', id);
+                    } else {
+                        result = await this.db.from('resellers').insert([payload]);
+                    }
+
+                    if (result.error) {
+                        alert('Error: ' + result.error.message);
+                    } else {
+                        this.closeModals();
+                        this.showToast(id ? 'Socio actualizado' : 'Socio creado');
+                        this.loadResellers();
+                    }
+                } catch (err) {
+                    console.error('Error guardando reseller:', err);
+                    alert('Error al guardar: ' + err.message);
+                }
+            },
+
+            showToast: function (msg) {
+                const toast = document.createElement('div');
+                toast.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 12px 20px; border-radius: 8px; z-index: 10000; font-weight: 600; animation: slideIn 0.3s ease;';
+                toast.textContent = '✓ ' + msg;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            },
+
+            toggleMobileMenu: function () {
+                const sidebar = document.querySelector('.sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('active');
+            },
+
+            closeMobileMenu: function () {
+                const sidebar = document.querySelector('.sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('active');
+            },
+
+            initMobileMenu: function () {
+                const menuBtn = document.getElementById('mobile-menu-btn');
+                const sidebar = document.querySelector('.sidebar');
+
+                const showMobileMenu = () => {
+                    if (window.innerWidth <= 768) {
+                        menuBtn.style.display = 'flex';
+                    } else {
+                        menuBtn.style.display = 'none';
+                        sidebar.classList.remove('mobile-open');
+                        document.getElementById('sidebar-overlay').classList.remove('active');
+                    }
+                };
+
+                showMobileMenu();
+                window.addEventListener('resize', showMobileMenu);
+
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        if (window.innerWidth <= 768) {
+                            this.closeMobileMenu();
+                        }
+                    });
+                });
+            },
+
+            initModals: function () {
+                const modalPromo = document.getElementById('modal-promo');
+                const modalReseller = document.getElementById('modal-reseller');
+
+                modalPromo.addEventListener('click', (e) => {
+                    if (e.target === modalPromo) this.closeModals();
+                });
+                modalReseller.addEventListener('click', (e) => {
+                    if (e.target === modalReseller) this.closeModals();
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') this.closeModals();
+                });
+            },
+
+            start: async function () {
+                this.initDB();
+                this.initMobileMenu();
+                this.initModals();
+
+                // Initialize language
+                const savedLang = localStorage.getItem('admin_lang') || 'es';
+                this.changeLanguage(savedLang);
+
+                const { data: { session }, error } = await this.db.auth.getSession();
+
+                if (error || !session) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                document.getElementById('user-email-display').textContent = session.user.email;
+                this.loadDashboardData();
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => app.start());
+    </script>
+
+    <div id="modal-promo"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+        <div
+            style="background: white; border-radius: 12px; padding: 32px; max-width: 500px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+            <h2 data-i18n="modal_promo_title"
+                style="font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; color: #2B0710; font-family: 'Playfair Display', serif;">
+                Gestionar Cupón</h2>
+
+            <form id="form-promo" onsubmit="app.savePromo(event)"
+                style="display: flex; flex-direction: column; gap: 16px;">
+                <input type="hidden" id="promo-id">
+
+                <div style="display: flex; flex-direction: column;">
+                    <label data-i18n="label_promo_code"
+                        style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Código
+                        del Cupón</label>
+                    <input type="text" id="promo-code"
+                        style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; font-family: monospace;">
+                </div>
+
+                <div style="display: flex; flex-direction: column;">
+                    <label data-i18n="label_promo_type"
+                        style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Tipo
+                        de Descuento *</label>
+                    <select id="promo-type" required
+                        style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                        <option value="" data-i18n="option_select_type">Seleccionar tipo...</option>
+                        <option value="percentage" data-i18n="option_percentage">Porcentaje (%)</option>
+                        <option value="fixed" data-i18n="option_fixed">Cantidad Fija (€)</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; flex-direction: column;">
+                    <label data-i18n="label_promo_value"
+                        style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Valor
+                        del Descuento *</label>
+                    <input type="number" id="promo-value" required step="0.01" min="0"
+                        style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                </div>
+
+                <div style="display: flex; flex-direction: column;">
+                    <label data-i18n="label_promo_min_cart"
+                        style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Mínimo
+                        de Carrito (€)</label>
+                    <input type="number" id="promo-min-cart" step="0.01" min="0"
+                        style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button type="button" onclick="app.closeModals()" data-i18n="btn_cancel"
+                        style="flex: 1; padding: 12px; border: 2px solid #cbd5e1; background: transparent; border-radius: 8px; font-weight: 600; cursor: pointer; color: #64748b; transition: all 0.3s;">
+                        Cancelar
+                    </button>
+                    <button type="submit" data-i18n="btn_save"
+                        style="flex: 1; padding: 12px; background: #C89F5D; color: #2B0710; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-reseller"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+        <div
+            style="background: white; border-radius: 12px; padding: 32px; max-width: 500px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+            <h2 data-i18n="modal_reseller_title"
+                style="font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; color: #2B0710; font-family: 'Playfair Display', serif;">
+                Gestionar Socio</h2>
+
+            <form id="form-reseller" onsubmit="app.saveReseller(event)"
+                style="display: flex; flex-direction: column; gap: 16px;">
+                <input type="hidden" id="reseller-id">
+
+                <div style="display: flex; flex-direction: column;">
+                    <label data-i18n="label_reseller_code"
+                        style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Código
+                        del Socio *</label>
+                    <input type="text" id="reseller-code" required
+                        style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; font-family: monospace;">
+                </div>
+
+                <div style="display: flex; flex-direction: column;">
+                    <label data-i18n="label_reseller_name"
+                        style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Nombre
+                        del Socio *</label>
+                    <input type="text" id="reseller-name" required
+                        style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                </div>
+
+                <div style="display: flex; flex-direction: column;">
+                    <label data-i18n="label_reseller_commission"
+                        style="font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Comisión
+                        (%)</label>
+                    <input type="number" id="reseller-commission" step="0.01" min="0" max="100"
+                        style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button type="button" onclick="app.closeModals()" data-i18n="btn_cancel"
+                        style="flex: 1; padding: 12px; border: 2px solid #cbd5e1; background: transparent; border-radius: 8px; font-weight: 600; cursor: pointer; color: #64748b; transition: all 0.3s;">
+                        Cancelar
+                    </button>
+                    <button type="submit" data-i18n="btn_save"
+                        style="flex: 1; padding: 12px; background: #C89F5D; color: #2B0710; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>
