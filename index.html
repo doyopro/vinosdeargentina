@@ -66,7 +66,7 @@
                         if (!ready) return [];
                     }
                     try {
-                        const { data, error } = await supabase.from('products').select('*');
+                        const { data, error } = await supabase.from('products').select('id, sku, name, price_retail, created_at, bodega, region, type, box_size, aiem_rate, igic_rate, notes_es, notes_en, stock, image_url');
                         if (error) throw error;
                         return (data || [])
                             .map(wine => ({ ...wine, provincia: getProvinciaBodega(wine.bodega) }))

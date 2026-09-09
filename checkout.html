@@ -328,7 +328,7 @@
                 // Buscar en RESELLERS
                 const { data: reseller } = await window.deAlturaSupabase
                     .from('resellers')
-                    .select('*')
+                    .select('id, code, name, is_active')
                     .ilike('code', codigo)
                     .eq('is_active', true)
                     .single();
