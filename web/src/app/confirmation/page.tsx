@@ -104,7 +104,7 @@ function ConfirmationInner() {
             promo_type: promoType,
           };
 
-          const { error: orderError } = await supabase.from("orders").insert([orderPayload]).select();
+          const { error: orderError } = await supabase.from("orders").insert([orderPayload]);
           if (orderError) {
             console.error("Error al insertar orden (silencioso):", orderError);
           }
