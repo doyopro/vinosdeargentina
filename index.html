@@ -66,7 +66,7 @@
                         if (!ready) return [];
                     }
                     try {
-                        const { data, error } = await supabase.from('products').select('id, sku, name, price_retail, created_at, bodega, region, type, box_size, aiem_rate, igic_rate, notes_es, notes_en, stock, image_url');
+                        const { data, error } = await supabase.from('products').select('id, sku, name, price_retail, created_at, bodega, region, type, box_size, aiem_rate, igic_rate, notes_es, notes_en, stock, image_url, is_available');
                         if (error) throw error;
                         return (data || [])
                             .map(wine => ({ ...wine, provincia: getProvinciaBodega(wine.bodega) }))
@@ -413,7 +413,8 @@
                         name: wine.name,
                         notes_es: wine.notes_es,
                         notes_en: wine.notes_en,
-                        image_url: wine.image_url
+                        image_url: wine.image_url,
+                        is_available: wine.is_available
                     }));
                     renderCatalog();
                 }
@@ -450,8 +451,7 @@
                     let notes = (currentLang === 'en' ? w.notes_en : w.notes_es) || '';
                     notes = notes.split('. ').join('.\n');
 
-                    const noStockNames = ['Pasacana', 'Orange', 'Bonarda'];
-                    const isOutOfStock = noStockNames.some(name => w.name.includes(name));
+                    const isOutOfStock = !w.is_available;
 
                     return `
                         <article class="flex flex-col bg-white rounded-xl shadow-sm hover:shadow-lg transition-all border border-stone-100 overflow-hidden h-full ${inCartCls} ${isOutOfStock ? 'opacity-75' : ''}">
