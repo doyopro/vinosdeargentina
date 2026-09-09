@@ -106,16 +106,7 @@ function ConfirmationInner() {
 
           const { error: orderError } = await supabase.from("orders").insert([orderPayload]).select();
           if (orderError) {
-            // TEMPORAL - debug logging for the test-mode e2e payment check, revert with the rest of the _TEST changes.
-            console.error(
-              "Error al insertar orden (silencioso):",
-              JSON.stringify({
-                message: orderError.message,
-                details: orderError.details,
-                hint: orderError.hint,
-                code: orderError.code,
-              })
-            );
+            console.error("Error al insertar orden (silencioso):", orderError);
           }
 
           for (const item of items) {
