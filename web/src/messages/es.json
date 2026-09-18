@@ -73,7 +73,8 @@
     "promoCouponApplied": "Cupón {code} aplicado ({pct}%)",
     "promoResellerApplied": "Código SOCIO aplicado: {name}",
     "promoInvalid": "Código inválido o no aplica",
-    "promoError": "Error validando código"
+    "promoError": "Error validando código",
+    "paymentNotReady": "El pago aún se está preparando. Esperá un momento e intentá de nuevo."
   },
   "confirmationPage": {
     "thankYou": "¡Gracias por tu compra!",

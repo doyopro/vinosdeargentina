@@ -94,3 +94,22 @@ export interface CustomerInfo {
 }
 
 export const CUSTOMER_INFO_KEY = "altura_customer_info";
+
+// Response shape from supabase/functions/create-payment-intent-v2. The server
+// is the source of truth for pricing; the browser calc in resolveDiscount
+// above is only for the live summary shown while the cart is being built.
+export interface Breakdown {
+  subtotal: number;
+  descuentoAplicado: number;
+  valorDescuento: number;
+  baseImponible: number;
+  igicAmount: number;
+  totalAmount: number;
+}
+
+export interface PaymentInit {
+  clientSecret: string;
+  orderId: string;
+  totalAmount: number;
+  breakdown: Breakdown;
+}

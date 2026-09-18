@@ -73,7 +73,8 @@
     "promoCouponApplied": "Coupon {code} applied ({pct}%)",
     "promoResellerApplied": "PARTNER code applied: {name}",
     "promoInvalid": "Invalid or non-applicable code",
-    "promoError": "Error validating code"
+    "promoError": "Error validating code",
+    "paymentNotReady": "Payment is still being prepared. Please wait a moment and try again."
   },
   "confirmationPage": {
     "thankYou": "Thank you for your purchase!",

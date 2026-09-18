@@ -5,10 +5,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LanguageToggle } from "@/components/LanguageToggle";
-import { supabase } from "@/lib/supabase";
 import { CART_STORAGE_KEY } from "@/lib/cart";
 import { CUSTOMER_INFO_KEY, CustomerInfo } from "@/lib/order";
-import { CartItem } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +29,7 @@ function ConfirmationInner() {
   );
 
   useEffect(() => {
-    async function processOrder() {
+    function processRedirect() {
       const paymentIntent = searchParams.get("payment_intent");
       const redirectStatus = searchParams.get("redirect_status");
       if (!paymentIntent) return;
@@ -50,85 +48,13 @@ function ConfirmationInner() {
       }
       window.localStorage.setItem(`processed_${paymentIntent}`, "true");
 
-      const cartStr = window.localStorage.getItem(CART_STORAGE_KEY);
-      const customerStr = window.localStorage.getItem(CUSTOMER_INFO_KEY);
-
+      // The order was already created and marked paid server-side (edge
+      // function + webhook). This page only clears the client-side state.
       window.localStorage.removeItem(CART_STORAGE_KEY);
       window.localStorage.removeItem(CUSTOMER_INFO_KEY);
-
-      try {
-        if (cartStr && customerStr) {
-          const cart = JSON.parse(cartStr) as Record<string, CartItem>;
-          const customer = JSON.parse(customerStr) as CustomerInfo & { descuentoAplicado?: number };
-          const items = Object.values(cart);
-
-          const itemsWithStringIds = items.map((item) => ({ ...item, id: String(item.id) }));
-
-          let subtotal = 0;
-          items.forEach((item) => {
-            subtotal += (item.price || 0) * (item.qty || 1) * (item.box || 1);
-          });
-
-          let descuentoAplicado = 0;
-          let valorDescuento = 0;
-          let baseImponible = subtotal;
-          const promoCode = customer.promo_code || null;
-          const promoType = customer.promo_type || null;
-
-          if (customer.descuentoAplicado !== undefined) {
-            descuentoAplicado = customer.descuentoAplicado;
-            valorDescuento = subtotal * descuentoAplicado;
-            baseImponible = subtotal - valorDescuento;
-          }
-
-          const igicAmount = baseImponible * 0.07;
-          const totalAmount = parseFloat((baseImponible + igicAmount).toFixed(2));
-
-          const orderPayload = {
-            customer_name: customer.name,
-            customer_email: customer.email,
-            customer_phone: customer.phone,
-            island: customer.island,
-            total_amount: totalAmount,
-            payment_status: "paid",
-            shipping_status: "new",
-            items: itemsWithStringIds,
-            address: customer.address || null,
-            postal_code: customer.postal_code || null,
-            subtotal_bruto: subtotal,
-            descuento_aplicado: descuentoAplicado,
-            valor_descuento: valorDescuento,
-            base_imponible: baseImponible,
-            igic_amount: igicAmount,
-            promo_code: promoCode,
-            promo_type: promoType,
-          };
-
-          const { error: orderError } = await supabase.from("orders").insert([orderPayload]);
-          if (orderError) {
-            console.error("Error al insertar orden (silencioso):", orderError);
-          }
-
-          for (const item of items) {
-            const pid = String(item.id);
-            if (!pid) continue;
-            try {
-              const { data: prod } = await supabase.from("products").select("stock").eq("id", pid).single();
-              if (prod) {
-                const newStock = (prod.stock || 0) - (item.qty || 1);
-                await supabase.from("products").update({ stock: newStock }).eq("id", pid);
-              }
-            } catch (err) {
-              console.warn(`Error en stock para ${pid} (silencioso):`, err);
-            }
-          }
-        }
-      } catch (e) {
-        console.error("Error técnico en background (silencioso):", e);
-      }
     }
 
-    processOrder();
+    processRedirect();
   }, [searchParams]);
 
   useEffect(() => {

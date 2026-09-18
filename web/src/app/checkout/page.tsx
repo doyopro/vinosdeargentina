@@ -8,7 +8,15 @@ import { LanguageToggle } from "@/components/LanguageToggle";
 import { supabase } from "@/lib/supabase";
 import { loadCart } from "@/lib/cart";
 import { getStripe, EDGE_FUNCTION_URL } from "@/lib/stripeClient";
-import { CUSTOMER_INFO_KEY, CustomerInfo, EMPTY_PROMO, PromoAplicado, Promotion, resolveDiscount } from "@/lib/order";
+import {
+  CUSTOMER_INFO_KEY,
+  CustomerInfo,
+  EMPTY_PROMO,
+  PaymentInit,
+  PromoAplicado,
+  Promotion,
+  resolveDiscount,
+} from "@/lib/order";
 import { Cart } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -35,10 +43,12 @@ export default function CheckoutPage() {
 
   const [submitting, setSubmitting] = useState(false);
   const [stripeError, setStripeError] = useState("");
+  const [paymentInit, setPaymentInit] = useState<PaymentInit | null>(null);
 
   const stripeContainerRef = useRef<HTMLDivElement>(null);
   const elementsRef = useRef<StripeElements | null>(null);
   const paymentElementRef = useRef<StripePaymentElement | null>(null);
+  const initRequestedRef = useRef(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage is client-only, read once after mount
@@ -55,28 +65,53 @@ export default function CheckoutPage() {
 
   const items = useMemo(() => Object.values(cart), [cart]);
 
-  const { importeBruto, valorDescuento, baseImponible, igicAmount, totalAmount, labelDescuento, descuentoAplicado } =
-    useMemo(() => {
-      const subtotal = items.reduce((sum, item) => sum + (item.price || 0) * (item.qty || 1) * (item.box || 1), 0);
-      const { descuentoAplicado, labelDescuento } = resolveDiscount(subtotal, allPromotions, promoAplicado);
-      const valorDescuento = subtotal * descuentoAplicado;
-      const baseImponible = subtotal - valorDescuento;
-      const igicAmount = baseImponible * 0.07;
-      const totalAmount = baseImponible + igicAmount;
-      return {
-        importeBruto: subtotal,
-        valorDescuento,
-        baseImponible,
-        igicAmount,
-        totalAmount,
-        labelDescuento,
-        descuentoAplicado,
-      };
-    }, [items, allPromotions, promoAplicado]);
+  // Client-side estimate: only used to render the summary while the cart is
+  // being built, before the server has priced the order.
+  const { labelDescuento, ...clientTotals } = useMemo(() => {
+    const subtotal = items.reduce((sum, item) => sum + (item.price || 0) * (item.qty || 1) * (item.box || 1), 0);
+    const { descuentoAplicado, labelDescuento } = resolveDiscount(subtotal, allPromotions, promoAplicado);
+    const valorDescuento = subtotal * descuentoAplicado;
+    const baseImponible = subtotal - valorDescuento;
+    const igicAmount = baseImponible * 0.07;
+    const totalAmount = baseImponible + igicAmount;
+    return {
+      importeBruto: subtotal,
+      valorDescuento,
+      baseImponible,
+      igicAmount,
+      totalAmount,
+      labelDescuento,
+      descuentoAplicado,
+    };
+  }, [items, allPromotions, promoAplicado]);
 
-  // Mount Stripe Payment Element once we know the cart is non-empty (mirrors checkout.html's init())
+  // Once the server has priced the order, its numbers are the source of
+  // truth for what's shown and what gets charged — never the browser's.
+  const { importeBruto, valorDescuento, baseImponible, igicAmount, totalAmount, descuentoAplicado } = paymentInit
+    ? {
+        importeBruto: paymentInit.breakdown.subtotal,
+        valorDescuento: paymentInit.breakdown.valorDescuento,
+        baseImponible: paymentInit.breakdown.baseImponible,
+        igicAmount: paymentInit.breakdown.igicAmount,
+        totalAmount: paymentInit.breakdown.totalAmount,
+        descuentoAplicado: paymentInit.breakdown.descuentoAplicado,
+      }
+    : clientTotals;
+
+  // The server needs full customer info to price + create the order, so we
+  // can't kick this off until the billing form is filled in.
+  const customerReady = useMemo(
+    () => Boolean(name.trim() && email.trim() && island.trim() && address.trim() && postal.trim()),
+    [name, email, island, address, postal]
+  );
+
+  // Creates the order + PaymentIntent exactly once (guarded by initRequestedRef)
+  // as soon as the cart and customer info are both ready, then mounts the
+  // Stripe Payment Element. handlePayment reuses the resulting clientSecret.
   useEffect(() => {
-    if (!ready || items.length === 0 || !stripeContainerRef.current) return;
+    if (!ready || items.length === 0 || !customerReady || !stripeContainerRef.current) return;
+    if (initRequestedRef.current) return;
+    initRequestedRef.current = true;
     let cancelled = false;
 
     (async () => {
@@ -87,19 +122,29 @@ export default function CheckoutPage() {
             Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ amount: totalAmount }),
+          body: JSON.stringify({
+            items: items.map((item) => ({ id: item.id, qty: item.qty })),
+            customer: { name, email, phone, address, postal_code: postal, island },
+            promo_code: promoAplicado.codigo,
+          }),
         });
-        const { clientSecret } = await res.json();
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "No se pudo iniciar el pago.");
         if (cancelled) return;
+
+        setPaymentInit(data as PaymentInit);
+
         const stripe = await getStripe();
         if (!stripe || !stripeContainerRef.current) return;
-        const elements = stripe.elements({ clientSecret });
+        const elements = stripe.elements({ clientSecret: data.clientSecret });
         const paymentElement = elements.create("payment");
         paymentElement.mount(stripeContainerRef.current);
         elementsRef.current = elements;
         paymentElementRef.current = paymentElement;
       } catch (e) {
-        console.error("Error inicializando Stripe:", e);
+        console.error("Error inicializando el pago:", e);
+        setStripeError(e instanceof Error ? e.message : String(e));
+        initRequestedRef.current = false;
       }
     })();
 
@@ -107,8 +152,8 @@ export default function CheckoutPage() {
       cancelled = true;
       paymentElementRef.current?.unmount();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount once when cart becomes available, like the original init()
-  }, [ready, items.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fires once when cart + customer info are ready; guarded by initRequestedRef
+  }, [ready, items.length, customerReady]);
 
   async function applyPromo() {
     const codigo = promoCodeInput.trim().toUpperCase();
@@ -165,7 +210,10 @@ export default function CheckoutPage() {
 
   async function handlePayment() {
     if (!validateForm()) return;
-    if (!elementsRef.current) return;
+    if (!elementsRef.current || !paymentInit) {
+      setStripeError(t("paymentNotReady"));
+      return;
+    }
 
     setSubmitting(true);
     setStripeError("");
@@ -188,19 +236,9 @@ export default function CheckoutPage() {
       };
       window.localStorage.setItem(CUSTOMER_INFO_KEY, JSON.stringify(customerInfo));
 
-      const res = await fetch(EDGE_FUNCTION_URL, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ amount: totalAmount }),
-      });
-      const { clientSecret } = await res.json();
-
       const { error } = await stripe.confirmPayment({
         elements: elementsRef.current,
-        clientSecret,
+        clientSecret: paymentInit.clientSecret,
         confirmParams: {
           return_url: `${window.location.origin}/confirmation`,
         },
