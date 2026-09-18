@@ -6,170 +6,127 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+interface OrderLine {
+  id: string;
+  qty: number;
+  box_size: number;
+}
+
+function ok(body: Record<string, unknown> = { received: true }) {
+  return new Response(JSON.stringify(body), {
+    status: 200,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+}
+
 Deno.serve(async (req) => {
-  // Handle CORS
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
-  try {
-    const signature = req.headers.get('stripe-signature');
-    const body = await req.text();
-    const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
+  const signature = req.headers.get('stripe-signature');
+  const body = await req.text();
+  const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
 
-    console.log('🔔 Webhook recibido');
-    console.log('Signature:', signature?.slice(0, 20) + '...');
-
-    if (!webhookSecret) {
-      throw new Error('STRIPE_WEBHOOK_SECRET no configurada');
-    }
-
-    if (!signature) {
-      throw new Error('No stripe-signature header');
-    }
-
-    // Inicializar Stripe
-    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, {
-      apiVersion: '2023-10-16',
+  if (!webhookSecret || !signature) {
+    console.error('Falta STRIPE_WEBHOOK_SECRET o la cabecera stripe-signature');
+    return new Response(JSON.stringify({ error: 'Missing webhook secret or signature' }), {
+      status: 400,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
+  }
 
-    // Verificar firma del webhook
-    let event;
-    try {
-      event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-      console.log('✅ Firma del webhook validada');
-      console.log('Tipo de evento:', event.type);
-    } catch (err) {
-      console.error('❌ Error validando firma:', err.message);
-      return new Response(
-        JSON.stringify({ error: 'Invalid signature' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
+  const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, {
+    apiVersion: '2023-10-16',
+  });
+
+  // 1. Verificar la firma. constructEventAsync porque constructEvent (síncrono)
+  // depende de SubtleCrypto de forma incompatible con el runtime de Deno.
+  let event: Stripe.Event;
+  try {
+    event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
+  } catch (err) {
+    console.error('Firma de webhook inválida:', err instanceof Error ? err.message : err);
+    return new Response(JSON.stringify({ error: 'Invalid signature' }), {
+      status: 400,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  // A partir de aquí la firma ya es válida: siempre respondemos 200 para que
+  // Stripe no reintente en bucle, y los errores solo se loguean.
+  try {
+    // 2. Solo nos interesa payment_intent.succeeded
+    if (event.type !== 'payment_intent.succeeded') {
+      return ok();
     }
 
-    // Solo procesar checkout.session.completed
-    if (event.type !== 'checkout.session.completed') {
-      console.log('⏭️ Evento ignorado (no es checkout.session.completed)');
-      return new Response(
-        JSON.stringify({ success: true, message: 'Event type not processed' }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
-      );
+    const paymentIntent = event.data.object as Stripe.PaymentIntent;
+
+    // 3. order_id viene en la metadata puesta por create-payment-intent-v2
+    const orderId = paymentIntent.metadata?.order_id;
+    if (!orderId) {
+      console.error('payment_intent.succeeded sin metadata.order_id:', paymentIntent.id);
+      return ok();
     }
 
-    const session = event.data.object as any;
-    console.log('📦 Session ID:', session.id);
-    console.log('Metadata:', session.metadata);
-
-    // Inicializar Supabase
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Parsear datos del session
-    const totalAmountCents = session.amount_total; // En céntimos
-    const totalAmountEuros = totalAmountCents / 100;
-    const igic = Number((totalAmountEuros * 0.07 / 1.07).toFixed(2));
-    const subtotal = Number((totalAmountEuros - igic).toFixed(2));
-
-    console.log('💰 Total:', totalAmountEuros, '€');
-    console.log('📊 Subtotal:', subtotal, '€');
-    console.log('📈 IGIC:', igic, '€');
-
-    // Parsear items desde metadata
-    let items = [];
-    try {
-      if (session.metadata?.items) {
-        items = JSON.parse(session.metadata.items);
-        console.log('📋 Items parseados:', items);
-      }
-    } catch (e) {
-      console.warn('⚠️ Error parseando items:', e.message);
-      items = [];
-    }
-
-    // Insertar orden en Supabase
-    console.log('💾 Insertando orden en BD...');
-    const { data: orderData, error: orderError } = await supabase
+    // 4. Idempotencia: solo marcamos como pagada (y solo descontamos stock)
+    // si la orden seguía en 'pending'. Un reintento de Stripe sobre la misma
+    // orden ya pagada no vuelve a tocar stock.
+    const { data: updatedOrders, error: updateError } = await supabase
       .from('orders')
-      .insert([{
-        customer_name: session.customer_details?.name || 'Unknown',
-        customer_email: session.customer_details?.email || session.customer_email,
-        customer_phone: session.metadata?.customer_phone || null,
-        island: session.metadata?.island || null,
-        address: session.metadata?.address || null,
-        postal_code: session.metadata?.postal_code || null,
-        subtotal_amount: subtotal,
-        tax_amount: igic,
-        total_amount: totalAmountEuros,
-        items: items,
-        payment_method: 'stripe',
-        payment_status: 'paid',
-        shipping_status: 'pending',
-        stripe_payment_id: session.payment_intent,
-        stripe_invoice_id: session.invoice || null,
-        created_at: new Date().toISOString(),
-      }])
-      .select();
+      .update({ payment_status: 'paid', payment_method: 'stripe' })
+      .eq('id', orderId)
+      .eq('payment_status', 'pending')
+      .select('id, items');
 
-    if (orderError) {
-      console.error('❌ Error insertando orden:', orderError);
-      throw orderError;
+    if (updateError) {
+      console.error('Error marcando la orden como pagada:', updateError);
+      return ok();
     }
 
-    if (!orderData || orderData.length === 0) {
-      throw new Error('No se retornó el ID de la orden');
+    if (!updatedOrders || updatedOrders.length === 0) {
+      // Ya estaba pagada (o no existe): nada más que hacer.
+      return ok();
     }
 
-    const orderId = orderData[0].id;
-    console.log('✅ Orden creada con ID:', orderId);
+    const order = updatedOrders[0];
+    const items: OrderLine[] = Array.isArray(order.items) ? order.items : [];
 
-    // Insertar items de la orden
-    if (items && items.length > 0) {
-      console.log('📦 Insertando', items.length, 'items...');
+    // 5. Descuento de stock JIT (puede quedar negativo a propósito)
+    for (const line of items) {
+      if (!line || !line.id) continue;
+      const decrement = (line.qty || 0) * (line.box_size || 0);
+      if (decrement <= 0) continue;
 
-      const orderItems = items.map((item: any) => ({
-        order_id: orderId,
-        wine_id: item.id,
-        quantity: item.qty || item.quantity,
-        unit_price: item.price,
-      }));
+      const { data: product, error: productError } = await supabase
+        .from('products')
+        .select('stock')
+        .eq('id', line.id)
+        .single();
 
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert(orderItems);
+      if (productError || !product) {
+        console.error(`Error leyendo stock de ${line.id}:`, productError);
+        continue;
+      }
 
-      if (itemsError) {
-        console.error('❌ Error insertando items:', itemsError);
-        // No bloquear - la orden ya está creada
-      } else {
-        console.log('✅ Items insertados correctamente');
+      const { error: stockError } = await supabase
+        .from('products')
+        .update({ stock: (product.stock || 0) - decrement })
+        .eq('id', line.id);
+
+      if (stockError) {
+        console.error(`Error descontando stock de ${line.id}:`, stockError);
       }
     }
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        order_id: orderId,
-        message: 'Webhook procesado correctamente',
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
-
+    return ok();
   } catch (error) {
-    console.error('❌ Error procesando webhook:', error.message);
-
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error: error instanceof Error ? error.message : 'Error desconocido',
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    console.error('Error procesando webhook:', error instanceof Error ? error.message : error);
+    return ok();
   }
 });
