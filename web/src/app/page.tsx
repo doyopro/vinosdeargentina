@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { WineCard } from "@/components/WineCard";
 import { CartDrawer } from "@/components/CartDrawer";
+import { HeroCollage } from "@/components/HeroCollage";
 import { supabase } from "@/lib/supabase";
 import { getProvinciaBodega } from "@/lib/bodegaProvincia";
 import { loadCart, saveCart } from "@/lib/cart";
@@ -131,15 +132,7 @@ export default function Home() {
       <LanguageToggle />
 
       <header className="relative bg-wine-900 pt-32 pb-24 px-6 lg:pt-40 lg:pb-32 overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="https://images.unsplash.com/photo-1506377247377-2a5b3b0ca7df?auto=format&fit=crop&q=80&w=2070"
-            alt="Viñedos"
-            className="w-full h-full object-cover object-center opacity-[0.15] mix-blend-luminosity"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-wine-900 via-wine-900/90 to-transparent" />
-        </div>
+        <HeroCollage />
 
         <div className="max-w-5xl mx-auto relative z-10 text-center flex flex-col items-center mt-6">
           <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/5 border border-gold-500/30 backdrop-blur-md mb-8 shadow-[0_0_15px_rgba(200,159,93,0.2)]">
