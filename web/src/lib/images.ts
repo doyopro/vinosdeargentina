@@ -1,7 +1,8 @@
 // Single source of truth for site photography. To add a new photo:
 // 1. Drop the optimized JPEG into web/public/images/.
-// 2. Add one entry below with its path, both alts, and the section(s) it
-//    belongs to. Nothing else in the app should hardcode an image path.
+// 2. Add one entry below with its path, both alts, dimensions, focus point,
+//    and the section(s) it belongs to. Nothing else in the app should
+//    hardcode an image path.
 
 export type ImageSection = "hero" | "landing";
 
@@ -12,6 +13,9 @@ export interface SiteImage {
   altEn: string;
   width: number;
   height: number;
+  /** CSS object-position, tuned per photo so the important part of the
+   * frame survives whatever crop its grid slot forces. */
+  focus: string;
   sections: ImageSection[];
 }
 
@@ -25,6 +29,7 @@ export const SITE_IMAGES: SiteImage[] = [
     altEn: "Vineyard at the foot of the Andes mountains, under a clear sky",
     width: 2400,
     height: 1740,
+    focus: "center 55%",
     sections: ["hero"],
   },
   {
@@ -33,6 +38,7 @@ export const SITE_IMAGES: SiteImage[] = [
     altEn: "Argentine flag waving in front of a vineyard with the Mendoza mountains behind",
     width: 2400,
     height: 1600,
+    focus: "30% 45%",
     sections: ["hero"],
   },
   {
@@ -41,6 +47,7 @@ export const SITE_IMAGES: SiteImage[] = [
     altEn: "Tractor beside vine rows with the mountains and dramatic clouds behind",
     width: 2400,
     height: 1800,
+    focus: "60% 60%",
     sections: ["hero"],
   },
   {
@@ -49,6 +56,7 @@ export const SITE_IMAGES: SiteImage[] = [
     altEn: "Multicolored hills of the Quebrada, with donkeys grazing at the foot of the mountain",
     width: 2400,
     height: 1600,
+    focus: "45% 68%",
     sections: ["hero"],
   },
   {
@@ -57,6 +65,7 @@ export const SITE_IMAGES: SiteImage[] = [
     altEn: "Bunches of Malbec grapes hanging from the vine during harvest",
     width: 2400,
     height: 1614,
+    focus: "40% 55%",
     sections: ["hero"],
   },
   {
@@ -65,6 +74,7 @@ export const SITE_IMAGES: SiteImage[] = [
     altEn: "Panoramic view of a vineyard with the Andes mountains in the background",
     width: 2400,
     height: 1600,
+    focus: "center 50%",
     sections: ["hero"],
   },
   {
@@ -73,7 +83,8 @@ export const SITE_IMAGES: SiteImage[] = [
     altEn: "Close-up of Malbec grape clusters on the vine",
     width: 1800,
     height: 2400,
-    sections: ["landing"],
+    focus: "center 40%",
+    sections: ["hero"],
   },
   {
     src: "/images/vinedo-hileras-montana.jpg",
@@ -81,6 +92,7 @@ export const SITE_IMAGES: SiteImage[] = [
     altEn: "Rows of vines with mountains in the background on a clear day",
     width: 2400,
     height: 1600,
+    focus: "center 50%",
     sections: ["landing"],
   },
   {
@@ -89,7 +101,8 @@ export const SITE_IMAGES: SiteImage[] = [
     altEn: "Century-old weeping willow in the garden of an Argentine winery",
     width: 1800,
     height: 2400,
-    sections: ["landing"],
+    focus: "center 35%",
+    sections: ["hero"],
   },
   {
     src: "/images/quebrada-humahuaca-panoramica.jpg",
@@ -97,7 +110,8 @@ export const SITE_IMAGES: SiteImage[] = [
     altEn: "Panoramic view of the Quebrada de Humahuaca, with reddish-toned mountains",
     width: 2400,
     height: 1041,
-    sections: ["landing"],
+    focus: "center 60%",
+    sections: ["hero"],
   },
   {
     src: "/images/vino-barrica-botellas.jpg",
@@ -105,10 +119,17 @@ export const SITE_IMAGES: SiteImage[] = [
     altEn: "Two bottles of red wine on an oak barrel, with a vineyard in the background",
     width: 2400,
     height: 1600,
-    sections: ["landing"],
+    focus: "center 40%",
+    sections: ["hero"],
   },
 ];
 
 export function getImagesForSection(section: ImageSection): SiteImage[] {
   return SITE_IMAGES.filter((image) => image.sections.includes(section));
+}
+
+export function findImage(src: string): SiteImage {
+  const image = SITE_IMAGES.find((i) => i.src === src);
+  if (!image) throw new Error(`Unknown image: ${src}`);
+  return image;
 }

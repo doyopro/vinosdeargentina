@@ -1,0 +1,43 @@
+/* Soft radial glow behind the hero title/subtitle/button. Fixed pixel
+   ellipse sizes per breakpoint (tuned by eye), instead of percentages of the
+   text block's own box — that box's height swings wildly (2 vs 4 line wraps
+   on narrow screens), which turned percentage-based ellipses into hard
+   rectangles instead of a soft radial fade. */
+.glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Badge and button carry their own solid backgrounds and don't need this;
+     the ellipse targets the title+ruler+subtitle span between them. */
+  background: radial-gradient(
+    ellipse 320px 440px at 50% 56%,
+    rgba(0, 0, 0, 0.94) 0%,
+    rgba(0, 0, 0, 0.88) 45%,
+    rgba(0, 0, 0, 0.55) 75%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+@media (min-width: 640px) {
+  .glow {
+    background: radial-gradient(
+      ellipse 480px 280px at 50% 50%,
+      rgba(0, 0, 0, 0.94) 0%,
+      rgba(0, 0, 0, 0.85) 45%,
+      rgba(0, 0, 0, 0.5) 75%,
+      rgba(0, 0, 0, 0) 100%
+    );
+  }
+}
+
+@media (min-width: 1024px) {
+  .glow {
+    background: radial-gradient(
+      ellipse 620px 320px at 50% 48%,
+      rgba(0, 0, 0, 0.92) 0%,
+      rgba(0, 0, 0, 0.82) 45%,
+      rgba(0, 0, 0, 0.46) 75%,
+      rgba(0, 0, 0, 0) 100%
+    );
+  }
+}

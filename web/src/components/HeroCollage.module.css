@@ -1,0 +1,82 @@
+.wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.grid {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  height: 100%;
+  /* Near-black, never maroon: this is what shows through the 3px seams. */
+  background: #060505;
+}
+
+.tile {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Desktop: 6 cols x 4 rows, 9 photos, zero gaps, sizes varied
+   (3 big squares, 2 tall verticals, 4 wide strips). */
+.gridDesktop {
+  composes: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  grid-template-areas:
+    "a a b c c d"
+    "a a b e e d"
+    "f f g g h h"
+    "f f g g i i";
+}
+
+/* Tablet: 4 cols x 3 rows, 7 photos (1 big square, 4 small squares, 2 wide). */
+.gridTablet {
+  composes: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-areas:
+    "a a b c"
+    "a a d d"
+    "e f f g";
+}
+
+/* Mobile: 2 cols x 3 rows, 4 photos (2 wide strips, 2 small squares). */
+.gridMobile {
+  composes: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-areas:
+    "a a"
+    "b c"
+    "d d";
+}
+
+.a {
+  grid-area: a;
+}
+.b {
+  grid-area: b;
+}
+.c {
+  grid-area: c;
+}
+.d {
+  grid-area: d;
+}
+.e {
+  grid-area: e;
+}
+.f {
+  grid-area: f;
+}
+.g {
+  grid-area: g;
+}
+.h {
+  grid-area: h;
+}
+.i {
+  grid-area: i;
+}
