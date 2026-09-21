@@ -2,11 +2,22 @@
    ellipse sizes per breakpoint (tuned by eye), instead of percentages of the
    text block's own box — that box's height swings wildly (2 vs 4 line wraps
    on narrow screens), which turned percentage-based ellipses into hard
-   rectangles instead of a soft radial fade. */
+   rectangles instead of a soft radial fade.
+
+   The element's own box (inset) is bled well past the ellipse's radii in
+   every direction: backgrounds are clipped to the border box, so a box
+   smaller than 2x the gradient's radius chops the fade off before it
+   reaches transparent — that was the other source of the hard edge. A
+   large blur is layered on top as a second, independent safety net. */
 .glow {
   position: absolute;
-  inset: 0;
+  /* Generous bleed in every direction: backgrounds clip to the border box,
+     and these ellipses' radii (up to 620px) are bigger than half the text
+     block's own width/height, so without this bleed the fade got chopped
+     off mid-fall-off — that was the hard edge. */
+  inset: -200px;
   pointer-events: none;
+  filter: blur(20px);
   /* Badge and button carry their own solid backgrounds and don't need this;
      the ellipse targets the title+ruler+subtitle span between them. */
   background: radial-gradient(
