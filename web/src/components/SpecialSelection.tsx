@@ -1,27 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useCart } from "@/lib/CartContext";
 import { lineKey } from "@/lib/cart";
-import { fetchPacks, toPackLine } from "@/lib/packs";
+import { toPackLine } from "@/lib/packs";
 import { Pack } from "@/lib/types";
 import { PackCard } from "@/components/PackCard";
 
-export function SpecialSelection() {
+export function SpecialSelection({ packs }: { packs: Pack[] }) {
   const t = useTranslations();
   const { cart, addPack } = useCart();
-  const [packs, setPacks] = useState<Pack[]>([]);
-
-  useEffect(() => {
-    let active = true;
-    fetchPacks().then((p) => {
-      if (active) setPacks(p);
-    });
-    return () => {
-      active = false;
-    };
-  }, []);
 
   if (packs.length === 0) return null;
 

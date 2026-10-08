@@ -1,7 +1,34 @@
 export type Region = "cuyo" | "norte" | "patagonia";
 export type WineType = "tinto" | "blanco" | "rosado";
 
-export interface Product {
+/** Optional editorial fields; any of them can be null (render nothing for a null row). */
+export interface ProductDetail {
+  grape: string | null;
+  subregion: string | null;
+  altitude_label: string | null;
+  aging_es: string | null;
+  aging_en: string | null;
+  profile_es: string | null;
+  profile_en: string | null;
+  pairing_es: string | null;
+  pairing_en: string | null;
+  serve_temp: string | null;
+  why_es: string | null;
+  why_en: string | null;
+}
+
+export interface Bodega {
+  slug: string;
+  name: string;
+  location_es: string | null;
+  location_en: string | null;
+  description_es: string | null;
+  description_en: string | null;
+  sort_order: number | null;
+}
+
+export interface Product extends ProductDetail {
+  bodega_slug: string | null;
   id: string;
   sku: string;
   name: string;
@@ -25,6 +52,8 @@ export interface Product {
 // Shape kept identical to the original catalogData / cart item built by index.html
 export interface CatalogWine {
   id: string;
+  sku: string;
+  bodega_slug: string | null;
   type: WineType;
   region: Region;
   provincia: string;

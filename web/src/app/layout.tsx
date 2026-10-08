@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Montserrat } from "next/font/google";
 import { I18nProvider } from "@/lib/i18n";
 import { CartProvider } from "@/lib/CartContext";
+import { AgeGate } from "@/components/AgeGate";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -25,12 +27,13 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "De Altura Wines | Desde los Andes a Canarias",
   description:
     "El prestigio mundial del vino argentino, desde la inmensidad de los Andes directo a Islas Canarias. Catálogo exclusivo.",
   openGraph: {
     type: "website",
-    url: "https://doyopro.github.io/vinosdeargentina/",
+    url: SITE_URL,
     title: "De Altura Wines | Desde los Andes a Canarias",
     description:
       "El prestigio mundial del vino argentino, desde la inmensidad de los Andes directo a Islas Canarias. Catálogo exclusivo.",
@@ -49,7 +52,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="es" className={`${playfair.variable} ${montserrat.variable} scroll-smooth`}>
       <body className="antialiased relative font-sans">
         <I18nProvider>
-          <CartProvider>{children}</CartProvider>
+          <CartProvider>
+            {children}
+            <AgeGate />
+          </CartProvider>
         </I18nProvider>
       </body>
     </html>

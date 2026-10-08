@@ -52,7 +52,11 @@
   "packHideWines": "Hide the wines",
   "packFeatured": "Featured",
   "packAddAria": "Add {name} to cart",
-  "wineType": {"tinto": "Red", "blanco": "White", "rosado": "Rosé"},
+  "wineType": {
+    "tinto": "Red",
+    "blanco": "White",
+    "rosado": "Rosé"
+  },
   "cartEmpty": "The cart is empty",
   "cartTitle": "Your Cart",
   "cartTotal": "Total",
@@ -105,5 +109,253 @@
     "backToStore": "Back to Store",
     "whatsappSupport": "WhatsApp Support",
     "footer": "De Altura Wines · Canarias 2026"
+  },
+  "legal": {
+    "draftNotice": "Draft pending review",
+    "backToShop": "Back to shop",
+    "updated": "Text in square brackets is pending confirmation.",
+    "aviso": {
+      "title": "Legal notice",
+      "sections": [
+        {
+          "h": "1. Website owner",
+          "p": [
+            "In compliance with Spanish Law 34/2002 on Information Society Services and Electronic Commerce (LSSI-CE), the owner of this website is:",
+            "Company name: [RAZÓN SOCIAL] · Tax ID: [NIF] · Address: [DOMICILIO] · Email: [EMAIL] · Phone: [TELÉFONO] · Registry details: [COMMERCIAL REGISTRY DETAILS, IF APPLICABLE]."
+          ]
+        },
+        {
+          "h": "2. Purpose",
+          "p": [
+            "This website (De Altura Wines) presents and sells Argentine wines online, by the case and in packs, to customers aged 18 or over, with delivery to the Canary Islands.",
+            "Accessing and using the site makes you a user and implies acceptance of this legal notice."
+          ]
+        },
+        {
+          "h": "3. Intellectual and industrial property",
+          "p": [
+            "Texts, photographs, designs, logos, trademarks and other content on the site belong to [RAZÓN SOCIAL] or to third parties who have authorised their use, and are protected by intellectual and industrial property law. Reproduction, distribution or modification without express authorisation is forbidden. Winery and wine names and trademarks belong to their respective owners."
+          ]
+        },
+        {
+          "h": "4. Liability",
+          "p": [
+            "The owner strives to keep the information on the site up to date and accurate, but does not guarantee the absence of errors or uninterrupted availability. Prices and product availability may change without notice.",
+            "The owner is not responsible for the content of third-party sites linked from this website."
+          ]
+        },
+        {
+          "h": "5. Governing law and jurisdiction",
+          "p": [
+            "This legal notice is governed by Spanish law. For any dispute, unless consumer law provides otherwise, the parties submit to the courts of [JURISDICTION TO BE CONFIRMED]."
+          ]
+        }
+      ]
+    },
+    "privacidad": {
+      "title": "Privacy policy",
+      "sections": [
+        {
+          "h": "1. Data controller",
+          "p": [
+            "[RAZÓN SOCIAL], Tax ID [NIF], registered at [DOMICILIO]. Data protection contact: [EMAIL]."
+          ]
+        },
+        {
+          "h": "2. Data we process",
+          "p": [
+            "To handle your order we process: name, email, phone, delivery address (including island and postcode) and order data (products, amounts, promo code if used).",
+            "We do not store your card details: payment is made directly on Stripe's payment gateway."
+          ]
+        },
+        {
+          "h": "3. Purpose and legal basis",
+          "p": [
+            "Handling and delivering your order, and answering your enquiries: performance of a contract (art. 6.1.b GDPR).",
+            "Meeting tax, accounting and invoicing obligations: legal obligation (art. 6.1.c GDPR).",
+            "Fraud prevention and payment security: legitimate interest (art. 6.1.f GDPR)."
+          ]
+        },
+        {
+          "h": "4. Retention",
+          "p": [
+            "We keep data for as long as the commercial relationship lasts and, afterwards, blocked for the statutory limitation periods applicable to tax, commercial and consumer obligations ([PERIODS TO BE CONFIRMED])."
+          ]
+        },
+        {
+          "h": "5. Recipients",
+          "p": [
+            "Stripe, as payment service provider. Supabase, as technology provider hosting the data. Carriers or couriers, when the order is shipped. Public authorities, where legally required.",
+            "Some of these providers may process data outside the European Economic Area with appropriate safeguards (for example, standard contractual clauses) [SERVER LOCATION AND SAFEGUARDS TO BE CONFIRMED]."
+          ]
+        },
+        {
+          "h": "6. Your rights",
+          "p": [
+            "You can exercise your rights of access, rectification, erasure, objection, restriction and portability by writing to [EMAIL], stating your request and attaching a copy of your ID where necessary.",
+            "If you believe your data is not being handled properly, you can lodge a complaint with the Spanish Data Protection Agency (www.aepd.es)."
+          ]
+        }
+      ]
+    },
+    "cookies": {
+      "title": "Cookie policy",
+      "sections": [
+        {
+          "h": "1. What we use",
+          "p": [
+            "This site only uses technical cookies and local storage that are strictly necessary for it to work. They do not require consent."
+          ]
+        },
+        {
+          "h": "2. Details",
+          "p": [
+            "Shopping cart: stores in your browser the products you add (local storage).",
+            "Language: remembers whether you prefer Spanish or English.",
+            "Age verification: remembers that you confirmed you are 18 or over.",
+            "Temporary order data: during checkout your delivery details are kept in your browser to complete the process.",
+            "Payment: Stripe's payment gateway may use its own technical and fraud-prevention mechanisms while the payment form loads [TO BE CONFIRMED]."
+          ]
+        },
+        {
+          "h": "3. Analytics and advertising",
+          "p": [
+            "We currently use no analytics or advertising cookies. If we add them in the future, we will tell you and ask for your consent before activating them."
+          ]
+        },
+        {
+          "h": "4. How to remove them",
+          "p": [
+            "You can clear the site's storage from your browser settings. If you do, your cart will be emptied and you will be asked your age again."
+          ]
+        }
+      ]
+    },
+    "condiciones": {
+      "title": "Terms of purchase",
+      "sections": [
+        {
+          "h": "1. Scope",
+          "p": [
+            "These terms govern the purchase of wines through this website, owned by [RAZÓN SOCIAL] (Tax ID [NIF]). By placing an order you accept these terms."
+          ]
+        },
+        {
+          "h": "2. Products and prices",
+          "p": [
+            "Prices are shown in euros and include IGIC. Wines are sold by the full case and in packs, as indicated on each product. We reserve the right to correct obvious pricing errors before confirming an order."
+          ]
+        },
+        {
+          "h": "3. Sales to adults only",
+          "p": [
+            "Alcoholic beverages are sold exclusively to people aged 18 or over. By purchasing you declare that you are; proof of age may be requested on delivery."
+          ]
+        },
+        {
+          "h": "4. Ordering process",
+          "p": [
+            "Add products to your cart, complete your delivery details and pay. You will receive an order confirmation by email [TO BE CONFIRMED]. The contract is formed once payment is confirmed."
+          ]
+        },
+        {
+          "h": "5. Payment",
+          "p": [
+            "Payment is made by card through Stripe. We do not store your card details."
+          ]
+        },
+        {
+          "h": "6. Delivery",
+          "p": [
+            "You can pick up your order in Lanzarote or request shipping from Lanzarote at an additional cost depending on destination. See the Shipping and returns page for details."
+          ]
+        },
+        {
+          "h": "7. Right of withdrawal",
+          "p": [
+            "As a consumer you have the right to withdraw from the purchase within 14 calendar days of receipt, without giving a reason, subject to the legal exceptions that apply (for example, products that have been unsealed or that cannot be returned by their nature) [EXCEPTIONS AND PROCEDURE TO BE CONFIRMED].",
+            "To exercise it, write to [EMAIL] stating your order number."
+          ]
+        },
+        {
+          "h": "8. Warranty and customer service",
+          "p": [
+            "Products are covered by the legal guarantee of conformity under consumer law [APPLICABLE PERIODS TO BE CONFIRMED]. For any issue: [EMAIL] · [TELÉFONO]."
+          ]
+        },
+        {
+          "h": "9. Governing law",
+          "p": [
+            "These terms are governed by Spanish law. You may also use the European online dispute resolution platform."
+          ]
+        }
+      ]
+    },
+    "envios": {
+      "title": "Shipping and returns",
+      "sections": [
+        {
+          "h": "1. Pick-up in Lanzarote",
+          "p": [
+            "You can pick up your order in Lanzarote [PICK-UP ADDRESS AND HOURS TO BE CONFIRMED]."
+          ]
+        },
+        {
+          "h": "2. Shipping",
+          "p": [
+            "Orders ship from Lanzarote at an additional cost depending on destination. The cost will be confirmed before payment [QUOTING PROCESS TO BE CONFIRMED].",
+            "Delivery times: [PLAZOS]."
+          ]
+        },
+        {
+          "h": "3. Broken or damaged bottle",
+          "p": [
+            "Check the package when you receive it. If a bottle arrives broken or damaged, let us know within 48 hours of delivery by writing to [EMAIL], with photos of the package and the product. We will arrange a replacement or refund [TO BE CONFIRMED]."
+          ]
+        },
+        {
+          "h": "4. Returns",
+          "p": [
+            "Returns follow the Terms of purchase (right of withdrawal). Write to us at [EMAIL] before sending anything so we can tell you how to proceed [RETURN PROCEDURE AND COSTS TO BE CONFIRMED]."
+          ]
+        }
+      ]
+    }
+  },
+  "footerNav": {
+    "label": "Site links",
+    "bodegas": "Wineries",
+    "shop": "Shop",
+    "aviso": "Legal notice",
+    "privacidad": "Privacy",
+    "cookies": "Cookies",
+    "condiciones": "Terms of purchase",
+    "envios": "Shipping & returns"
+  },
+  "wineDetail": {
+    "backToShop": "← Back to shop",
+    "perBottle": "per bottle",
+    "boxesNote": "Sold by the case of {n} bottles.",
+    "profile": "Profile",
+    "grape": "Grape",
+    "region": "Region",
+    "altitude": "Altitude",
+    "aging": "Aging",
+    "serveTemp": "Serving temperature",
+    "taste": "What does it taste like?",
+    "pairing": "Ideal with",
+    "why": "Why we chose it"
+  },
+  "bodegasPage": {
+    "title": "Wineries",
+    "subtitle": "The high-altitude wineries behind our selection.",
+    "winery": "Winery",
+    "viewWines": "See their wines",
+    "wines": "{n, plural, one {# wine} other {# wines}}"
+  },
+  "ageGate": {
+    "title": "Are you 18 or older?",
+    "yes": "Yes",
+    "no": "No"
   }
 }

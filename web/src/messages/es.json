@@ -52,7 +52,11 @@
   "packHideWines": "Ocultar los vinos",
   "packFeatured": "Destacado",
   "packAddAria": "Añadir {name} al carrito",
-  "wineType": {"tinto": "Tinto", "blanco": "Blanco", "rosado": "Rosado"},
+  "wineType": {
+    "tinto": "Tinto",
+    "blanco": "Blanco",
+    "rosado": "Rosado"
+  },
   "cartEmpty": "El carrito está vacío",
   "cartTitle": "Tu Carrito",
   "cartTotal": "Total",
@@ -105,5 +109,253 @@
     "backToStore": "Volver a la Tienda",
     "whatsappSupport": "WhatsApp Support",
     "footer": "De Altura Wines · Canarias 2026"
+  },
+  "legal": {
+    "draftNotice": "Borrador pendiente de revisión",
+    "backToShop": "Volver a la tienda",
+    "updated": "Los textos entre corchetes son datos pendientes de confirmar.",
+    "aviso": {
+      "title": "Aviso legal",
+      "sections": [
+        {
+          "h": "1. Titular del sitio web",
+          "p": [
+            "En cumplimiento de la Ley 34/2002, de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSI-CE), se informa de que el titular de este sitio web es:",
+            "Razón social: [RAZÓN SOCIAL] · NIF: [NIF] · Domicilio: [DOMICILIO] · Email: [EMAIL] · Teléfono: [TELÉFONO] · Datos registrales: [DATOS DEL REGISTRO MERCANTIL, SI APLICA]."
+          ]
+        },
+        {
+          "h": "2. Objeto",
+          "p": [
+            "Este sitio web (De Altura Wines) tiene por objeto la presentación y la venta en línea de vinos argentinos, en cajas y packs, a clientes mayores de 18 años, con entrega en las Islas Canarias.",
+            "El acceso y uso del sitio atribuye la condición de usuario e implica la aceptación de este aviso legal."
+          ]
+        },
+        {
+          "h": "3. Propiedad intelectual e industrial",
+          "p": [
+            "Los textos, fotografías, diseños, logotipos, marcas y demás contenidos del sitio son titularidad de [RAZÓN SOCIAL] o de terceros que han autorizado su uso, y están protegidos por la normativa de propiedad intelectual e industrial. Queda prohibida su reproducción, distribución o transformación sin autorización expresa. Las marcas y nombres de las bodegas y de los vinos pertenecen a sus respectivos titulares."
+          ]
+        },
+        {
+          "h": "4. Responsabilidad",
+          "p": [
+            "El titular se esfuerza por mantener la información del sitio actualizada y exacta, pero no garantiza la ausencia de errores ni la disponibilidad ininterrumpida del servicio. Los precios y la disponibilidad de los productos pueden cambiar sin previo aviso.",
+            "El titular no se responsabiliza de los contenidos de sitios de terceros enlazados desde esta web."
+          ]
+        },
+        {
+          "h": "5. Legislación aplicable y jurisdicción",
+          "p": [
+            "Este aviso legal se rige por la legislación española. Para cualquier controversia, y salvo que la normativa de consumidores establezca otro fuero, las partes se someterán a los juzgados y tribunales de [JURISDICCIÓN A CONFIRMAR]."
+          ]
+        }
+      ]
+    },
+    "privacidad": {
+      "title": "Política de privacidad",
+      "sections": [
+        {
+          "h": "1. Responsable del tratamiento",
+          "p": [
+            "[RAZÓN SOCIAL], NIF [NIF], con domicilio en [DOMICILIO]. Contacto en materia de protección de datos: [EMAIL]."
+          ]
+        },
+        {
+          "h": "2. Datos que tratamos",
+          "p": [
+            "Para gestionar tu pedido tratamos: nombre, email, teléfono, dirección de entrega (incluida la isla y el código postal) y los datos del pedido (productos, importes, código promocional si lo usas).",
+            "No almacenamos los datos de tu tarjeta: el pago se realiza directamente en la pasarela de Stripe."
+          ]
+        },
+        {
+          "h": "3. Finalidad y base jurídica",
+          "p": [
+            "Gestionar y entregar tu pedido, y atender tus consultas: ejecución del contrato (art. 6.1.b RGPD).",
+            "Cumplir obligaciones fiscales, contables y de facturación: obligación legal (art. 6.1.c RGPD).",
+            "Prevención del fraude y seguridad del pago: interés legítimo (art. 6.1.f RGPD)."
+          ]
+        },
+        {
+          "h": "4. Plazos de conservación",
+          "p": [
+            "Conservaremos los datos mientras dure la relación comercial y, después, bloqueados durante los plazos de prescripción legales aplicables a las obligaciones fiscales, mercantiles y de consumo ([PLAZOS A CONFIRMAR])."
+          ]
+        },
+        {
+          "h": "5. Destinatarios",
+          "p": [
+            "Stripe, como proveedor del servicio de pago. Supabase, como proveedor tecnológico de alojamiento de datos. Empresas de transporte o mensajería, cuando el pedido se envía. Administraciones públicas y autoridades, cuando exista obligación legal.",
+            "Algunos de estos proveedores pueden tratar datos fuera del Espacio Económico Europeo con las garantías adecuadas (por ejemplo, cláusulas contractuales tipo) [UBICACIÓN DE LOS SERVIDORES Y GARANTÍAS A CONFIRMAR]."
+          ]
+        },
+        {
+          "h": "6. Tus derechos",
+          "p": [
+            "Puedes ejercer los derechos de acceso, rectificación, supresión, oposición, limitación del tratamiento y portabilidad escribiendo a [EMAIL], indicando tu petición y adjuntando una copia de tu documento de identidad cuando sea necesario.",
+            "Si consideras que tus datos no se tratan correctamente, puedes presentar una reclamación ante la Agencia Española de Protección de Datos (www.aepd.es)."
+          ]
+        }
+      ]
+    },
+    "cookies": {
+      "title": "Política de cookies",
+      "sections": [
+        {
+          "h": "1. Qué usamos",
+          "p": [
+            "Este sitio solo utiliza cookies y almacenamiento local técnicos, estrictamente necesarios para que funcione. No requieren consentimiento."
+          ]
+        },
+        {
+          "h": "2. Detalle",
+          "p": [
+            "Carrito de la compra: guarda en tu navegador los productos que añades (almacenamiento local).",
+            "Idioma: recuerda si prefieres español o inglés.",
+            "Verificación de edad: recuerda que has confirmado tener 18 años o más.",
+            "Datos temporales del pedido: durante el pago se guardan en tu navegador los datos de entrega para completar el proceso.",
+            "Pago: la pasarela de pago de Stripe puede utilizar sus propios mecanismos técnicos y de prevención del fraude mientras se carga el formulario de pago [CONFIRMAR]."
+          ]
+        },
+        {
+          "h": "3. Analítica y publicidad",
+          "p": [
+            "Por ahora no utilizamos cookies de analítica ni de publicidad. Si en el futuro las incorporamos, te lo indicaremos y solicitaremos tu consentimiento antes de activarlas."
+          ]
+        },
+        {
+          "h": "4. Cómo eliminarlas",
+          "p": [
+            "Puedes borrar el almacenamiento del sitio desde la configuración de tu navegador. Si lo haces, se vaciará tu carrito y se volverá a preguntar tu edad."
+          ]
+        }
+      ]
+    },
+    "condiciones": {
+      "title": "Condiciones de compra",
+      "sections": [
+        {
+          "h": "1. Ámbito",
+          "p": [
+            "Estas condiciones regulan la compra de vinos a través de este sitio web, cuyo titular es [RAZÓN SOCIAL] (NIF [NIF]). Al realizar un pedido, aceptas estas condiciones."
+          ]
+        },
+        {
+          "h": "2. Productos y precios",
+          "p": [
+            "Los precios se muestran en euros e incluyen el IGIC. La venta se realiza por cajas completas y por packs, tal y como se indica en cada producto. Nos reservamos el derecho de corregir errores evidentes de precio antes de confirmar el pedido."
+          ]
+        },
+        {
+          "h": "3. Venta a mayores de 18 años",
+          "p": [
+            "La venta de bebidas alcohólicas está dirigida exclusivamente a personas mayores de 18 años. Al comprar declaras serlo; podremos solicitar acreditación en la entrega."
+          ]
+        },
+        {
+          "h": "4. Proceso de pedido",
+          "p": [
+            "Añade los productos al carrito, completa tus datos de entrega y realiza el pago. Recibirás la confirmación del pedido por email [CONFIRMAR]. El contrato se entiende formalizado cuando se confirma el pago."
+          ]
+        },
+        {
+          "h": "5. Pago",
+          "p": [
+            "El pago se realiza con tarjeta mediante Stripe. No almacenamos los datos de tu tarjeta."
+          ]
+        },
+        {
+          "h": "6. Entrega",
+          "p": [
+            "Puedes retirar tu pedido en Lanzarote o solicitar el envío desde Lanzarote, con coste adicional según destino. Consulta la página de Envíos y devoluciones para más detalle."
+          ]
+        },
+        {
+          "h": "7. Derecho de desistimiento",
+          "p": [
+            "Como consumidor tienes derecho a desistir de la compra en un plazo de 14 días naturales desde la recepción, sin necesidad de justificación, salvo las excepciones legales aplicables (por ejemplo, productos que se hayan desprecintado o que por su naturaleza no puedan devolverse) [CONFIRMAR EXCEPCIONES Y PROCEDIMIENTO].",
+            "Para ejercerlo, escribe a [EMAIL] indicando tu número de pedido."
+          ]
+        },
+        {
+          "h": "8. Garantía y atención al cliente",
+          "p": [
+            "Los productos están amparados por la garantía legal de conformidad prevista en la normativa de consumidores [CONFIRMAR PLAZOS APLICABLES]. Para cualquier incidencia: [EMAIL] · [TELÉFONO]."
+          ]
+        },
+        {
+          "h": "9. Legislación aplicable",
+          "p": [
+            "Estas condiciones se rigen por la legislación española. Puedes acudir también a la plataforma europea de resolución de litigios en línea."
+          ]
+        }
+      ]
+    },
+    "envios": {
+      "title": "Envíos y devoluciones",
+      "sections": [
+        {
+          "h": "1. Retirada en Lanzarote",
+          "p": [
+            "Puedes retirar tu pedido en Lanzarote [DIRECCIÓN Y HORARIO DE RETIRADA A CONFIRMAR]."
+          ]
+        },
+        {
+          "h": "2. Envíos",
+          "p": [
+            "Los envíos salen desde Lanzarote y tienen un coste adicional según el destino. El coste se confirmará antes del pago [MECANISMO DE COTIZACIÓN A CONFIRMAR].",
+            "Plazos de entrega: [PLAZOS]."
+          ]
+        },
+        {
+          "h": "3. Botella rota o dañada",
+          "p": [
+            "Revisa el paquete al recibirlo. Si llega una botella rota o dañada, avísanos en un máximo de 48 horas desde la entrega escribiendo a [EMAIL] y adjunta fotos del paquete y del producto. Gestionaremos la reposición o el reembolso [CONFIRMAR]."
+          ]
+        },
+        {
+          "h": "4. Devoluciones",
+          "p": [
+            "Las devoluciones se rigen por lo indicado en las Condiciones de compra (derecho de desistimiento). Escríbenos a [EMAIL] antes de enviar nada para indicarte cómo proceder [CONFIRMAR PROCEDIMIENTO Y COSTES DE DEVOLUCIÓN]."
+          ]
+        }
+      ]
+    }
+  },
+  "footerNav": {
+    "label": "Enlaces del sitio",
+    "bodegas": "Bodegas",
+    "shop": "Tienda",
+    "aviso": "Aviso legal",
+    "privacidad": "Privacidad",
+    "cookies": "Cookies",
+    "condiciones": "Condiciones de compra",
+    "envios": "Envíos y devoluciones"
+  },
+  "wineDetail": {
+    "backToShop": "← Volver a la tienda",
+    "perBottle": "por botella",
+    "boxesNote": "Se vende por cajas de {n} botellas.",
+    "profile": "Perfil",
+    "grape": "Uva",
+    "region": "Región",
+    "altitude": "Altitud",
+    "aging": "Crianza",
+    "serveTemp": "Temperatura de servicio",
+    "taste": "¿A qué sabe?",
+    "pairing": "Ideal con",
+    "why": "Por qué lo elegimos"
+  },
+  "bodegasPage": {
+    "title": "Bodegas",
+    "subtitle": "Las bodegas de altura detrás de nuestra selección.",
+    "winery": "Bodega",
+    "viewWines": "Ver sus vinos",
+    "wines": "{n, plural, one {# vino} other {# vinos}}"
+  },
+  "ageGate": {
+    "title": "¿Tenés 18 años o más?",
+    "yes": "Sí",
+    "no": "No"
   }
 }
