@@ -18,6 +18,8 @@ export interface Product {
   image_url: string | null;
   created_at: string;
   is_available: boolean;
+  is_featured: boolean;
+  sort_order: number | null;
 }
 
 // Shape kept identical to the original catalogData / cart item built by index.html
@@ -34,6 +36,8 @@ export interface CatalogWine {
   notes_en: string | null;
   image_url: string | null;
   is_available: boolean;
+  is_featured: boolean;
+  sort_order: number | null;
 }
 
 export interface CartItem extends CatalogWine {

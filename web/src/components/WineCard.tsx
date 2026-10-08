@@ -24,7 +24,7 @@ export function WineCard({ wine, qty, onChangeQty }: Props) {
 
   return (
     <article
-      className={`flex flex-col bg-white rounded-xl shadow-sm hover:shadow-lg transition-all border border-stone-100 overflow-hidden h-full ${inCartCls} ${outOfStock ? "opacity-75" : ""}`}
+      className={`flex flex-col bg-white rounded-xl shadow-sm hover:shadow-lg transition-all border border-stone-100 overflow-hidden h-full ${inCartCls} ${outOfStock ? "opacity-60 grayscale-[40%]" : ""}`}
     >
       <div className="h-72 bg-stone-50 relative flex items-center justify-center p-6">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -37,10 +37,16 @@ export function WineCard({ wine, qty, onChangeQty }: Props) {
           <span className="bg-wine-900/90 text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
             Caja de {wine.box}
           </span>
-          {outOfStock && (
+          {outOfStock ? (
             <span className="bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
-              SIN STOCK
+              {t("outOfStock")}
             </span>
+          ) : (
+            wine.is_featured && (
+              <span className="bg-gold-500 text-wine-900 text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-md">
+                {t("featuredBadge")}
+              </span>
+            )
           )}
         </div>
       </div>
@@ -66,34 +72,29 @@ export function WineCard({ wine, qty, onChangeQty }: Props) {
               <div className="text-[15px] font-bold text-wine-800">{totalGross} €</div>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center bg-stone-100 rounded-lg h-11">
-              <button
-                onClick={() => onChangeQty(wine.id, -1)}
-                disabled={outOfStock}
-                className="w-10 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                -
-              </button>
-              <span className="w-8 text-center text-sm font-bold">{qty}</span>
+          {outOfStock ? (
+            <div className="h-11 flex items-center justify-center rounded-lg bg-stone-200 text-stone-500 text-[10px] font-bold uppercase tracking-widest">
+              {t("outOfStock")}
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <div className="flex items-center bg-stone-100 rounded-lg h-11">
+                <button onClick={() => onChangeQty(wine.id, -1)} className="w-10 font-bold">
+                  -
+                </button>
+                <span className="w-8 text-center text-sm font-bold">{qty}</span>
+                <button onClick={() => onChangeQty(wine.id, 1)} className="w-10 font-bold">
+                  +
+                </button>
+              </div>
               <button
                 onClick={() => onChangeQty(wine.id, 1)}
-                disabled={outOfStock}
-                className="w-10 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex-grow text-white font-bold h-11 rounded-lg text-[10px] uppercase tracking-widest bg-wine-900 hover:bg-wine-800"
               >
-                +
+                {t("addToCart")}
               </button>
             </div>
-            <button
-              onClick={() => onChangeQty(wine.id, 1)}
-              disabled={outOfStock}
-              className={`flex-grow text-white font-bold h-11 rounded-lg text-[10px] uppercase tracking-widest ${
-                outOfStock ? "bg-stone-300 cursor-not-allowed" : "bg-wine-900 hover:bg-wine-800"
-              }`}
-            >
-              {outOfStock ? t("notAvailable") : t("addToCart")}
-            </button>
-          </div>
+          )}
         </div>
       </div>
     </article>

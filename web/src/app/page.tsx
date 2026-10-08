@@ -14,6 +14,14 @@ import { Cart, CatalogWine, Product, Region, WineType } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
+// Available wines first; within each group featured on top, then sort_order
+// (nulls last), then name. Unavailable wines always sink to the end.
+const byCatalogPriority = (a: CatalogWine, b: CatalogWine) =>
+  Number(b.is_available) - Number(a.is_available) ||
+  Number(b.is_featured) - Number(a.is_featured) ||
+  (a.sort_order ?? Infinity) - (b.sort_order ?? Infinity) ||
+  a.name.localeCompare(b.name);
+
 const REGIONS: Region[] = ["cuyo", "norte", "patagonia"];
 const PROVINCIAS = ["Mendoza", "San Juan", "Salta", "Jujuy", "Patagonia"];
 
@@ -36,7 +44,7 @@ export default function Home() {
     (async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, sku, name, price_retail, created_at, bodega, region, type, box_size, aiem_rate, igic_rate, notes_es, notes_en, stock, image_url, is_available");
+        .select("id, sku, name, price_retail, created_at, bodega, region, type, box_size, aiem_rate, igic_rate, notes_es, notes_en, stock, image_url, is_available, is_featured, sort_order");
       if (error) {
         console.error("Error getWines:", error);
         return;
@@ -56,14 +64,10 @@ export default function Home() {
           notes_en: p.notes_en,
           image_url: p.image_url,
           is_available: p.is_available,
+          is_featured: p.is_featured,
+          sort_order: p.sort_order,
         }))
-        .sort((a, b) => {
-          if (a.bodega === "Buenos Aires" && b.bodega !== "Buenos Aires") return -1;
-          if (b.bodega === "Buenos Aires" && a.bodega !== "Buenos Aires") return 1;
-          const bOrder = (a.bodega || "").localeCompare(b.bodega || "");
-          if (bOrder !== 0) return bOrder;
-          return a.price - b.price;
-        });
+        .sort(byCatalogPriority);
       setCatalogData(wines);
     })();
     return () => {
@@ -74,7 +78,7 @@ export default function Home() {
   const updateQty = (id: string, change: number) => {
     setCart((prev) => {
       const wine = catalogData.find((w) => w.id === id);
-      if (!wine) return prev;
+      if (!wine || (change > 0 && !wine.is_available)) return prev;
       const qty = (prev[id] ? prev[id].qty : 0) + change;
       const next = { ...prev };
       if (qty > 0) next[id] = { ...wine, qty };
@@ -104,16 +108,27 @@ export default function Home() {
     });
   };
 
+  const isFiltering = typeFilter.size > 0 || provinciaFilter.size > 0 || sortPrice !== "default";
+
   const filtered = useMemo(() => {
     let list = catalogData.filter((w) => {
       if (typeFilter.size > 0 && !typeFilter.has(w.type)) return false;
       if (provinciaFilter.size > 0 && !provinciaFilter.has(w.provincia)) return false;
       return true;
     });
-    if (sortPrice === "asc") list = [...list].sort((a, b) => a.price - b.price);
-    else if (sortPrice === "desc") list = [...list].sort((a, b) => b.price - a.price);
+    // Featured wines live in "Recomendados" until the user filters/sorts; then
+    // they join the grid so no result is hidden.
+    if (!isFiltering) list = list.filter((w) => !w.is_featured || !w.is_available);
+    const availFirst = (a: CatalogWine, b: CatalogWine) => Number(b.is_available) - Number(a.is_available);
+    if (sortPrice === "asc") list = [...list].sort((a, b) => availFirst(a, b) || a.price - b.price);
+    else if (sortPrice === "desc") list = [...list].sort((a, b) => availFirst(a, b) || b.price - a.price);
     return list;
-  }, [catalogData, typeFilter, provinciaFilter, sortPrice]);
+  }, [catalogData, typeFilter, provinciaFilter, sortPrice, isFiltering]);
+
+  const featuredWines = useMemo(
+    () => catalogData.filter((w) => w.is_featured && w.is_available),
+    [catalogData]
+  );
 
   const cartCount = Object.values(cart).reduce((sum, item) => sum + item.qty, 0);
 
@@ -231,6 +246,22 @@ export default function Home() {
           ))}
         </div>
 
+        {!isFiltering && featuredWines.length > 0 && (
+          <section aria-labelledby="featured-title" className="rounded-2xl border border-gold-500/30 bg-gradient-to-b from-gold-500/10 to-transparent p-5 md:p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <span className="h-px w-8 bg-gold-500" aria-hidden />
+              <h3 id="featured-title" className="text-3xl font-serif text-wine-900">
+                {t("featuredTitle")}
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredWines.map((w) => (
+                <WineCard key={`featured-${w.id}`} wine={w} qty={cart[w.id]?.qty ?? 0} onChangeQty={updateQty} />
+              ))}
+            </div>
+          </section>
+        )}
+
         {REGIONS.map((region) => {
           const wines = filtered.filter((w) => w.region === region);
           if (wines.length === 0) return null;
@@ -246,7 +277,7 @@ export default function Home() {
           );
         })}
 
-        {filtered.length === 0 && (
+        {filtered.length === 0 && (isFiltering || featuredWines.length === 0) && (
           <div className="py-16 text-center text-stone-400 italic">{t("noResults")}</div>
         )}
 
