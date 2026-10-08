@@ -15,6 +15,21 @@ export interface ProductDetail {
   serve_temp: string | null;
   why_es: string | null;
   why_en: string | null;
+  alcohol: number | null;
+  soil_es: string | null;
+  soil_en: string | null;
+  winemaking_es: string | null;
+  winemaking_en: string | null;
+  look_es: string | null;
+  look_en: string | null;
+  nose_es: string | null;
+  nose_en: string | null;
+  palate_es: string | null;
+  palate_en: string | null;
+  learn_title_es: string | null;
+  learn_title_en: string | null;
+  learn_body_es: string | null;
+  learn_body_en: string | null;
 }
 
 export interface Bodega {
@@ -24,6 +39,8 @@ export interface Bodega {
   location_en: string | null;
   description_es: string | null;
   description_en: string | null;
+  terroir_es: string | null;
+  terroir_en: string | null;
   sort_order: number | null;
 }
 

@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 const AGE_KEY = "deAlturaAge18";
 const BOT_UA = /bot|crawl|spider|slurp|googlebot|bingpreview|facebookexternalhit|lighthouse/i;
 
-// Full-screen 18+ check. Rendered only on the client after mount, so the
+// 18+ check (blurred overlay + centered card). Rendered only on the client after mount, so the
 // server HTML (and therefore crawlers) always gets the full page content.
 export function AgeGate() {
   const t = useTranslations("ageGate");
@@ -49,29 +49,30 @@ export function AgeGate() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="age-gate-title"
-      className="fixed inset-0 z-[300] bg-wine-900 flex flex-col items-center justify-center px-6 text-center"
+      className="fixed inset-0 z-[300] flex items-center justify-center px-5 bg-black/45 backdrop-blur-[6px]"
     >
-      <div className="canary-stripe h-2 w-full absolute top-0 left-0" />
-      <p className="font-serif text-2xl text-white tracking-wide mb-10">
-        De Altura <span className="text-gold-500">Wines</span>
-      </p>
-      <h2 id="age-gate-title" className="font-serif text-3xl md:text-4xl text-white mb-10">
-        {t("title")}
-      </h2>
-      <div className="flex gap-4">
-        <button
-          autoFocus
-          onClick={accept}
-          className="min-w-32 bg-gold-500 hover:bg-gold-600 text-wine-900 font-bold px-8 py-4 rounded-sm uppercase tracking-widest text-xs transition-colors"
-        >
-          {t("yes")}
-        </button>
-        <button
-          onClick={() => undefined}
-          className="min-w-32 border border-white/30 text-white/80 hover:bg-white/10 font-bold px-8 py-4 rounded-sm uppercase tracking-widest text-xs transition-colors"
-        >
-          {t("no")}
-        </button>
+      <div className="w-full max-w-[420px] rounded-3xl bg-stone-50 border border-gold-500/30 shadow-2xl p-8 md:p-10 text-center">
+        <div className="canary-stripe h-1 w-16 rounded-full mx-auto mb-6" aria-hidden />
+        <p id="age-gate-title" className="font-serif text-3xl text-wine-900 tracking-wide">
+          {t("title")}
+        </p>
+        <p className="mt-6 text-xl font-semibold text-wine-900">{t("question")}</p>
+        <p className="mt-2 text-xs text-stone-500">{t("hint")}</p>
+        <div className="mt-8 flex flex-col gap-3">
+          <button
+            autoFocus
+            onClick={accept}
+            className="w-full bg-wine-900 hover:bg-wine-800 text-white font-bold py-4 rounded-xl uppercase tracking-widest text-xs shadow-md transition-colors"
+          >
+            {t("yes")}
+          </button>
+          <button
+            onClick={() => undefined}
+            className="w-full border border-stone-300 text-stone-600 hover:bg-stone-100 font-bold py-3.5 rounded-xl uppercase tracking-widest text-xs transition-colors"
+          >
+            {t("no")}
+          </button>
+        </div>
       </div>
     </div>
   );

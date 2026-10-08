@@ -17,6 +17,7 @@ export function WineCard({ wine, qty, onChangeQty }: Props) {
 
   const unitGross = (wine.price * 1.07).toFixed(2).replace(".", ",");
   const totalGross = (wine.price * 1.07 * wine.box).toFixed(2).replace(".", ",");
+  const hasCase = (wine.box ?? 0) > 1;
   const inCartCls = qty > 0 ? "ring-2 ring-gold-500" : "";
   const outOfStock = !wine.is_available;
 
@@ -71,19 +72,16 @@ export function WineCard({ wine, qty, onChangeQty }: Props) {
         </h4>
         <p className="text-sm text-stone-600 mb-4 leading-relaxed whitespace-pre-line">{notes}</p>
         <div className="mt-auto border-t border-stone-100 pt-5">
-          <div className="flex justify-between items-end mb-4">
-            <div className="flex flex-col">
-              <span className="text-[10px] text-stone-400 uppercase font-bold mb-0.5">{t("unitPrice")}</span>
-              <div className="text-2xl font-serif font-bold text-wine-900">
-                {unitGross} € <span className="text-[10px] font-sans text-stone-400 font-normal">{t("incTax")}</span>
+          <div className="mb-4">
+            <div className="text-2xl font-serif font-bold text-wine-900">
+              {t("priceBottle", { price: unitGross })}{" "}
+              <span className="text-[10px] font-sans text-stone-400 font-normal">{t("incTax")}</span>
+            </div>
+            {hasCase && (
+              <div className="text-sm font-semibold text-wine-800 mt-0.5">
+                {t("caseLine", { n: wine.box, total: totalGross })}
               </div>
-            </div>
-            <div className="text-right flex flex-col items-end">
-              <span className="text-[10px] text-stone-400 uppercase font-bold mb-0.5">
-                {t("boxOf", { n: wine.box })}
-              </span>
-              <div className="text-[15px] font-bold text-wine-800">{totalGross} €</div>
-            </div>
+            )}
           </div>
           {outOfStock ? (
             <div className="h-11 flex items-center justify-center rounded-lg bg-stone-200 text-stone-500 text-[10px] font-bold uppercase tracking-widest">
@@ -104,7 +102,7 @@ export function WineCard({ wine, qty, onChangeQty }: Props) {
                 onClick={() => onChangeQty(wine.id, 1)}
                 className="flex-grow text-white font-bold h-11 rounded-lg text-[10px] uppercase tracking-widest bg-wine-900 hover:bg-wine-800"
               >
-                {t("addToCart")}
+                {hasCase ? t("addCase", { n: wine.box }) : t("addToCart")}
               </button>
             </div>
           )}

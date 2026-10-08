@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SiteShell } from "@/components/SiteShell";
 import { WineDetail } from "@/components/WineDetail";
-import { getProduct, getProducts } from "@/lib/catalog";
+import { getBodega, getProduct, getProducts } from "@/lib/catalog";
 import { SITE_URL } from "@/lib/site";
 
 export const revalidate = 300;
@@ -37,6 +37,12 @@ export default async function WinePage({ params }: { params: Promise<{ sku: stri
   const { sku } = await params;
   const product = await getProduct(sku);
   if (!product) notFound();
+  const bodega = product.bodega_slug ? await getBodega(product.bodega_slug) : null;
+
+  const extra = [
+    product.grape ? { "@type": "PropertyValue", name: "Grape", value: product.grape } : null,
+    product.alcohol != null ? { "@type": "PropertyValue", name: "Alcohol by volume", value: `${Number(product.alcohol)} %` } : null,
+  ].filter(Boolean);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -45,6 +51,7 @@ export default async function WinePage({ params }: { params: Promise<{ sku: stri
     image: product.image_url ? [product.image_url] : undefined,
     description: product.why_es || product.notes_es || undefined,
     sku: product.sku,
+    additionalProperty: extra.length ? extra : undefined,
     brand: { "@type": "Brand", name: product.bodega },
     offers: {
       "@type": "Offer",
@@ -61,7 +68,7 @@ export default async function WinePage({ params }: { params: Promise<{ sku: stri
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
-      <WineDetail product={product} />
+      <WineDetail product={product} bodega={bodega} />
     </SiteShell>
   );
 }

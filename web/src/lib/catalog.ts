@@ -7,7 +7,11 @@ import { Bodega, CatalogWine, Product } from "./types";
 export const PRODUCT_COLUMNS =
   "id, sku, name, price_retail, created_at, bodega, bodega_slug, region, type, box_size, aiem_rate, igic_rate, notes_es, notes_en, stock, image_url, is_available, is_featured, sort_order, grape, subregion, altitude_label, aging_es, aging_en, profile_es, profile_en, pairing_es, pairing_en, serve_temp, why_es, why_en";
 
-const BODEGA_COLUMNS = "slug, name, location_es, location_en, description_es, description_en, sort_order";
+// Long-form editorial columns, only needed on the wine page. (spec_review is
+// internal and not readable by anon: never select it.)
+const PRODUCT_DETAIL_COLUMNS = `${PRODUCT_COLUMNS}, alcohol, soil_es, soil_en, winemaking_es, winemaking_en, look_es, look_en, nose_es, nose_en, palate_es, palate_en, learn_title_es, learn_title_en, learn_body_es, learn_body_en`;
+
+const BODEGA_COLUMNS = "slug, name, location_es, location_en, description_es, description_en, terroir_es, terroir_en, sort_order";
 
 export async function getProducts(): Promise<Product[]> {
   const { data, error } = await supabase.from("products").select(PRODUCT_COLUMNS);
@@ -23,7 +27,7 @@ export async function getCatalogWines(): Promise<CatalogWine[]> {
 }
 
 export async function getProduct(sku: string): Promise<Product | null> {
-  const { data, error } = await supabase.from("products").select(PRODUCT_COLUMNS).eq("sku", sku).maybeSingle();
+  const { data, error } = await supabase.from("products").select(PRODUCT_DETAIL_COLUMNS).eq("sku", sku).maybeSingle();
   if (error) console.error("Error getProduct:", error);
   return (data as unknown as Product | null) ?? null;
 }

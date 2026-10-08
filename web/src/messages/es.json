@@ -332,20 +332,6 @@
     "condiciones": "Condiciones de compra",
     "envios": "Envíos y devoluciones"
   },
-  "wineDetail": {
-    "backToShop": "← Volver a la tienda",
-    "perBottle": "por botella",
-    "boxesNote": "Se vende por cajas de {n} botellas.",
-    "profile": "Perfil",
-    "grape": "Uva",
-    "region": "Región",
-    "altitude": "Altitud",
-    "aging": "Crianza",
-    "serveTemp": "Temperatura de servicio",
-    "taste": "¿A qué sabe?",
-    "pairing": "Ideal con",
-    "why": "Por qué lo elegimos"
-  },
   "bodegasPage": {
     "title": "Bodegas",
     "subtitle": "Las bodegas de altura detrás de nuestra selección.",
@@ -354,8 +340,36 @@
     "wines": "{n, plural, one {# vino} other {# vinos}}"
   },
   "ageGate": {
-    "title": "¿Tenés 18 años o más?",
-    "yes": "Sí",
+    "title": "vinoargentino.es",
+    "question": "¿Eres mayor de 18 años?",
+    "hint": "Para entrar necesitamos confirmar tu edad.",
+    "yes": "Sí, soy mayor de 18",
     "no": "No"
+  },
+  "priceBottle": "{price} € / botella",
+  "caseLine": "Caja de {n} · {total} €",
+  "addCase": "Añadir caja de {n}",
+  "wineSheet": {
+    "backToShop": "← Volver a la tienda",
+    "altitude": "Altitud",
+    "zone": "Zona",
+    "grape": "Uva",
+    "alcohol": "Alcohol",
+    "serveTemp": "Temperatura de servicio",
+    "vineyard": "El viñedo",
+    "soil": "Suelo",
+    "winemaking": "Elaboración",
+    "tasting": "Nota de cata",
+    "look": "Vista",
+    "nose": "Nariz",
+    "palate": "Boca",
+    "didYouKnow": "¿Sabías que…?",
+    "place": "El lugar",
+    "pairing": "Ideal con",
+    "why": "Por qué lo elegimos",
+    "howToServe": "Cómo servirlo",
+    "temperature": "Temperatura",
+    "aging": "Guarda y decantación",
+    "vintage": "Añada"
   }
 }

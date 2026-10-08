@@ -332,20 +332,6 @@
     "condiciones": "Terms of purchase",
     "envios": "Shipping & returns"
   },
-  "wineDetail": {
-    "backToShop": "← Back to shop",
-    "perBottle": "per bottle",
-    "boxesNote": "Sold by the case of {n} bottles.",
-    "profile": "Profile",
-    "grape": "Grape",
-    "region": "Region",
-    "altitude": "Altitude",
-    "aging": "Aging",
-    "serveTemp": "Serving temperature",
-    "taste": "What does it taste like?",
-    "pairing": "Ideal with",
-    "why": "Why we chose it"
-  },
   "bodegasPage": {
     "title": "Wineries",
     "subtitle": "The high-altitude wineries behind our selection.",
@@ -354,8 +340,36 @@
     "wines": "{n, plural, one {# wine} other {# wines}}"
   },
   "ageGate": {
-    "title": "Are you 18 or older?",
-    "yes": "Yes",
+    "title": "vinoargentino.es",
+    "question": "Are you over 18?",
+    "hint": "We need to confirm your age to enter.",
+    "yes": "Yes, I'm over 18",
     "no": "No"
+  },
+  "priceBottle": "{price} € / bottle",
+  "caseLine": "Case of {n} · {total} €",
+  "addCase": "Add case of {n}",
+  "wineSheet": {
+    "backToShop": "← Back to shop",
+    "altitude": "Altitude",
+    "zone": "Area",
+    "grape": "Grape",
+    "alcohol": "Alcohol",
+    "serveTemp": "Serving temperature",
+    "vineyard": "The vineyard",
+    "soil": "Soil",
+    "winemaking": "Winemaking",
+    "tasting": "Tasting notes",
+    "look": "Look",
+    "nose": "Nose",
+    "palate": "Palate",
+    "didYouKnow": "Did you know…?",
+    "place": "The place",
+    "pairing": "Ideal with",
+    "why": "Why we chose it",
+    "howToServe": "How to serve it",
+    "temperature": "Temperature",
+    "aging": "Cellaring and decanting",
+    "vintage": "Vintage"
   }
 }
