@@ -11,6 +11,8 @@ import { supabase } from "@/lib/supabase";
 import { getProvinciaBodega } from "@/lib/bodegaProvincia";
 import { useCart } from "@/lib/CartContext";
 import { DeliveryNote } from "@/components/DeliveryNote";
+import { SpecialSelection } from "@/components/SpecialSelection";
+import { lineKey } from "@/lib/cart";
 import { CatalogWine, Product, Region, WineType } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -243,11 +245,13 @@ export default function Home() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {featuredWines.map((w) => (
-                <WineCard key={`featured-${w.id}`} wine={w} qty={cart[w.id]?.qty ?? 0} onChangeQty={updateQty} />
+                <WineCard key={`featured-${w.id}`} wine={w} qty={cart[lineKey("product", w.id)]?.qty ?? 0} onChangeQty={updateQty} />
               ))}
             </div>
           </section>
         )}
+
+        {!isFiltering && <SpecialSelection />}
 
         {REGIONS.map((region) => {
           const wines = filtered.filter((w) => w.region === region);
@@ -257,7 +261,7 @@ export default function Home() {
               <h3 className="text-3xl font-serif text-stone-900 mb-6">{t(`region.${region}`)}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {wines.map((w) => (
-                  <WineCard key={w.id} wine={w} qty={cart[w.id]?.qty ?? 0} onChangeQty={updateQty} />
+                  <WineCard key={w.id} wine={w} qty={cart[lineKey("product", w.id)]?.qty ?? 0} onChangeQty={updateQty} />
                 ))}
               </div>
             </section>

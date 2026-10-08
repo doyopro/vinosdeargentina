@@ -42,10 +42,56 @@ export interface CatalogWine {
   stock?: number | null;
 }
 
-export interface CartItem extends CatalogWine {
-  qty: number; // boxes
-  /** Line kind (sent to the server as `type`); packs will reuse { id, qty }. Defaults to "product". */
-  kind?: "product" | "pack";
+/** A wine line: qty = boxes of `box` bottles; `price` is net per bottle. */
+export interface WineLine extends CatalogWine {
+  qty: number;
+  kind?: "product";
 }
 
+export interface PackImage {
+  src: string;
+  alt: string;
+}
+
+/** A pack line: qty = packs; `price_retail` is the gross (IGIC incl.) price of ONE whole pack. */
+export interface PackLine {
+  kind: "pack";
+  id: string;
+  name: string;
+  qty: number;
+  bottles: number;
+  price_retail: number;
+  images: PackImage[];
+}
+
+/** Sent to the server as `type` ('product' | 'pack'); packs reuse { id, qty }. */
+export type CartItem = WineLine | PackLine;
+
+/** Keyed by lineKey(kind, id) so a pack and a wine with the same id never collide. */
 export type Cart = Record<string, CartItem>;
+
+export interface PackProduct {
+  id: string;
+  name: string;
+  type: WineType;
+  image_url: string | null;
+  price_retail: number;
+}
+
+export interface PackItem {
+  bottles: number;
+  product: PackProduct;
+}
+
+export interface Pack {
+  id: string;
+  slug: string;
+  name: string;
+  collection: string | null;
+  description_es: string | null;
+  description_en: string | null;
+  price_retail: number;
+  is_featured: boolean;
+  sort_order: number | null;
+  items: PackItem[];
+}

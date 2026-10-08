@@ -4,6 +4,8 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useCart, maxQtyFor } from "@/lib/CartContext";
 import { DeliveryNote } from "@/components/DeliveryNote";
+import { PackCollage } from "@/components/PackCollage";
+import { keyOf, lineGross } from "@/lib/cart";
 
 interface Props {
   open: boolean;
@@ -15,7 +17,7 @@ export function CartDrawer({ open, onClose }: Props) {
   const router = useRouter();
   const { items, setQty, remove } = useCart();
 
-  const total = items.reduce((sum, item) => sum + item.qty * item.price * 1.07 * item.box, 0);
+  const total = items.reduce((sum, item) => sum + lineGross(item), 0);
 
   const processCheckout = () => {
     router.push("/checkout");
@@ -46,14 +48,23 @@ export function CartDrawer({ open, onClose }: Props) {
             <p className="text-center text-stone-400 italic mt-10">{t("cartEmpty")}</p>
           ) : (
             items.map((item) => {
-              const itemTotal = item.qty * item.price * 1.07 * item.box;
+              const key = keyOf(item);
+              const itemTotal = lineGross(item);
               const atMax = item.qty >= maxQtyFor(item);
+              const isPack = item.kind === "pack";
               return (
-                <div key={item.id} className="p-4 bg-white border rounded-lg shadow-sm mb-3">
+                <div key={key} className="p-4 bg-white border rounded-lg shadow-sm mb-3">
                   <div className="flex justify-between gap-3">
-                    <div>
+                    {isPack && (
+                      <div className="flex-shrink-0 rounded-md bg-stone-50 pt-1" aria-hidden={false}>
+                        <PackCollage images={item.images} size="mini" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
                       <h5 className="text-sm font-bold text-wine-900">{item.name}</h5>
-                      <div className="text-xs text-stone-500">{t("boxOf", { n: item.box })}</div>
+                      <div className="text-xs text-stone-500">
+                        {isPack ? t("packBottles", { n: item.bottles }) : t("boxOf", { n: item.box })}
+                      </div>
                     </div>
                     <div className="font-bold text-wine-900 whitespace-nowrap">
                       {itemTotal.toFixed(2).replace(".", ",")} €
@@ -62,18 +73,18 @@ export function CartDrawer({ open, onClose }: Props) {
                   <div className="mt-3 flex items-center justify-between">
                     <div className="flex items-center bg-stone-100 rounded-lg h-9">
                       <button
-                        onClick={() => setQty(item.id, item.qty - 1)}
+                        onClick={() => setQty(key, item.qty - 1)}
                         disabled={item.qty <= 1}
                         aria-label={t("cartDecrease")}
                         className="w-9 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         −
                       </button>
-                      <span className="w-12 text-center text-xs font-bold">
-                        {item.qty} {t("boxesUnit")}
+                      <span className="min-w-12 px-1 text-center text-xs font-bold whitespace-nowrap">
+                        {isPack ? item.qty : `${item.qty} ${t("boxesUnit")}`}
                       </span>
                       <button
-                        onClick={() => setQty(item.id, item.qty + 1)}
+                        onClick={() => setQty(key, item.qty + 1)}
                         disabled={atMax}
                         aria-label={t("cartIncrease")}
                         className="w-9 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
@@ -82,7 +93,7 @@ export function CartDrawer({ open, onClose }: Props) {
                       </button>
                     </div>
                     <button
-                      onClick={() => remove(item.id)}
+                      onClick={() => remove(key)}
                       className="text-[11px] font-bold uppercase tracking-widest text-stone-400 hover:text-red-600 underline underline-offset-2"
                     >
                       {t("cartRemove")}

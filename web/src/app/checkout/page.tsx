@@ -8,6 +8,7 @@ import type { StripeElements, StripePaymentElement } from "@stripe/stripe-js";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { supabase } from "@/lib/supabase";
 import { useCart, maxQtyFor } from "@/lib/CartContext";
+import { keyOf, lineNet } from "@/lib/cart";
 import { DeliveryNote } from "@/components/DeliveryNote";
 import { getStripe, EDGE_FUNCTION_URL } from "@/lib/stripeClient";
 import {
@@ -75,7 +76,7 @@ export default function CheckoutPage() {
   // Client-side estimate: only used to render the summary while the cart is
   // being built, before the server has priced the order.
   const { labelDescuento, ...clientTotals } = useMemo(() => {
-    const subtotal = items.reduce((sum, item) => sum + (item.price || 0) * (item.qty || 1) * (item.box || 1), 0);
+    const subtotal = items.reduce((sum, item) => sum + lineNet(item), 0);
     const { descuentoAplicado, labelDescuento } = resolveDiscount(subtotal, allPromotions, promoAplicado);
     const valorDescuento = subtotal * descuentoAplicado;
     const baseImponible = subtotal - valorDescuento;
@@ -473,15 +474,17 @@ export default function CheckoutPage() {
                 <>
                   <div className="space-y-4 mb-8 max-h-[40vh] overflow-y-auto pr-2">
                     {items.map((item) => {
-                      const boxSize = item.box || 1;
-                      const itemTotal = (item.price || 0) * (item.qty || 1) * boxSize;
+                      const key = keyOf(item);
+                      const itemTotal = lineNet(item);
                       return (
-                        <div key={item.id} className="bg-white/5 p-4 rounded-xl border border-white/5">
+                        <div key={key} className="bg-white/5 p-4 rounded-xl border border-white/5">
                           <div className="flex justify-between items-start">
                             <div className="pr-2">
                               <div className="text-sm font-bold text-white">{item.name}</div>
                               <div className="text-[10px] text-stone-400 mt-1 uppercase font-bold tracking-widest">
-                                {item.qty} Caja(s) &times; {boxSize} bot.
+                                {item.kind === "pack"
+                                  ? `${item.qty} × ${tc("packBottles", { n: item.bottles })}`
+                                  : `${item.qty} Caja(s) × ${item.box || 1} bot.`}
                               </div>
                             </div>
                             <div className="text-sm font-bold text-gold-500 whitespace-nowrap">{itemTotal.toFixed(2)} &euro;</div>
@@ -490,7 +493,7 @@ export default function CheckoutPage() {
                             <div className="flex items-center bg-white/10 rounded-lg h-8">
                               <button
                                 type="button"
-                                onClick={() => setQty(item.id, item.qty - 1)}
+                                onClick={() => setQty(key, item.qty - 1)}
                                 disabled={item.qty <= 1}
                                 aria-label={tc("cartDecrease")}
                                 className="w-8 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
@@ -500,7 +503,7 @@ export default function CheckoutPage() {
                               <span className="w-8 text-center text-xs font-bold">{item.qty}</span>
                               <button
                                 type="button"
-                                onClick={() => setQty(item.id, item.qty + 1)}
+                                onClick={() => setQty(key, item.qty + 1)}
                                 disabled={item.qty >= maxQtyFor(item)}
                                 aria-label={tc("cartIncrease")}
                                 className="w-8 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
@@ -510,7 +513,7 @@ export default function CheckoutPage() {
                             </div>
                             <button
                               type="button"
-                              onClick={() => remove(item.id)}
+                              onClick={() => remove(key)}
                               className="text-[10px] font-bold uppercase tracking-widest text-stone-400 hover:text-white underline underline-offset-2"
                             >
                               {tc("cartRemove")}
