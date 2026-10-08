@@ -38,6 +38,10 @@
   "featuredTitle": "Recommended",
   "featuredBadge": "Recommended",
   "outOfStock": "Out of stock",
+  "deliveryNote": "Pick-up in Lanzarote at no cost. Shipping to the other islands by arrangement, after a quote. Orders ship from Lanzarote, not from Tenerife.",
+  "cartRemove": "Remove",
+  "cartDecrease": "Fewer boxes",
+  "cartIncrease": "More boxes",
   "cartEmpty": "The cart is empty",
   "cartTitle": "Your Cart",
   "cartTotal": "Total",
@@ -76,7 +80,10 @@
     "promoResellerApplied": "PARTNER code applied: {name}",
     "promoInvalid": "Invalid or non-applicable code",
     "promoError": "Error validating code",
-    "paymentNotReady": "Payment is still being prepared. Please wait a moment and try again."
+    "paymentNotReady": "Payment is still being prepared. Please wait a moment and try again.",
+    "paymentInitFailed": "We couldn't start the payment. Check your details and try again",
+    "paymentRetry": "Retry",
+    "pricingUpdating": "Updating total..."
   },
   "confirmationPage": {
     "thankYou": "Thank you for your purchase!",

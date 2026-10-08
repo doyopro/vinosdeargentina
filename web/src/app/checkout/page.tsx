@@ -2,11 +2,13 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { StripeElements, StripePaymentElement } from "@stripe/stripe-js";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { supabase } from "@/lib/supabase";
-import { loadCart } from "@/lib/cart";
+import { useCart, maxQtyFor } from "@/lib/CartContext";
+import { DeliveryNote } from "@/components/DeliveryNote";
 import { getStripe, EDGE_FUNCTION_URL } from "@/lib/stripeClient";
 import {
   CUSTOMER_INFO_KEY,
@@ -17,17 +19,20 @@ import {
   Promotion,
   resolveDiscount,
 } from "@/lib/order";
-import { Cart } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
+
+// Failure of the order/PaymentIntent call, carrying the server's message (or HTTP status).
+class InitError extends Error {}
 
 const ISLANDS = ["Tenerife", "Gran Canaria", "La Palma", "La Gomera", "El Hierro", "Fuerteventura", "Lanzarote"];
 
 export default function CheckoutPage() {
   const t = useTranslations("checkoutPage");
+  const tc = useTranslations();
 
-  const [cart, setCart] = useState<Cart>({});
-  const [ready, setReady] = useState(false);
+  const router = useRouter();
+  const { items, hydrated: ready, setQty, remove } = useCart();
   const [allPromotions, setAllPromotions] = useState<Promotion[]>([]);
   const [promoAplicado, setPromoAplicado] = useState<PromoAplicado>(EMPTY_PROMO);
   const [promoCodeInput, setPromoCodeInput] = useState("");
@@ -44,17 +49,21 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [stripeError, setStripeError] = useState("");
   const [paymentInit, setPaymentInit] = useState<PaymentInit | null>(null);
+  const [pricedSig, setPricedSig] = useState<string | null>(null);
+  const [initFailed, setInitFailed] = useState(false);
+  const [initAttempt, setInitAttempt] = useState(0);
 
   const stripeContainerRef = useRef<HTMLDivElement>(null);
   const elementsRef = useRef<StripeElements | null>(null);
   const paymentElementRef = useRef<StripePaymentElement | null>(null);
-  const initRequestedRef = useRef(false);
+  const requestIdRef = useRef(0);
+  const abortRef = useRef<AbortController | null>(null);
+  const lastCartSigRef = useRef<string | null>(null);
 
+  // Empty cart (never filled, or everything removed here): back to the shop.
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage is client-only, read once after mount
-    setCart(loadCart());
-    setReady(true);
-  }, []);
+    if (ready && items.length === 0) router.replace("/");
+  }, [ready, items.length, router]);
 
   useEffect(() => {
     (async () => {
@@ -62,8 +71,6 @@ export default function CheckoutPage() {
       if (data && data.length > 0) setAllPromotions(data as Promotion[]);
     })();
   }, []);
-
-  const items = useMemo(() => Object.values(cart), [cart]);
 
   // Client-side estimate: only used to render the summary while the cart is
   // being built, before the server has priced the order.
@@ -85,75 +92,126 @@ export default function CheckoutPage() {
     };
   }, [items, allPromotions, promoAplicado]);
 
-  // Once the server has priced the order, its numbers are the source of
-  // truth for what's shown and what gets charged — never the browser's.
-  const { importeBruto, valorDescuento, baseImponible, igicAmount, totalAmount, descuentoAplicado } = paymentInit
-    ? {
-        importeBruto: paymentInit.breakdown.subtotal,
-        valorDescuento: paymentInit.breakdown.valorDescuento,
-        baseImponible: paymentInit.breakdown.baseImponible,
-        igicAmount: paymentInit.breakdown.igicAmount,
-        totalAmount: paymentInit.breakdown.totalAmount,
-        descuentoAplicado: paymentInit.breakdown.descuentoAplicado,
-      }
-    : clientTotals;
-
   // The server needs full customer info to price + create the order, so we
-  // can't kick this off until the billing form is filled in.
+  // can't price until the billing form is filled in.
   const customerReady = useMemo(
     () => Boolean(name.trim() && email.trim() && island.trim() && address.trim() && postal.trim()),
     [name, email, island, address, postal]
   );
 
-  // Creates the order + PaymentIntent exactly once (guarded by initRequestedRef)
-  // as soon as the cart and customer info are both ready, then mounts the
-  // Stripe Payment Element. handlePayment reuses the resulting clientSecret.
-  useEffect(() => {
-    if (!ready || items.length === 0 || !customerReady || !stripeContainerRef.current) return;
-    if (initRequestedRef.current) return;
-    initRequestedRef.current = true;
-    let cancelled = false;
+  // Everything the server prices from. If this differs from the signature of
+  // the last server response, the displayed total is stale.
+  const cartSig = useMemo(
+    () => JSON.stringify({ items: items.map((i) => [i.id, i.qty, i.kind ?? "product"]), promo: promoAplicado.codigo }),
+    [items, promoAplicado.codigo]
+  );
+  const pricingSig = useMemo(
+    () => JSON.stringify({ cartSig, customer: [name, email, phone, address, postal, island] }),
+    [cartSig, name, email, phone, address, postal, island]
+  );
 
-    (async () => {
+  const isStale = !paymentInit || pricedSig !== pricingSig;
+  const updating = customerReady && items.length > 0 && isStale && !initFailed;
+
+  // The server's numbers are the source of truth for what's shown and charged.
+  // The browser estimate is only a provisional value until a fresh response lands.
+  const serverBreakdown = paymentInit && !isStale ? paymentInit.breakdown : null;
+  const { importeBruto, valorDescuento, baseImponible, igicAmount, totalAmount, descuentoAplicado } = serverBreakdown
+    ? {
+        importeBruto: serverBreakdown.subtotal,
+        valorDescuento: serverBreakdown.valorDescuento,
+        baseImponible: serverBreakdown.baseImponible,
+        igicAmount: serverBreakdown.igicAmount,
+        totalAmount: serverBreakdown.totalAmount,
+        descuentoAplicado: serverBreakdown.descuentoAplicado,
+      }
+    : clientTotals;
+
+  // (Re)price on the server whenever the cart, the coupon or the customer data
+  // change: new order + PaymentIntent. Debounced; stale responses are ignored.
+  useEffect(() => {
+    if (!ready || items.length === 0 || !customerReady) return;
+    if (pricedSig === pricingSig) return;
+
+    // Cart/coupon edits: ~400ms. Customer-only edits wait longer to avoid
+    // creating an order per pause while typing.
+    const delay = lastCartSigRef.current !== cartSig ? 400 : 1000;
+    const timer = setTimeout(async () => {
+      const requestId = ++requestIdRef.current;
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+      lastCartSigRef.current = cartSig;
+      setStripeError("");
+      setInitFailed(false);
+
       try {
+        if (!EDGE_FUNCTION_URL) throw new InitError("EDGE_FUNCTION_URL no configurada");
         const res = await fetch(EDGE_FUNCTION_URL, {
           method: "POST",
+          signal: controller.signal,
           headers: {
             Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            items: items.map((item) => ({ id: item.id, qty: item.qty })),
+            items: items.map((item) => ({ id: item.id, qty: item.qty, type: item.kind ?? "product" })),
             customer: { name, email, phone, address, postal_code: postal, island },
             promo_code: promoAplicado.codigo,
           }),
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "No se pudo iniciar el pago.");
-        if (cancelled) return;
-
+        const data = await res.json().catch(() => null);
+        if (requestId !== requestIdRef.current) return; // a newer request superseded this one
+        if (!res.ok || !data?.clientSecret || !data?.orderId) {
+          const detail = typeof data?.error === "string" ? data.error : `HTTP ${res.status}`;
+          throw new InitError(detail);
+        }
         setPaymentInit(data as PaymentInit);
-
-        const stripe = await getStripe();
-        if (!stripe || !stripeContainerRef.current) return;
-        const elements = stripe.elements({ clientSecret: data.clientSecret });
-        const paymentElement = elements.create("payment");
-        paymentElement.mount(stripeContainerRef.current);
-        elementsRef.current = elements;
-        paymentElementRef.current = paymentElement;
+        setPricedSig(pricingSig);
       } catch (e) {
-        console.error("Error inicializando el pago:", e);
-        setStripeError(e instanceof Error ? e.message : String(e));
-        initRequestedRef.current = false;
+        if (controller.signal.aborted || requestId !== requestIdRef.current) return;
+        console.error("Error calculando el total en el servidor:", e);
+        const detail = e instanceof InitError ? ` (${e.message})` : "";
+        setStripeError(`${t("paymentInitFailed")}${detail}`);
+        setInitFailed(true);
+        setPaymentInit(null);
       }
-    })();
+    }, delay);
 
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pricingSig/cartSig cover every input the request reads
+  }, [ready, items.length, customerReady, pricingSig, pricedSig, initAttempt]);
+
+  // Abort anything still in flight when leaving the page.
+  useEffect(
+    () => () => {
+      requestIdRef.current++;
+      abortRef.current?.abort();
+    },
+    []
+  );
+
+  // (Re)mount the Stripe Payment Element whenever a new clientSecret arrives.
+  const clientSecret = paymentInit?.clientSecret;
+  useEffect(() => {
+    if (!clientSecret || !stripeContainerRef.current) return;
+    let cancelled = false;
+    (async () => {
+      const stripe = await getStripe();
+      if (cancelled || !stripe || !stripeContainerRef.current) return;
+      const elements = stripe.elements({ clientSecret });
+      const paymentElement = elements.create("payment");
+      paymentElement.mount(stripeContainerRef.current);
+      elementsRef.current = elements;
+      paymentElementRef.current = paymentElement;
+    })();
     return () => {
       cancelled = true;
       paymentElementRef.current?.unmount();
+      paymentElementRef.current = null;
+      elementsRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- fires once when cart + customer info are ready; guarded by initRequestedRef
-  }, [ready, items.length, customerReady]);
+  }, [clientSecret]);
 
   async function applyPromo() {
     const codigo = promoCodeInput.trim().toUpperCase();
@@ -210,8 +268,9 @@ export default function CheckoutPage() {
 
   async function handlePayment() {
     if (!validateForm()) return;
-    if (!elementsRef.current || !paymentInit) {
-      setStripeError(t("paymentNotReady"));
+    if (updating) return;
+    if (!elementsRef.current || !paymentInit || isStale) {
+      if (!initFailed) setStripeError(t("paymentNotReady"));
       return;
     }
 
@@ -343,7 +402,24 @@ export default function CheckoutPage() {
                     <h2 className="text-xl font-serif text-wine-900 font-bold">{t("step2")}</h2>
                   </div>
                   <div ref={stripeContainerRef} className="p-4 border border-stone-200 rounded-xl bg-stone-50" />
-                  {stripeError && <div className="mt-4 text-red-500 text-sm font-medium">{stripeError}</div>}
+                  {stripeError && (
+                    <div className="mt-4 text-red-500 text-sm font-medium" role="alert">
+                      {stripeError}
+                      {initFailed && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setStripeError("");
+                            setInitFailed(false);
+                            setInitAttempt((n) => n + 1);
+                          }}
+                          className="ml-3 underline font-bold"
+                        >
+                          {t("paymentRetry")}
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="mb-8">
@@ -370,12 +446,14 @@ export default function CheckoutPage() {
                   )}
                 </div>
 
+                <DeliveryNote className="mb-5" />
+
                 <button
                   onClick={handlePayment}
-                  disabled={submitting}
-                  className="w-full bg-wine-900 hover:bg-wine-800 disabled:opacity-60 text-white font-bold py-5 rounded-lg transition-all shadow-xl hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3 uppercase tracking-widest text-sm"
+                  disabled={submitting || updating}
+                  className="w-full bg-wine-900 hover:bg-wine-800 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-5 rounded-lg transition-all shadow-xl hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3 uppercase tracking-widest text-sm"
                 >
-                  {t("payNow")}
+                  {updating ? t("pricingUpdating") : t("payNow")}
                 </button>
               </div>
             )}
@@ -398,14 +476,46 @@ export default function CheckoutPage() {
                       const boxSize = item.box || 1;
                       const itemTotal = (item.price || 0) * (item.qty || 1) * boxSize;
                       return (
-                        <div key={item.id} className="flex justify-between items-start bg-white/5 p-4 rounded-xl border border-white/5">
-                          <div className="pr-2">
-                            <div className="text-sm font-bold text-white">{item.name}</div>
-                            <div className="text-[10px] text-stone-400 mt-1 uppercase font-bold tracking-widest">
-                              {item.qty} Caja(s) &times; {boxSize} bot.
+                        <div key={item.id} className="bg-white/5 p-4 rounded-xl border border-white/5">
+                          <div className="flex justify-between items-start">
+                            <div className="pr-2">
+                              <div className="text-sm font-bold text-white">{item.name}</div>
+                              <div className="text-[10px] text-stone-400 mt-1 uppercase font-bold tracking-widest">
+                                {item.qty} Caja(s) &times; {boxSize} bot.
+                              </div>
                             </div>
+                            <div className="text-sm font-bold text-gold-500 whitespace-nowrap">{itemTotal.toFixed(2)} &euro;</div>
                           </div>
-                          <div className="text-sm font-bold text-gold-500 whitespace-nowrap">{itemTotal.toFixed(2)} &euro;</div>
+                          <div className="mt-3 flex items-center justify-between">
+                            <div className="flex items-center bg-white/10 rounded-lg h-8">
+                              <button
+                                type="button"
+                                onClick={() => setQty(item.id, item.qty - 1)}
+                                disabled={item.qty <= 1}
+                                aria-label={tc("cartDecrease")}
+                                className="w-8 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+                              >
+                                −
+                              </button>
+                              <span className="w-8 text-center text-xs font-bold">{item.qty}</span>
+                              <button
+                                type="button"
+                                onClick={() => setQty(item.id, item.qty + 1)}
+                                disabled={item.qty >= maxQtyFor(item)}
+                                aria-label={tc("cartIncrease")}
+                                className="w-8 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => remove(item.id)}
+                              className="text-[10px] font-bold uppercase tracking-widest text-stone-400 hover:text-white underline underline-offset-2"
+                            >
+                              {tc("cartRemove")}
+                            </button>
+                          </div>
                         </div>
                       );
                     })}
@@ -432,6 +542,11 @@ export default function CheckoutPage() {
                       <span>{t("taxes")}</span>
                       <span className="text-white font-semibold">{igicAmount.toFixed(2)} &euro;</span>
                     </div>
+                    {updating && (
+                      <div className="text-right text-[11px] text-gold-500 animate-pulse" role="status">
+                        {t("pricingUpdating")}
+                      </div>
+                    )}
                     <div className="flex justify-between items-center pt-4 text-white">
                       <span className="text-lg font-bold">{t("total")}</span>
                       <span className="text-3xl font-serif font-bold text-gold-500">{totalAmount.toFixed(2)} &euro;</span>

@@ -9,8 +9,9 @@ import { HeroCollage } from "@/components/HeroCollage";
 import glowStyles from "./HeroTextGlow.module.css";
 import { supabase } from "@/lib/supabase";
 import { getProvinciaBodega } from "@/lib/bodegaProvincia";
-import { loadCart, saveCart } from "@/lib/cart";
-import { Cart, CatalogWine, Product, Region, WineType } from "@/lib/types";
+import { useCart } from "@/lib/CartContext";
+import { DeliveryNote } from "@/components/DeliveryNote";
+import { CatalogWine, Product, Region, WineType } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -28,16 +29,11 @@ const PROVINCIAS = ["Mendoza", "San Juan", "Salta", "Jujuy", "Patagonia"];
 export default function Home() {
   const t = useTranslations();
   const [catalogData, setCatalogData] = useState<CatalogWine[]>([]);
-  const [cart, setCart] = useState<Cart>({});
+  const { cart, count: cartCount, add } = useCart();
   const [cartOpen, setCartOpen] = useState(false);
   const [typeFilter, setTypeFilter] = useState<Set<WineType>>(new Set());
   const [provinciaFilter, setProvinciaFilter] = useState<Set<string>>(new Set());
   const [sortPrice, setSortPrice] = useState<"default" | "asc" | "desc">("default");
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- read persisted cart once after mount (localStorage is client-only)
-    setCart(loadCart());
-  }, []);
 
   useEffect(() => {
     let active = true;
@@ -66,6 +62,7 @@ export default function Home() {
           is_available: p.is_available,
           is_featured: p.is_featured,
           sort_order: p.sort_order,
+          stock: p.stock,
         }))
         .sort(byCatalogPriority);
       setCatalogData(wines);
@@ -76,16 +73,8 @@ export default function Home() {
   }, []);
 
   const updateQty = (id: string, change: number) => {
-    setCart((prev) => {
-      const wine = catalogData.find((w) => w.id === id);
-      if (!wine || (change > 0 && !wine.is_available)) return prev;
-      const qty = (prev[id] ? prev[id].qty : 0) + change;
-      const next = { ...prev };
-      if (qty > 0) next[id] = { ...wine, qty };
-      else delete next[id];
-      saveCart(next);
-      return next;
-    });
+    const wine = catalogData.find((w) => w.id === id);
+    if (wine) add(wine, change);
   };
 
   const toggleType = (value: WineType | "all") => {
@@ -129,8 +118,6 @@ export default function Home() {
     () => catalogData.filter((w) => w.is_featured && w.is_available),
     [catalogData]
   );
-
-  const cartCount = Object.values(cart).reduce((sum, item) => sum + item.qty, 0);
 
   const filterBtnCls = (active: boolean) =>
     active
@@ -328,6 +315,7 @@ export default function Home() {
             <span className="text-gold-500 mx-2">·</span> Islas Canarias
           </h2>
           <div className="w-24 h-px bg-gold-500/30 mb-8" />
+          <DeliveryNote variant="dark" className="max-w-xl text-left mb-6" />
           <p className="text-stone-400 text-xs font-light mb-4">{t("footerCopyright")}</p>
           <a
             href="https://www.doyo.pro/"
@@ -367,7 +355,7 @@ export default function Home() {
         )}
       </button>
 
-      <CartDrawer cart={cart} open={cartOpen} onClose={() => setCartOpen(false)} />
+      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </>
   );
 }

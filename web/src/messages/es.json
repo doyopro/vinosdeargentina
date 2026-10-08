@@ -38,6 +38,10 @@
   "featuredTitle": "Recomendados",
   "featuredBadge": "Recomendado",
   "outOfStock": "Sin stock",
+  "deliveryNote": "Recogida en Lanzarote sin coste. Envíos al resto de las islas a convenir, previa cotización. Los envíos salen desde Lanzarote, no desde Tenerife.",
+  "cartRemove": "Quitar",
+  "cartDecrease": "Menos cajas",
+  "cartIncrease": "Más cajas",
   "cartEmpty": "El carrito está vacío",
   "cartTitle": "Tu Carrito",
   "cartTotal": "Total",
@@ -76,7 +80,10 @@
     "promoResellerApplied": "Código SOCIO aplicado: {name}",
     "promoInvalid": "Código inválido o no aplica",
     "promoError": "Error validando código",
-    "paymentNotReady": "El pago aún se está preparando. Esperá un momento e intentá de nuevo."
+    "paymentNotReady": "El pago aún se está preparando. Esperá un momento e intentá de nuevo.",
+    "paymentInitFailed": "No pudimos iniciar el pago. Revisa los datos e inténtalo de nuevo",
+    "paymentRetry": "Reintentar",
+    "pricingUpdating": "Actualizando total..."
   },
   "confirmationPage": {
     "thankYou": "¡Gracias por tu compra!",

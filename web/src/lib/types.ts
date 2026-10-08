@@ -38,10 +38,14 @@ export interface CatalogWine {
   is_available: boolean;
   is_featured: boolean;
   sort_order: number | null;
+  /** Bottles in stock. JIT business: 0/negative means "pending restock", not a cap. */
+  stock?: number | null;
 }
 
 export interface CartItem extends CatalogWine {
-  qty: number;
+  qty: number; // boxes
+  /** Line kind (sent to the server as `type`); packs will reuse { id, qty }. Defaults to "product". */
+  kind?: "product" | "pack";
 }
 
 export type Cart = Record<string, CartItem>;

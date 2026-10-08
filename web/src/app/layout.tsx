@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Montserrat } from "next/font/google";
 import { I18nProvider } from "@/lib/i18n";
+import { CartProvider } from "@/lib/CartContext";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -40,7 +41,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es" className={`${playfair.variable} ${montserrat.variable} scroll-smooth`}>
       <body className="antialiased relative font-sans">
-        <I18nProvider>{children}</I18nProvider>
+        <I18nProvider>
+          <CartProvider>{children}</CartProvider>
+        </I18nProvider>
       </body>
     </html>
   );
