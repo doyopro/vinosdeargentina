@@ -1,6 +1,5 @@
 {
   "badge": "100% Vino Argentino · Exportación a Canarias",
-  "heroTitle": "De Altura Wines",
   "heroSubtitle": "El prestigio mundial del vino argentino, desde la inmensidad de los Andes directo a Islas Canarias.",
   "exploreCatalog": "Explorar Catálogo",
   "catalogTitle": "Catálogo 2026",
@@ -29,7 +28,7 @@
   "horecaTitle": "Atención HORECA en Canarias",
   "horecaSubtitle": "Condiciones exclusivas y asesoría especializada para la confección de su carta.",
   "horecaCta": "Contacta un asesor",
-  "footerCopyright": "© 2026 De Altura Wines. Todos los derechos reservados.",
+  "footerCopyright": "© 2026 VinoArgentino.es. Todos los derechos reservados.",
   "poweredBy": "Powered by Doyo",
   "unitPrice": "Precio Unitario",
   "incTax": "(IGIC incl.)",
@@ -108,7 +107,7 @@
     "orderNumber": "Número de Pedido",
     "backToStore": "Volver a la Tienda",
     "whatsappSupport": "WhatsApp Support",
-    "footer": "De Altura Wines · Canarias 2026"
+    "footer": "VinoArgentino.es · Canarias 2026"
   },
   "legal": {
     "draftNotice": "Borrador pendiente de revisión",
@@ -127,7 +126,7 @@
         {
           "h": "2. Objeto",
           "p": [
-            "Este sitio web (De Altura Wines) tiene por objeto la presentación y la venta en línea de vinos argentinos, en cajas y packs, a clientes mayores de 18 años, con entrega en las Islas Canarias.",
+            "Este sitio web (VinoArgentino.es) tiene por objeto la presentación y la venta en línea de vinos argentinos, en cajas y packs, a clientes mayores de 18 años, con entrega en las Islas Canarias.",
             "El acceso y uso del sitio atribuye la condición de usuario e implica la aceptación de este aviso legal."
           ]
         },
@@ -371,5 +370,11 @@
     "temperature": "Temperatura",
     "aging": "Guarda y decantación",
     "vintage": "Añada"
+  },
+  "tagline": "Vinos de Argentina, directo a tu mesa",
+  "partner": {
+    "collab": "Selección en colaboración con",
+    "title": "Nuestro partner",
+    "blurb": "Trabajamos junto a De Altura Wines para acercarte vinos de bodegas argentinas."
   }
 }

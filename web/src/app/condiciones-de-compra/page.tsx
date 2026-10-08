@@ -3,8 +3,8 @@ import { SiteShell } from "@/components/SiteShell";
 import { LegalPage } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
-  title: "Condiciones de compra | Vinos de Altura",
-  description: "Condiciones de compra de De Altura Wines (borrador pendiente de revisión).",
+  title: "Condiciones de compra | VinoArgentino.es",
+  description: "Condiciones de compra de VinoArgentino.es (borrador pendiente de revisión).",
   alternates: { canonical: "/condiciones-de-compra" },
 };
 

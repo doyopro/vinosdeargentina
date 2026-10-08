@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ sku: stri
   const p = await getProduct(sku);
   if (!p) return { title: "Vino no encontrado" };
   const description = clip(p.why_es || p.notes_es || `${p.name}, vino argentino de ${p.bodega}.`);
-  const title = `${p.name} | ${p.bodega} · Vino argentino`;
+  const title = `${p.name} · ${p.bodega} | VinoArgentino.es`;
   return {
     title,
     description,
@@ -56,6 +56,7 @@ export default async function WinePage({ params }: { params: Promise<{ sku: stri
     offers: {
       "@type": "Offer",
       url: `${SITE_URL}/vino/${product.sku}`,
+      seller: { "@type": "Organization", name: "VinoArgentino.es", url: SITE_URL },
       priceCurrency: "EUR",
       price: product.price_retail,
       availability: product.is_available ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",

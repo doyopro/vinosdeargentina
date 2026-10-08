@@ -5,6 +5,10 @@ import { useTranslations } from "next-intl";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { CartFab } from "@/components/CartFab";
 import { FooterLinks } from "@/components/FooterLinks";
+import { PartnerCredit } from "@/components/PartnerCredit";
+import { PartnerStrip } from "@/components/PartnerStrip";
+import { Wordmark } from "@/components/Wordmark";
+import { Tagline } from "@/components/Tagline";
 import { WineCard } from "@/components/WineCard";
 import { HeroCollage } from "@/components/HeroCollage";
 import glowStyles from "@/app/HeroTextGlow.module.css";
@@ -112,7 +116,7 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
             className="relative text-6xl md:text-7xl lg:text-8xl font-serif text-white mb-8 tracking-tight"
             style={{ textShadow: "0 2px 16px rgba(0,0,0,0.55)" }}
           >
-            {t("heroTitle")}
+            <Wordmark />
           </h1>
           <div className="relative flex flex-col w-56 md:w-64 h-3 md:h-4 mb-10 rounded-sm overflow-hidden border border-white/10">
             <div className="h-1/3 w-full bg-[#74ACDF]" />
@@ -235,6 +239,8 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
             <strong>{t("logisticsNoteStrong")}</strong> {t("logisticsNote")}
           </p>
         </div>
+
+        <PartnerStrip />
       </main>
 
       <section className="bg-stone-900 text-stone-300 py-20 px-6 border-t-4 border-wine-800">
@@ -262,15 +268,12 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
 
       <footer className="bg-wine-900 pt-16 pb-12 px-6 border-t border-wine-800 relative z-10">
         <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
-          <h2 className="text-xl md:text-2xl lg:text-3xl font-serif text-white tracking-wide mb-6 drop-shadow-md leading-relaxed">
-            Vinos de Altura <span className="text-gold-500 mx-2 hidden md:inline">·</span>
-            <br className="md:hidden" />
-            Canarias <span className="text-gold-500 mx-2">·</span> Lanzarote{" "}
-            <span className="text-gold-500 mx-2">·</span> Islas Canarias
-          </h2>
+          <Wordmark className="font-serif text-3xl md:text-4xl tracking-wide drop-shadow-md" />
+          <Tagline className="mt-2 mb-6" />
           <div className="w-24 h-px bg-gold-500/30 mb-8" />
           <DeliveryNote variant="dark" className="max-w-xl text-left mb-6" />
-          <FooterLinks className="mb-6" />
+          <FooterLinks className="mb-5" />
+          <PartnerCredit className="mb-4" />
           <p className="text-stone-400 text-xs font-light mb-4">{t("footerCopyright")}</p>
           <a
             href="https://www.doyo.pro/"

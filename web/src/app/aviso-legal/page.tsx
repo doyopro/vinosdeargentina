@@ -3,8 +3,8 @@ import { SiteShell } from "@/components/SiteShell";
 import { LegalPage } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
-  title: "Aviso legal | Vinos de Altura",
-  description: "Aviso legal de la tienda online De Altura Wines (borrador pendiente de revisión).",
+  title: "Aviso legal | VinoArgentino.es",
+  description: "Aviso legal de la tienda online VinoArgentino.es (borrador pendiente de revisión).",
   alternates: { canonical: "/aviso-legal" },
 };
 

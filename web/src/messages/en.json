@@ -1,6 +1,5 @@
 {
   "badge": "100% Argentine Wine · Export to Canary Islands",
-  "heroTitle": "De Altura Wines",
   "heroSubtitle": "The global prestige of Argentine wine, from the immensity of the Andes straight to the Canary Islands.",
   "exploreCatalog": "Explore Catalog",
   "catalogTitle": "2026 Catalog",
@@ -29,7 +28,7 @@
   "horecaTitle": "HORECA Attention in the Canary Islands",
   "horecaSubtitle": "Exclusive conditions and specialized advice for building your wine list.",
   "horecaCta": "Contact an Advisor",
-  "footerCopyright": "© 2026 De Altura Wines. All rights reserved.",
+  "footerCopyright": "© 2026 VinoArgentino.es. All rights reserved.",
   "poweredBy": "Powered by Doyo",
   "unitPrice": "Unit Price",
   "incTax": "(IGIC incl.)",
@@ -108,7 +107,7 @@
     "orderNumber": "Order Number",
     "backToStore": "Back to Store",
     "whatsappSupport": "WhatsApp Support",
-    "footer": "De Altura Wines · Canarias 2026"
+    "footer": "VinoArgentino.es · Canarias 2026"
   },
   "legal": {
     "draftNotice": "Draft pending review",
@@ -127,7 +126,7 @@
         {
           "h": "2. Purpose",
           "p": [
-            "This website (De Altura Wines) presents and sells Argentine wines online, by the case and in packs, to customers aged 18 or over, with delivery to the Canary Islands.",
+            "This website (VinoArgentino.es) presents and sells Argentine wines online, by the case and in packs, to customers aged 18 or over, with delivery to the Canary Islands.",
             "Accessing and using the site makes you a user and implies acceptance of this legal notice."
           ]
         },
@@ -371,5 +370,11 @@
     "temperature": "Temperature",
     "aging": "Cellaring and decanting",
     "vintage": "Vintage"
+  },
+  "tagline": "Argentine wines, straight to your table",
+  "partner": {
+    "collab": "Selection in collaboration with",
+    "title": "Our partner",
+    "blurb": "We work with De Altura Wines to bring you wines from Argentine wineries."
   }
 }

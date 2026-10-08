@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const b = await getBodega(slug);
   if (!b) return { title: "Bodega no encontrada" };
-  const title = `${b.name} | Bodegas · Vinos de Altura`;
+  const title = `${b.name} | VinoArgentino.es`;
   const description = (b.description_es || `Vinos de ${b.name}${b.location_es ? `, ${b.location_es}` : ""}.`).slice(0, 158);
   return {
     title,

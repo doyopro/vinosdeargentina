@@ -28,13 +28,15 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "De Altura Wines | Desde los Andes a Canarias",
+  applicationName: "VinoArgentino.es",
+  title: "VinoArgentino.es — Vinos de Argentina online",
   description:
     "El prestigio mundial del vino argentino, desde la inmensidad de los Andes directo a Islas Canarias. Catálogo exclusivo.",
   openGraph: {
     type: "website",
     url: SITE_URL,
-    title: "De Altura Wines | Desde los Andes a Canarias",
+    siteName: "VinoArgentino.es",
+    title: "VinoArgentino.es — Vinos de Argentina online",
     description:
       "El prestigio mundial del vino argentino, desde la inmensidad de los Andes directo a Islas Canarias. Catálogo exclusivo.",
     images: [

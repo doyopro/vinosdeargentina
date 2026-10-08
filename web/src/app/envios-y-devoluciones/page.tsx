@@ -3,8 +3,8 @@ import { SiteShell } from "@/components/SiteShell";
 import { LegalPage } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
-  title: "Envíos y devoluciones | Vinos de Altura",
-  description: "Envíos y devoluciones de De Altura Wines (borrador pendiente de revisión).",
+  title: "Envíos y devoluciones | VinoArgentino.es",
+  description: "Envíos y devoluciones de VinoArgentino.es (borrador pendiente de revisión).",
   alternates: { canonical: "/envios-y-devoluciones" },
 };
 
