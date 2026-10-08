@@ -1,5 +1,5 @@
 {
-  "badge": "100% Vino Argentino · Exportación a Canarias",
+  "badge": "Vinos de Argentina, directo a tu mesa",
   "heroSubtitle": "El prestigio mundial del vino argentino, desde la inmensidad de los Andes directo a Islas Canarias.",
   "exploreCatalog": "Explorar Catálogo",
   "catalogTitle": "Catálogo 2026",
@@ -45,7 +45,7 @@
   "specialTitle": "Selección Especial",
   "specialSubtitle": "Cajas armadas por nosotros para descubrir Argentina",
   "packBottles": "{n, plural, one {# botella} other {# botellas}}",
-  "packSave": "Ahorrás {n} €",
+  "packSave": "Ahorras {n} €",
   "packIncludes": "Incluye",
   "packShowWines": "Ver los vinos",
   "packHideWines": "Ocultar los vinos",
@@ -94,7 +94,7 @@
     "promoResellerApplied": "Código SOCIO aplicado: {name}",
     "promoInvalid": "Código inválido o no aplica",
     "promoError": "Error validando código",
-    "paymentNotReady": "El pago aún se está preparando. Esperá un momento e intentá de nuevo.",
+    "paymentNotReady": "El pago aún se está preparando. Espera un momento e inténtalo de nuevo.",
     "paymentInitFailed": "No pudimos iniciar el pago. Revisa los datos e inténtalo de nuevo",
     "paymentRetry": "Reintentar",
     "pricingUpdating": "Actualizando total..."
