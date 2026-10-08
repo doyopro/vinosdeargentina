@@ -376,5 +376,23 @@
     "collab": "Selection in collaboration with",
     "title": "Our partner",
     "blurb": "We work with De Altura Wines to bring you wines from Argentine wineries."
+  },
+  "packSeeDetail": "See details",
+  "packSheet": {
+    "label": "Special Selection",
+    "backToShop": "← Back to the shop",
+    "perPack": "{price} € / pack",
+    "bottlesLine": "{n, plural, one {# bottle} other {# bottles}}",
+    "addPack": "Add pack to cart",
+    "proposal": "The proposal",
+    "wines": "The wines in this pack",
+    "enjoy": "How to enjoy it",
+    "idealFor": "Ideal for",
+    "others": "Other packs",
+    "viewWine": "View wine",
+    "serve": "Serve at",
+    "pairing": "Pairing",
+    "soldOut": "Out of stock",
+    "looseValue": "Value if bought separately"
   }
 }

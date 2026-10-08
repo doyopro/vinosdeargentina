@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useLocaleSwitch } from "@/lib/i18n";
@@ -38,9 +39,9 @@ export function PackCard({ pack, qty, onChangeQty }: Props) {
           className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_58%,rgba(200,159,93,0.30),rgba(200,159,93,0.08)_55%,transparent_75%)]"
         />
         <div aria-hidden className="absolute bottom-3 left-1/2 -translate-x-1/2 h-4 w-52 rounded-[50%] bg-wine-900/15 blur-md" />
-        <div className="relative">
+        <Link href={`/pack/${pack.slug}`} aria-label={pack.name} className="relative">
           <PackCollage images={packImages(pack)} />
-        </div>
+        </Link>
         <div className="absolute top-3 right-3 flex flex-col items-end gap-2">
           <span className="bg-wine-900/90 text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
             {t("packBottles", { n: bottles })}
@@ -55,8 +56,18 @@ export function PackCard({ pack, qty, onChangeQty }: Props) {
 
       <div className="p-5 flex flex-col flex-grow">
         {pack.collection && <span className="text-[10px] font-bold uppercase text-stone-400 mb-1">{pack.collection}</span>}
-        <h4 className="text-xl font-serif font-bold text-wine-900 mb-2">{pack.name}</h4>
-        <p className="text-sm text-stone-600 mb-4 leading-relaxed">{description}</p>
+        <h4 className="text-xl font-serif font-bold text-wine-900 mb-2">
+          <Link href={`/pack/${pack.slug}`} className="hover:text-wine-700 transition-colors">
+            {pack.name}
+          </Link>
+        </h4>
+        <p className="text-sm text-stone-600 mb-3 leading-relaxed">{description}</p>
+        <Link
+          href={`/pack/${pack.slug}`}
+          className="self-start text-[10px] font-bold uppercase tracking-widest text-wine-800 underline underline-offset-2 mb-4"
+        >
+          {t("packSeeDetail")}
+        </Link>
 
         <div className="mb-5">
           <button

@@ -42,15 +42,12 @@
     "e f f g";
 }
 
-/* Mobile: 2 cols x 3 rows, 4 photos (2 wide strips, 2 small squares). */
+/* Mobile: one full-bleed photo (no seams behind the text). */
 .gridMobile {
   composes: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  grid-template-areas:
-    "a a"
-    "b c"
-    "d d";
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  grid-template-areas: "a";
 }
 
 .a {

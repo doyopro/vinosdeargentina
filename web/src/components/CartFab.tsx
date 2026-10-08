@@ -13,7 +13,8 @@ export function CartFab() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Cart"
-        className="fixed bottom-6 right-6 z-50 bg-wine-900 hover:bg-wine-800 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105 border border-wine-700 group"
+        style={{ bottom: "max(1.5rem, calc(env(safe-area-inset-bottom) + 1rem))" }}
+        className="fixed right-4 sm:right-6 z-50 bg-wine-900 hover:bg-wine-800 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105 border border-wine-700 group"
       >
         <svg className="w-6 h-6 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />

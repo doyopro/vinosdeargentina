@@ -376,5 +376,23 @@
     "collab": "Selección en colaboración con",
     "title": "Nuestro partner",
     "blurb": "Trabajamos junto a De Altura Wines para acercarte vinos de bodegas argentinas."
+  },
+  "packSeeDetail": "Ver detalle",
+  "packSheet": {
+    "label": "Selección Especial",
+    "backToShop": "← Volver a la tienda",
+    "perPack": "{price} € / pack",
+    "bottlesLine": "{n, plural, one {# botella} other {# botellas}}",
+    "addPack": "Añadir pack al carrito",
+    "proposal": "La propuesta",
+    "wines": "Los vinos del pack",
+    "enjoy": "Cómo disfrutarlo",
+    "idealFor": "Ideal para",
+    "others": "Otros packs",
+    "viewWine": "Ver ficha",
+    "serve": "Servir a",
+    "pairing": "Maridaje",
+    "soldOut": "Sin stock",
+    "looseValue": "Valor por separado"
   }
 }

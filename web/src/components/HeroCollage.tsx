@@ -43,12 +43,11 @@ const TABLET_TILES: Tile[] = [
   { area: styles.g, image: findImage("/images/bodega-jardin-sauce.jpg"), vw: 25 },
 ];
 
-// Mobile (<640px): 2x3 grid, 4 photos — 2 wide strips, 2 small squares.
+// Mobile (<640px): a single full-bleed photo. A multi-tile grid put its
+// near-black seams right behind the title and copy, reading as hard dark
+// bands on phones.
 const MOBILE_TILES: Tile[] = [
-  { area: styles.a, image: findImage("/images/vinedo-andes-cielo.jpg"), vw: 100 },
-  { area: styles.b, image: findImage("/images/uvas-malbec-01.jpg"), vw: 50 },
-  { area: styles.c, image: findImage("/images/bodega-jardin-sauce.jpg"), vw: 50 },
-  { area: styles.d, image: findImage("/images/bodega-tractor-cordillera.jpg"), vw: 100 },
+  { area: styles.a, image: findImage("/images/vinedo-andes-cielo.jpg"), vw: 100, priority: true },
 ];
 
 function CollageGrid({ tiles, gridClassName, locale }: { tiles: Tile[]; gridClassName: string; locale: "es" | "en" }) {

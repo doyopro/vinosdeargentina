@@ -122,6 +122,17 @@ export interface PackProduct {
   type: WineType;
   image_url: string | null;
   price_retail: number;
+  // Extra fields for the pack page (all optional: the home only needs the above).
+  sku?: string;
+  grape?: string | null;
+  subregion?: string | null;
+  altitude_label?: string | null;
+  profile_es?: string | null;
+  profile_en?: string | null;
+  pairing_es?: string | null;
+  pairing_en?: string | null;
+  serve_temp?: string | null;
+  is_available?: boolean;
 }
 
 export interface PackItem {
@@ -139,5 +150,11 @@ export interface Pack {
   price_retail: number;
   is_featured: boolean;
   sort_order: number | null;
+  proposal_es?: string | null;
+  proposal_en?: string | null;
+  occasion_es?: string | null;
+  occasion_en?: string | null;
+  tasting_tip_es?: string | null;
+  tasting_tip_en?: string | null;
   items: PackItem[];
 }
