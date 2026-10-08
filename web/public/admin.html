@@ -757,16 +757,19 @@
                 <div class="panel-header">
                     <h3 data-i18n="inventory_title"><i class="fa-solid fa-calculator"></i> Desglose Financiero y Control
                         de Stock</h3>
-                    <span style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="inventory_subtitle">✅ Coste
-                        Real (price_cost_net) | Margen basado en (PVP/1.07 - Coste) | Stock Negativo = Pendiente de
+                    <span style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="inventory_subtitle">✅ Costo
+                        real = costo Martín + arancel 10% | Margen % sobre costo real, basado en (PVP/1.07 - costo real) | Stock Negativo = Pendiente de
                         Reposición</span>
                 </div>
                 <div class="table-wrapper">
-                    <table style="min-width: 1400px;">
+                    <table style="min-width: 1750px;">
                         <thead>
                             <tr>
                                 <th data-i18n="table_product">Producto (Bodega)</th>
-                                <th data-i18n="table_net_cost">💰 Coste Neto</th>
+                                <th data-i18n="table_cost_martin">💰 Costo Martín</th>
+                                <th data-i18n="table_arancel">🛃 Arancel 10%</th>
+                                <th data-i18n="table_cost_real">✅ Costo real</th>
+                                <th data-i18n="table_igic_import">🧾 IGIC import. (recuperable)</th>
                                 <th data-i18n="table_horeca">🍽️ PVP HORECA</th>
                                 <th data-i18n="table_margin_horeca">↗ Mg. HORECA</th>
                                 <th data-i18n="table_tax_horeca">+ IGIC HORECA</th>
@@ -864,6 +867,52 @@
     </main>
 
     <script>
+        const ARANCEL_RATE = 0.10;
+        const IGIC_RATE = 0.07;
+
+        // price_cost_net = costo de Martín, SIN impuestos. El IGIC de importación
+        // es recuperable: solo informativo, no entra en costoReal ni en el margen.
+        function costBreakdown(priceCostNet) {
+            const costoMartin = parseFloat(priceCostNet) || 0;
+            const arancel = costoMartin * ARANCEL_RATE;
+            return {
+                costoMartin,
+                arancel,
+                costoReal: costoMartin + arancel,
+                igicImportacion: costoMartin * IGIC_RATE
+            };
+        }
+
+        // Lee una línea de pedido en cualquiera de los dos formatos:
+        //  - nuevo (create-payment-intent-v2): {id, sku, name, qty, box_size, unit_price (IGIC incl.), line_total}
+        //  - viejo: {id, name, qty, box, price (neto)}
+        // qty = cajas en ambos. Devuelve todo por botella para que ambos den el mismo COGS.
+        function processOrderItem(item, products) {
+            const boxes = parseInt(item.qty) || 1;
+            const bottles = boxes * (parseInt(item.box_size ?? item.box) || 1);
+            const priceNetBottle = item.unit_price != null
+                ? (parseFloat(item.unit_price) || 0) / (1 + IGIC_RATE)
+                : (parseFloat(item.price) || 0);
+
+            const list = products || [];
+            const product =
+                list.find(pr => item.id != null && String(pr.id) === String(item.id)) ||
+                (item.sku ? list.find(pr => pr.sku && String(pr.sku) === String(item.sku)) : null) ||
+                (item.name ? list.find(pr => pr.name === item.name) : null);
+
+            const costoReal = product ? costBreakdown(product.price_cost_net).costoReal : 0;
+            const costPerBottle = costoReal > 0 ? costoReal : priceNetBottle * 0.5;
+
+            return {
+                boxes,
+                bottles,
+                costPerBottle,
+                cogs: bottles * costPerBottle,
+                revenueNet: bottles * priceNetBottle,
+                name: item.name || (product && product.name) || 'Unknown'
+            };
+        }
+
         const app = {
             db: null,
             currentLang: 'es',
@@ -876,7 +925,7 @@
                     table_payment_status: 'Estado Pago', table_logistics: 'Logística (WhatsApp)', orders_mgmt_title: 'Gestión de Órdenes',
                     table_ref: 'Ref. Pedido', table_customer_info: 'Cliente info', table_destination: 'Destino', table_amount: 'Importe',
                     table_logistics_short: 'Logística', inventory_title: 'Desglose Financiero y Control de Stock',
-                    inventory_subtitle: '✅ Coste Real (price_cost_net) | Margen basado en (PVP/1.07 - Coste) | Stock Negativo = Pendiente de Reposición',
+                    inventory_subtitle: '✅ Costo real = costo Martín + arancel 10% | Margen % sobre costo real, basado en (PVP/1.07 - costo real) | Stock Negativo = Pendiente de Reposición',
                     table_product: 'Producto (Bodega)', table_net_cost: '💰 Coste Neto', table_horeca: '🍽️ PVP HORECA',
                     table_retail: '🛍️ PVP Retail', table_margin: '↗ Margen %', table_tax_short: '+ IGIC 7%', table_stock: 'Stock JIT',
                     table_available: 'Disponible', error_availability_update: 'Error al actualizar la disponibilidad: ',
@@ -890,8 +939,11 @@
                     whatsapp_msg: "Hola {name}, soy Nicolás de De Altura Wines. Tu pedido #{id} ya ha sido procesado y va de camino. ¡Que lo disfrutes! 🍷",
                     error_stock_update: 'Error al actualizar el stock: ',
                     cost_net_label: 'Coste Neto', horeca_label: 'HORECA', retail_label: 'Retail', margin_label: 'Margen', tax_label: 'IGIC 7%',
-                    table_margin_horeca: '↗ Mg. HORECA', table_tax_horeca: '+ IGIC HORECA',
-                    table_margin_retail: '↗ Mg. Retail', table_tax_retail: '+ IGIC Retail',
+                    table_margin_horeca: '↗ Mg. HORECA (% s/ costo real)', table_tax_horeca: '+ IGIC HORECA',
+                    table_margin_retail: '↗ Mg. Retail (% s/ costo real)', table_tax_retail: '+ IGIC Retail',
+                    table_cost_martin: '💰 Costo Martín', table_arancel: '🛃 Arancel 10%', table_cost_real: '✅ Costo real', table_igic_import: '🧾 IGIC import. (recuperable)',
+                    cost_martin_label: 'Costo Martín', arancel_label: 'Arancel 10%', cost_real_label: 'Costo real', igic_import_label: 'IGIC import. recuperable',
+                    margin_horeca_label: 'Mg. HORECA s/ costo real', margin_retail_label: 'Mg. Retail s/ costo real',
                     promos_title: 'Cupones y Promociones', table_promo_code: 'Código', table_promo_type: 'Tipo', table_discount_value: 'Descuento',
                     table_min_cart: 'Mínimo Carrito', table_status: 'Estado', resellers_title: 'Gestión de Resellers (Socios)',
                     table_reseller_code: 'Código Socio', table_reseller_name: 'Nombre', table_commission: 'Comisión %', table_total_sales: 'Ventas Totales',
@@ -921,7 +973,7 @@
                     table_payment_status: 'Payment Status', table_logistics: 'Logistics (WhatsApp)', orders_mgmt_title: 'Order Management',
                     table_ref: 'Order Ref.', table_customer_info: 'Customer info', table_destination: 'Destination', table_amount: 'Amount',
                     table_logistics_short: 'Logistics', inventory_title: 'Financial Breakdown & Stock Control',
-                    inventory_subtitle: '✅ Real Cost (price_cost_net) | Margin based on (RRP/1.07 - Cost) | Negative Stock = Pending Restock',
+                    inventory_subtitle: '✅ Real cost = Martín cost + 10% import duty | Margin % on real cost, based on (RRP/1.07 - real cost) | Negative Stock = Pending Restock',
                     table_product: 'Product (Winery)', table_net_cost: '💰 Net Cost', table_horeca: '🍽️ HORECA Price',
                     table_retail: '🛍️ Retail Price', table_margin: '↗ Margin %', table_tax_short: '+ IGIC 7%', table_stock: 'JIT Stock',
                     table_available: 'Available', error_availability_update: 'Error updating availability: ',
@@ -935,8 +987,11 @@
                     whatsapp_msg: "Hello {name}, this is Nicolas from De Altura Wines. Your order #{id} has been processed and is on its way. Enjoy! 🍷",
                     error_stock_update: 'Error updating stock: ',
                     cost_net_label: 'Net Cost', horeca_label: 'HORECA', retail_label: 'Retail', margin_label: 'Margin', tax_label: 'IGIC 7%',
-                    table_margin_horeca: '↗ Mg. HORECA', table_tax_horeca: '+ IGIC HORECA',
-                    table_margin_retail: '↗ Mg. Retail', table_tax_retail: '+ IGIC Retail',
+                    table_margin_horeca: '↗ Mg. HORECA (% on real cost)', table_tax_horeca: '+ IGIC HORECA',
+                    table_margin_retail: '↗ Mg. Retail (% on real cost)', table_tax_retail: '+ IGIC Retail',
+                    table_cost_martin: '💰 Martín Cost', table_arancel: '🛃 Import Duty 10%', table_cost_real: '✅ Real Cost', table_igic_import: '🧾 Import IGIC (recoverable)',
+                    cost_martin_label: 'Martín Cost', arancel_label: 'Import Duty 10%', cost_real_label: 'Real Cost', igic_import_label: 'Import IGIC recoverable',
+                    margin_horeca_label: 'HORECA Mg. on real cost', margin_retail_label: 'Retail Mg. on real cost',
                     promos_title: 'Coupons & Promotions', table_promo_code: 'Code', table_promo_type: 'Type', table_discount_value: 'Discount',
                     table_min_cart: 'Min Cart', table_status: 'Status', resellers_title: 'Resellers Management (Partners)',
                     table_reseller_code: 'Partner Code', table_reseller_name: 'Name', table_commission: 'Commission %', table_total_sales: 'Total Sales',
@@ -1060,24 +1115,17 @@
                                 // PROCESAR ITEMS: Cajas, COGS, Top Productos
                                 if (o.items && Array.isArray(o.items)) {
                                     o.items.forEach(item => {
-                                        const qty = parseInt(item.qty) || 1;
-                                        const boxSize = parseInt(item.box) || 1;
-                                        const totalBoxes_item = qty * boxSize;
-                                        totalBoxes += totalBoxes_item;
-
-                                        // COSTE: Asumir 50% del precio si no hay dato real
-                                        const itemPrice = parseFloat(item.price) || 0;
-                                        const itemCost = itemPrice * 0.5;
-                                        const itemCOGS = itemCost * qty;
-                                        totalCOGS += itemCOGS;
+                                        // COGS con costo real (costo Martín + arancel 10%); ver processOrderItem
+                                        const r = processOrderItem(item, products);
+                                        totalBoxes += r.boxes;
+                                        totalCOGS += r.cogs;
 
                                         // TOP PRODUCTOS: Agrupar por nombre
-                                        const productName = item.name || 'Unknown';
-                                        if (!productSales[productName]) {
-                                            productSales[productName] = { boxes: 0, revenue: 0 };
+                                        if (!productSales[r.name]) {
+                                            productSales[r.name] = { boxes: 0, revenue: 0 };
                                         }
-                                        productSales[productName].boxes += totalBoxes_item;
-                                        productSales[productName].revenue += itemPrice * qty;
+                                        productSales[r.name].boxes += r.boxes;
+                                        productSales[r.name].revenue += r.revenueNet;
                                     });
                                 }
 
@@ -1223,37 +1271,40 @@
                 if (!products) return;
 
                 document.getElementById('inventory-body').innerHTML = products.map(p => {
-                    const costNet = parseFloat(p.price_cost_net || 0);
+                    const { costoMartin, arancel, costoReal, igicImportacion } = costBreakdown(p.price_cost_net);
 
                     // HORECA Calculations
                     const priceHorecaTotal = parseFloat(p.price_horeca || 0);
                     const netPriceHoreca = priceHorecaTotal / 1.07;
                     const igicHoreca = priceHorecaTotal - netPriceHoreca;
-                    const marginHoreca = netPriceHoreca - costNet;
-                    const marginPercentHoreca = costNet > 0 ? (marginHoreca / costNet) * 100 : 0;
+                    const marginHoreca = netPriceHoreca - costoReal;
+                    const marginPercentHoreca = costoReal > 0 ? (marginHoreca / costoReal) * 100 : 0;
 
                     // RETAIL Calculations
                     const priceRetailTotal = parseFloat(p.price_retail || 0);
                     const netPriceRetail = priceRetailTotal / 1.07;
                     const igicRetail = priceRetailTotal - netPriceRetail;
-                    const marginRetail = netPriceRetail - costNet;
-                    const marginPercentRetail = costNet > 0 ? (marginRetail / costNet) * 100 : 0;
+                    const marginRetail = netPriceRetail - costoReal;
+                    const marginPercentRetail = costoReal > 0 ? (marginRetail / costoReal) * 100 : 0;
 
                     const stockClass = p.stock < 0 ? 'negative-stock' : '';
 
                     return `<tr>
                         <td><strong>${p.name}</strong><br><small style="color: var(--text-muted)">${p.bodega || p.region}</small></td>
-                        <td class="finance-value" style="color: var(--text-muted);">💰 ${costNet.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].cost_net_label}</small></td>
+                        <td class="finance-value" style="color: var(--text-muted);">💰 ${costoMartin.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].cost_martin_label}</small></td>
+                        <td class="finance-value" style="color: var(--text-muted);">🛃 ${arancel.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].arancel_label}</small></td>
+                        <td class="finance-value" style="color: var(--text-main);">✅ ${costoReal.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].cost_real_label}</small></td>
+                        <td class="finance-value" style="color: var(--tax-color);">🧾 ${igicImportacion.toFixed(3)} €<br><small>${this.adminTranslations[this.currentLang].igic_import_label}</small></td>
                         
                         <td class="finance-value" style="color: var(--text-muted);">🍽️ ${priceHorecaTotal.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].horeca_label}</small></td>
                         <td class="finance-value" style="color: var(--text-main);">
-                            <span class="math-symbol">↗</span><span class="margin-percent">${marginPercentHoreca.toFixed(1)}%</span>${marginHoreca.toFixed(2)} €<br><small>Mg. HORECA</small>
+                            <span class="math-symbol">↗</span><span class="margin-percent">${marginPercentHoreca.toFixed(1)}%</span>${marginHoreca.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].margin_horeca_label}</small>
                         </td>
                         <td class="finance-value" style="color: var(--tax-color);"><span class="math-symbol">+</span>${igicHoreca.toFixed(2)} €<br><small>IGIC HORECA</small></td>
 
                         <td class="finance-value" style="color: var(--brand-gold);">🛍️ ${priceRetailTotal.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].retail_label}</small></td>
                         <td class="finance-value" style="color: var(--text-main);">
-                            <span class="math-symbol">↗</span><span class="margin-percent">${marginPercentRetail.toFixed(1)}%</span>${marginRetail.toFixed(2)} €<br><small>Mg. Retail</small>
+                            <span class="math-symbol">↗</span><span class="margin-percent">${marginPercentRetail.toFixed(1)}%</span>${marginRetail.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].margin_retail_label}</small>
                         </td>
                         <td class="finance-value" style="color: var(--tax-color);"><span class="math-symbol">+</span>${igicRetail.toFixed(2)} €<br><small>IGIC Retail</small></td>
 
