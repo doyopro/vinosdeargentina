@@ -6,18 +6,14 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface OrderItemInput {
-  id: string;
-  qty: number;
-}
+const IGIC_RATE = 0.07;
+const round2 = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
+
+interface OrderItemInput { id: string; qty: number; }
 
 interface CustomerInput {
-  name: string;
-  email: string;
-  phone: string | null;
-  address: string;
-  postal_code: string;
-  island: string;
+  name: string; email: string; phone: string | null;
+  address: string; postal_code: string; island: string;
 }
 
 interface RequestBody {
@@ -27,41 +23,24 @@ interface RequestBody {
 }
 
 interface ProductRow {
-  id: string;
-  sku: string;
-  name: string;
-  price_retail: number;
-  box_size: number;
-  is_available: boolean;
+  id: string; sku: string; name: string;
+  price_retail: number; box_size: number; is_available: boolean;
 }
 
 interface PromotionRow {
-  id: string;
-  code: string | null;
-  type: string;
-  discount_value: number;
-  min_cart_amount: number | null;
-  is_active: boolean;
+  id: string; code: string | null; type: string;
+  discount_value: number; min_cart_amount: number | null; is_active: boolean;
 }
 
 type PromoTipo = 'CODIGO' | 'RESELLER' | null;
 
 interface PromoAplicado {
-  codigo: string | null;
-  tipo: PromoTipo;
-  descuento: number;
-  codigoNombre: string;
+  codigo: string | null; tipo: PromoTipo;
+  descuento: number; codigoNombre: string;
 }
 
-const EMPTY_PROMO: PromoAplicado = {
-  codigo: null,
-  tipo: null,
-  descuento: 0,
-  codigoNombre: '',
-};
+const EMPTY_PROMO: PromoAplicado = { codigo: null, tipo: null, descuento: 0, codigoNombre: '' };
 
-// Ported verbatim from web/src/lib/order.ts resolveDiscount, which itself was
-// ported verbatim from checkout.html renderCartSummary's "MOTOR DE REGLAS".
 function resolveDiscount(
   subtotal: number,
   allPromotions: PromotionRow[],
@@ -111,7 +90,6 @@ function serverError(message: string) {
 }
 
 Deno.serve(async (req) => {
-  // Handle CORS
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -120,7 +98,7 @@ Deno.serve(async (req) => {
   try {
     body = await req.json();
   } catch {
-    return badRequest('Cuerpo de la petición inválido.');
+    return badRequest('Cuerpo de la peticion invalido.');
   }
 
   const items = body.items;
@@ -132,20 +110,13 @@ Deno.serve(async (req) => {
   }
   for (const item of items) {
     if (!item || typeof item.id !== 'string' || !item.id) {
-      return badRequest('Uno o más productos del pedido son inválidos.');
+      return badRequest('Uno o mas productos del pedido son invalidos.');
     }
     if (!Number.isInteger(item.qty) || item.qty <= 0) {
-      return badRequest('Cantidad inválida en uno o más productos.');
+      return badRequest('Cantidad invalida en uno o mas productos.');
     }
   }
-  if (
-    !customer ||
-    !customer.name ||
-    !customer.email ||
-    !customer.island ||
-    !customer.address ||
-    !customer.postal_code
-  ) {
+  if (!customer || !customer.name || !customer.email || !customer.island || !customer.address || !customer.postal_code) {
     return badRequest('Faltan datos del cliente.');
   }
 
@@ -154,7 +125,6 @@ Deno.serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // 1. Leer los productos pedidos y validar existencia + disponibilidad
     const uniqueIds = [...new Set(items.map((i) => i.id))];
     const { data: products, error: productsError } = await supabase
       .from('products')
@@ -171,30 +141,26 @@ Deno.serve(async (req) => {
     for (const id of uniqueIds) {
       const product = productsById.get(id);
       if (!product) {
-        return badRequest('Uno o más productos ya no existen.');
+        return badRequest('Uno o mas productos ya no existen.');
       }
       if (!product.is_available) {
-        return badRequest(`"${product.name}" ya no está disponible.`);
+        return badRequest(`"${product.name}" ya no esta disponible.`);
       }
     }
 
-    // 2. Subtotal y líneas del pedido, con los precios leídos del servidor
+    // price_retail se guarda CON IGIC incluido. Base imponible = price_retail / 1.07.
     const orderLines = items.map((item) => {
       const product = productsById.get(item.id)!;
-      const lineTotal = product.price_retail * item.qty * product.box_size;
+      const netUnit = product.price_retail / (1 + IGIC_RATE);
+      const lineTotal = round2(netUnit * item.qty * product.box_size);
       return {
-        id: product.id,
-        sku: product.sku,
-        name: product.name,
-        qty: item.qty,
-        box_size: product.box_size,
-        unit_price: product.price_retail,
-        line_total: lineTotal,
+        id: product.id, sku: product.sku, name: product.name,
+        qty: item.qty, box_size: product.box_size,
+        unit_price: product.price_retail, line_total: lineTotal,
       };
     });
-    const subtotal = orderLines.reduce((sum, line) => sum + line.line_total, 0);
+    const subtotal = round2(orderLines.reduce((sum, line) => sum + line.line_total, 0));
 
-    // 3. Descuento: promociones automáticas, cupón o socio reseller
     const { data: promotions, error: promotionsError } = await supabase
       .from('promotions')
       .select('id, code, type, discount_value, min_cart_amount, is_active')
@@ -225,7 +191,7 @@ Deno.serve(async (req) => {
 
         if (resellerError && resellerError.code !== 'PGRST116') {
           console.error('Error leyendo resellers:', resellerError);
-          return serverError('No se pudo validar el código.');
+          return serverError('No se pudo validar el codigo.');
         }
 
         if (reseller) {
@@ -236,13 +202,11 @@ Deno.serve(async (req) => {
 
     const { descuentoAplicado } = resolveDiscount(subtotal, allPromotions, promoAplicado);
 
-    // 4. Totales
-    const valorDescuento = subtotal * descuentoAplicado;
-    const baseImponible = subtotal - valorDescuento;
-    const igicAmount = baseImponible * 0.07;
-    const totalAmount = baseImponible + igicAmount;
+    const valorDescuento = round2(subtotal * descuentoAplicado);
+    const baseImponible = round2(subtotal - valorDescuento);
+    const igicAmount = round2(baseImponible * IGIC_RATE);
+    const totalAmount = round2(baseImponible + igicAmount);
 
-    // 5. Insertar la orden en estado 'pending'
     const orderPayload = {
       customer_name: customer.name,
       customer_email: customer.email,
@@ -276,10 +240,7 @@ Deno.serve(async (req) => {
 
     const orderId = orderData.id;
 
-    // 6. Crear el PaymentIntent por el total calculado en el servidor
-    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, {
-      apiVersion: '2023-10-16',
-    });
+    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2023-10-16' });
 
     let paymentIntent;
     try {
@@ -294,7 +255,6 @@ Deno.serve(async (req) => {
       return serverError('No se pudo iniciar el pago.');
     }
 
-    // 7. Vincular el PaymentIntent a la orden
     const { error: linkError } = await supabase
       .from('orders')
       .update({ stripe_payment_intent_id: paymentIntent.id })
@@ -305,25 +265,14 @@ Deno.serve(async (req) => {
       return serverError('No se pudo finalizar el pedido.');
     }
 
-    // 8. Responder con lo que el checkout necesita
     return new Response(
       JSON.stringify({
         clientSecret: paymentIntent.client_secret,
         orderId,
         totalAmount,
-        breakdown: {
-          subtotal,
-          descuentoAplicado,
-          valorDescuento,
-          baseImponible,
-          igicAmount,
-          totalAmount,
-        },
+        breakdown: { subtotal, descuentoAplicado, valorDescuento, baseImponible, igicAmount, totalAmount },
       }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
     );
   } catch (error) {
     console.error('Error creando el pedido:', error);
