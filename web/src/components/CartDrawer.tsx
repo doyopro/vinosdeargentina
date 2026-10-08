@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useCart, maxQtyFor } from "@/lib/CartContext";
@@ -16,6 +17,15 @@ export function CartDrawer({ open, onClose }: Props) {
   const t = useTranslations();
   const router = useRouter();
   const { items, setQty, remove } = useCart();
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
 
   const total = items.reduce((sum, item) => sum + lineGross(item), 0);
 
@@ -37,10 +47,16 @@ export function CartDrawer({ open, onClose }: Props) {
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="p-6 border-b border-stone-100 flex justify-between items-center">
+        <div className="sticky top-0 z-10 bg-white border-b border-stone-100 flex justify-between items-center pl-6 pr-3 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
           <h3 className="text-2xl font-serif text-wine-900 font-bold">{t("cartTitle")}</h3>
-          <button onClick={onClose} className="text-stone-400 hover:text-wine-900 text-2xl leading-none">
-            &times;
+          <button
+            onClick={onClose}
+            aria-label={t("cartClose")}
+            className="w-11 h-11 flex items-center justify-center rounded-full text-stone-500 hover:text-wine-900 hover:bg-stone-100 transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6L6 18" />
+            </svg>
           </button>
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4">
@@ -104,7 +120,7 @@ export function CartDrawer({ open, onClose }: Props) {
             })
           )}
         </div>
-        <div className="p-6 border-t border-stone-100">
+        <div className="px-6 pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] border-t border-stone-100">
           <div className="flex justify-between items-center mb-4">
             <span className="text-stone-500 font-medium">{t("cartTotal")}</span>
             <div className="text-3xl font-serif text-wine-900 font-bold">

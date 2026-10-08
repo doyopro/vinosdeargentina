@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Montserrat } from "next/font/google";
 import { I18nProvider } from "@/lib/i18n";
 import { CartProvider } from "@/lib/CartContext";
@@ -16,6 +16,13 @@ const montserrat = Montserrat({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
 });
+
+// viewport-fit=cover lets env(safe-area-inset-*) work on notched phones.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   title: "De Altura Wines | Desde los Andes a Canarias",
