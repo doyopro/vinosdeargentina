@@ -394,5 +394,7 @@
     "pairing": "Maridaje",
     "soldOut": "Agotado",
     "looseValue": "Valor por separado"
-  }
+  },
+  "carouselPrev": "Packs anteriores",
+  "carouselNext": "Packs siguientes"
 }

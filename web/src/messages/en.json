@@ -394,5 +394,7 @@
     "pairing": "Pairing",
     "soldOut": "Sold out",
     "looseValue": "Value if bought separately"
-  }
+  },
+  "carouselPrev": "Previous packs",
+  "carouselNext": "Next packs"
 }
