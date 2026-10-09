@@ -7,9 +7,11 @@ const corsHeaders = {
 };
 
 interface OrderLine {
+  kind?: 'product' | 'pack';
   id: string;
   qty: number;
   box_size: number;
+  components?: { product_id: string; bottles: number }[];
 }
 
 function ok(body: Record<string, unknown> = { received: true }) {
@@ -97,30 +99,43 @@ Deno.serve(async (req) => {
     const order = updatedOrders[0];
     const items: OrderLine[] = Array.isArray(order.items) ? order.items : [];
 
-    // 5. Descuento de stock JIT (nunca baja de 0)
+    // 5. Descuento de stock JIT (nunca baja de 0).
+    // Vinos = qty*box_size; packs = qty*bottles por componente.
+    const decrements = new Map<string, number>();
+    const add = (productId: string, bottles: number) => {
+      if (!productId || bottles <= 0) return;
+      decrements.set(productId, (decrements.get(productId) || 0) + bottles);
+    };
     for (const line of items) {
       if (!line || !line.id) continue;
-      const decrement = (line.qty || 0) * (line.box_size || 0);
-      if (decrement <= 0) continue;
+      if (line.kind === 'pack') {
+        for (const c of line.components || []) {
+          add(c.product_id, (line.qty || 0) * (c.bottles || 0));
+        }
+      } else {
+        add(line.id, (line.qty || 0) * (line.box_size || 0));
+      }
+    }
 
+    for (const [productId, decrement] of decrements) {
       const { data: product, error: productError } = await supabase
         .from('products')
         .select('stock')
-        .eq('id', line.id)
+        .eq('id', productId)
         .single();
 
       if (productError || !product) {
-        console.error(`Error leyendo stock de ${line.id}:`, productError);
+        console.error(`Error leyendo stock de ${productId}:`, productError);
         continue;
       }
 
       const { error: stockError } = await supabase
         .from('products')
         .update({ stock: Math.max(0, (product.stock || 0) - decrement) })
-        .eq('id', line.id);
+        .eq('id', productId);
 
       if (stockError) {
-        console.error(`Error descontando stock de ${line.id}:`, stockError);
+        console.error(`Error descontando stock de ${productId}:`, stockError);
       }
     }
 
