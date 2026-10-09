@@ -108,8 +108,8 @@ export function PackDetail({ pack, others }: { pack: Pack; others: Pack[] }) {
             </div>
           </div>
 
-          <div className="relative h-72 md:h-[26rem] order-first md:order-none flex items-end justify-center">
-            <PackCollage images={packImages(pack)} />
+          <div className="relative h-72 sm:h-[26rem] md:h-80 lg:h-[28rem] order-first md:order-none flex items-end justify-center [--s:0.7] sm:[--s:1] md:[--s:0.7] lg:[--s:1]">
+            <PackCollage images={packImages(pack)} size="hero" />
           </div>
         </div>
       </header>
@@ -136,9 +136,9 @@ export function PackDetail({ pack, others }: { pack: Pack; others: Pack[] }) {
               const place = [w.grape, w.subregion, w.altitude_label].filter(filled).join(" · ");
               return (
                 <li key={w.id} className="flex gap-4 rounded-xl border border-stone-100 bg-stone-50 p-4">
-                  <div className="relative w-16 h-28 flex-shrink-0">
+                  <div className="relative w-20 h-36 md:w-24 md:h-44 flex-shrink-0">
                     {w.image_url && (
-                      <Image src={w.image_url} alt={w.name} fill sizes="64px" className="object-contain drop-shadow-[0_6px_8px_rgba(15,42,68,0.25)]" />
+                      <Image src={w.image_url} alt={w.name} fill sizes="96px" className="object-contain drop-shadow-[0_6px_8px_rgba(15,42,68,0.25)]" />
                     )}
                   </div>
                   <div className="min-w-0 flex-grow">
