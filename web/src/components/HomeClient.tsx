@@ -137,21 +137,18 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
         </div>
       </header>
 
-      <main id="catalog" className="max-w-6xl mx-auto px-4 py-20 space-y-16">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-10 pb-6 border-b border-stone-200">
-          <div>
-            <h2 className="text-4xl font-serif text-brand-900">{t("catalogTitle")}</h2>
-            <p className="text-stone-500 mt-2 font-medium">{t("catalogSubtitle")}</p>
-          </div>
-        </div>
-
-        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 -mt-8 text-sm text-brand-900">
-          {(["infoMin", "infoFree", "infoCanarias", "infoPickup"] as const).map((k) => (
-            <li key={k} className="bg-white border border-stone-200 rounded-xl px-4 py-3 leading-snug">
-              {t(k)}
-            </li>
-          ))}
-        </ul>
+      <main id="catalog" className="max-w-6xl mx-auto px-4 py-12 md:py-16 space-y-16">
+        <section className="-mb-8">
+          <h2 className="text-3xl md:text-4xl font-serif text-brand-900 mb-5">{t("catalogTitle")}</h2>
+          <dl className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-stone-200 border border-stone-200 rounded-xl overflow-hidden">
+            {(["Min", "Free", "Canarias", "Pickup"] as const).map((k) => (
+              <div key={k} className="bg-white px-4 py-3">
+                <dt className="text-[10px] font-bold uppercase tracking-widest text-sun-600">{t(`info${k}Label`)}</dt>
+                <dd className="mt-0.5 text-sm font-semibold text-brand-900 leading-snug">{t(`info${k}Value`)}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
 
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-6">
           <div className="flex flex-wrap gap-2 md:gap-3">
