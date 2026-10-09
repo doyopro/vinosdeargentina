@@ -37,7 +37,7 @@
   "featuredTitle": "Recommended",
   "featuredBadge": "Recommended",
   "outOfStock": "Sold out",
-  "deliveryNote": "Pick up your order in Lanzarote, or have it shipped from Lanzarote at an additional cost depending on destination.",
+  "deliveryNote": "Free pick-up in Playa Honda (Lanzarote), to be arranged. Shipping to the Canary Islands is free from €200; below that, €20 (IGIC included).",
   "cartClose": "Close cart",
   "cartRemove": "Remove",
   "cartDecrease": "Fewer boxes",
@@ -97,7 +97,18 @@
     "paymentNotReady": "Payment is still being prepared. Please wait a moment and try again.",
     "paymentInitFailed": "We couldn't start the payment. Check your details and try again",
     "paymentRetry": "Retry",
-    "pricingUpdating": "Updating total..."
+    "pricingUpdating": "Updating total...",
+    "deliveryTitle": "Delivery method",
+    "deliveryShipping": "Shipping to the Canary Islands",
+    "deliveryShippingDesc": "Free from €{threshold}; below that, €{fee} (IGIC included).",
+    "deliveryPickup": "Pick up in Playa Honda (Lanzarote)",
+    "deliveryPickupDesc": "Free. Pick-up date to be arranged with you.",
+    "pickupNote": "We will contact you to agree the day and time for pick-up in Playa Honda (Lanzarote). We don't need your address.",
+    "summaryShipping": "Shipping",
+    "summaryPickup": "Pick-up in Playa Honda",
+    "free": "Free",
+    "freeShippingHint": "You are €{amount} away from free shipping.",
+    "bigOrders": "Large order? Message us on WhatsApp and we will arrange the shipping."
   },
   "confirmationPage": {
     "thankYou": "Thank you for your purchase!",
@@ -266,7 +277,7 @@
         {
           "h": "6. Delivery",
           "p": [
-            "You can pick up your order in Lanzarote or request shipping from Lanzarote at an additional cost depending on destination. See the Shipping and returns page for details."
+            "You can pick up your order free of charge in Playa Honda (Lanzarote), by arrangement, or request shipping to the Canary Islands from Lanzarote. Shipping is free for orders of €200 or more (product amount including IGIC, after discounts) and costs €20 (IGIC included) below that; the cost is shown in the summary before payment. See the Shipping and returns page for details."
           ]
         },
         {
@@ -294,15 +305,15 @@
       "title": "Shipping and returns",
       "sections": [
         {
-          "h": "1. Pick-up in Lanzarote",
+          "h": "1. Pick-up in Playa Honda (Lanzarote)",
           "p": [
-            "You can pick up your order in Lanzarote [PICK-UP ADDRESS AND HOURS TO BE CONFIRMED]."
+            "You can pick up your order free of charge in Playa Honda (Lanzarote). The day and time are arranged with you by email or phone [EXACT ADDRESS AND HOURS TO BE CONFIRMED]."
           ]
         },
         {
           "h": "2. Shipping",
           "p": [
-            "Orders ship from Lanzarote at an additional cost depending on destination. The cost will be confirmed before payment [QUOTING PROCESS TO BE CONFIRMED].",
+            "Orders ship from Lanzarote to the Canary Islands. Shipping is free for orders of €200 or more (product amount including IGIC, after discounts). Below €200 shipping costs €20 (IGIC included), shown in the order summary before payment. For large orders, write to us and we will arrange the shipping.",
             "Delivery times: [PLAZOS]."
           ]
         },

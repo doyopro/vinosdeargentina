@@ -91,6 +91,7 @@ export interface CustomerInfo {
   postal_code: string;
   promo_code: string;
   promo_type: string;
+  delivery_method?: "pickup" | "shipping";
 }
 
 export const CUSTOMER_INFO_KEY = "altura_customer_info";
@@ -105,6 +106,10 @@ export interface Breakdown {
   baseImponible: number;
   igicAmount: number;
   totalAmount: number;
+  /** Goods total (after discount, IGIC incl.) and the shipping charged on top of it. */
+  goodsTotal?: number;
+  shippingAmount?: number;
+  deliveryMethod?: "pickup" | "shipping";
 }
 
 export interface PaymentInit {

@@ -26,6 +26,8 @@ export const dynamic = "force-dynamic";
 // Failure of the order/PaymentIntent call, carrying the server's message (or HTTP status).
 class InitError extends Error {}
 
+import { DeliveryMethod, FREE_SHIPPING_THRESHOLD, PICKUP_ADDRESS, PICKUP_ISLAND, PICKUP_POSTAL, SHIPPING_FEE, shippingFor } from "@/lib/shipping";
+
 const ISLANDS = ["Tenerife", "Gran Canaria", "La Palma", "La Gomera", "El Hierro", "Fuerteventura", "Lanzarote"];
 
 export default function CheckoutPage() {
@@ -45,6 +47,7 @@ export default function CheckoutPage() {
   const [island, setIsland] = useState("");
   const [address, setAddress] = useState("");
   const [postal, setPostal] = useState("");
+  const [delivery, setDelivery] = useState<DeliveryMethod>("shipping");
   const [errors, setErrors] = useState<Record<string, boolean>>({});
 
   const [submitting, setSubmitting] = useState(false);
@@ -73,6 +76,11 @@ export default function CheckoutPage() {
     })();
   }, []);
 
+  // Pickup needs no postal address: send the pickup point instead.
+  const effIsland = delivery === "pickup" ? PICKUP_ISLAND : island;
+  const effAddress = delivery === "pickup" ? PICKUP_ADDRESS : address;
+  const effPostal = delivery === "pickup" ? PICKUP_POSTAL : postal;
+
   // Client-side estimate: only used to render the summary while the cart is
   // being built, before the server has priced the order.
   const { labelDescuento, ...clientTotals } = useMemo(() => {
@@ -81,23 +89,27 @@ export default function CheckoutPage() {
     const valorDescuento = subtotal * descuentoAplicado;
     const baseImponible = subtotal - valorDescuento;
     const igicAmount = baseImponible * 0.07;
-    const totalAmount = baseImponible + igicAmount;
+    const goodsTotal = baseImponible + igicAmount;
+    const shippingAmount = shippingFor(delivery, goodsTotal);
+    const totalAmount = goodsTotal + shippingAmount;
     return {
       importeBruto: subtotal,
       valorDescuento,
       baseImponible,
       igicAmount,
+      goodsTotal,
+      shippingAmount,
       totalAmount,
       labelDescuento,
       descuentoAplicado,
     };
-  }, [items, allPromotions, promoAplicado]);
+  }, [items, allPromotions, promoAplicado, delivery]);
 
   // The server needs full customer info to price + create the order, so we
   // can't price until the billing form is filled in.
   const customerReady = useMemo(
-    () => Boolean(name.trim() && email.trim() && island.trim() && address.trim() && postal.trim()),
-    [name, email, island, address, postal]
+    () => Boolean(name.trim() && email.trim() && effIsland.trim() && effAddress.trim() && effPostal.trim()),
+    [name, email, effIsland, effAddress, effPostal]
   );
 
   // Everything the server prices from. If this differs from the signature of
@@ -107,8 +119,8 @@ export default function CheckoutPage() {
     [items, promoAplicado.codigo]
   );
   const pricingSig = useMemo(
-    () => JSON.stringify({ cartSig, customer: [name, email, phone, address, postal, island] }),
-    [cartSig, name, email, phone, address, postal, island]
+    () => JSON.stringify({ cartSig, customer: [name, email, phone, effAddress, effPostal, effIsland, delivery] }),
+    [cartSig, name, email, phone, effAddress, effPostal, effIsland, delivery]
   );
 
   const isStale = !paymentInit || pricedSig !== pricingSig;
@@ -117,16 +129,20 @@ export default function CheckoutPage() {
   // The server's numbers are the source of truth for what's shown and charged.
   // The browser estimate is only a provisional value until a fresh response lands.
   const serverBreakdown = paymentInit && !isStale ? paymentInit.breakdown : null;
-  const { importeBruto, valorDescuento, baseImponible, igicAmount, totalAmount, descuentoAplicado } = serverBreakdown
-    ? {
-        importeBruto: serverBreakdown.subtotal,
-        valorDescuento: serverBreakdown.valorDescuento,
-        baseImponible: serverBreakdown.baseImponible,
-        igicAmount: serverBreakdown.igicAmount,
-        totalAmount: serverBreakdown.totalAmount,
-        descuentoAplicado: serverBreakdown.descuentoAplicado,
-      }
-    : clientTotals;
+  const { importeBruto, valorDescuento, baseImponible, igicAmount, goodsTotal, shippingAmount, totalAmount, descuentoAplicado } =
+    serverBreakdown
+      ? {
+          importeBruto: serverBreakdown.subtotal,
+          valorDescuento: serverBreakdown.valorDescuento,
+          baseImponible: serverBreakdown.baseImponible,
+          igicAmount: serverBreakdown.igicAmount,
+          goodsTotal: serverBreakdown.goodsTotal ?? serverBreakdown.baseImponible + serverBreakdown.igicAmount,
+          shippingAmount: serverBreakdown.shippingAmount ?? 0,
+          totalAmount: serverBreakdown.totalAmount,
+          descuentoAplicado: serverBreakdown.descuentoAplicado,
+        }
+      : clientTotals;
+  const missingForFree = Math.max(0, FREE_SHIPPING_THRESHOLD - goodsTotal);
 
   // (Re)price on the server whenever the cart, the coupon or the customer data
   // change: new order + PaymentIntent. Debounced; stale responses are ignored.
@@ -157,8 +173,9 @@ export default function CheckoutPage() {
           },
           body: JSON.stringify({
             items: items.map((item) => ({ id: item.id, qty: item.qty, type: item.kind ?? "product" })),
-            customer: { name, email, phone, address, postal_code: postal, island },
+            customer: { name, email, phone, address: effAddress, postal_code: effPostal, island: effIsland },
             promo_code: promoAplicado.codigo,
+            delivery_method: delivery,
           }),
         });
         const data = await res.json().catch(() => null);
@@ -254,7 +271,8 @@ export default function CheckoutPage() {
   }
 
   function validateForm() {
-    const fields: Record<string, string> = { name, email, island, address, postal };
+    const fields: Record<string, string> =
+      delivery === "pickup" ? { name, email } : { name, email, island, address, postal };
     const nextErrors: Record<string, boolean> = {};
     let valid = true;
     for (const key of Object.keys(fields)) {
@@ -288,11 +306,12 @@ export default function CheckoutPage() {
         name,
         email,
         phone,
-        island,
-        address,
-        postal_code: postal,
+        island: effIsland,
+        address: effAddress,
+        postal_code: effPostal,
         promo_code: promoAplicado.codigo || "SIN CODIGO",
         promo_type: promoAplicado.tipo || "NINGUNO",
+        delivery_method: delivery,
       };
       window.localStorage.setItem(CUSTOMER_INFO_KEY, JSON.stringify(customerInfo));
 
@@ -366,33 +385,61 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                    <div className="flex flex-col">
-                      <label className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">{t("phone")}</label>
-                      <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className={inputCls("phone")} />
-                    </div>
-                    <div className="flex flex-col">
-                      <label className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">{t("island")}</label>
-                      <select value={island} onChange={(e) => setIsland(e.target.value)} className={`${inputCls("island")} appearance-none bg-white`}>
-                        <option value="">{t("selectIsland")}</option>
-                        {ISLANDS.map((i) => (
-                          <option key={i} value={i}>
-                            {i}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                  <div className="flex flex-col mb-6">
+                    <label className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">{t("phone")}</label>
+                    <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className={`${inputCls("phone")} md:w-1/2`} />
                   </div>
 
-                  <div className="flex flex-col mb-5">
-                    <label className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">{t("address")}</label>
-                    <input value={address} onChange={(e) => setAddress(e.target.value)} className={inputCls("address")} />
-                  </div>
+                  <fieldset className="mb-6">
+                    <legend className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-3">{t("deliveryTitle")}</legend>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {(
+                        [
+                          ["shipping", t("deliveryShipping"), t("deliveryShippingDesc", { threshold: FREE_SHIPPING_THRESHOLD, fee: SHIPPING_FEE })],
+                          ["pickup", t("deliveryPickup"), t("deliveryPickupDesc")],
+                        ] as [DeliveryMethod, string, string][]
+                      ).map(([value, label, desc]) => (
+                        <label
+                          key={value}
+                          className={`cursor-pointer rounded-xl border p-4 transition-colors ${
+                            delivery === value ? "border-brand-900 bg-brand-900/[0.04] ring-2 ring-sky-500/40" : "border-stone-200 hover:border-stone-300"
+                          }`}
+                        >
+                          <input type="radio" name="delivery" value={value} checked={delivery === value} onChange={() => setDelivery(value)} className="sr-only" />
+                          <div className="font-bold text-brand-900 text-sm">{label}</div>
+                          <div className="mt-1 text-xs text-stone-500 leading-relaxed">{desc}</div>
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
 
-                  <div className="flex flex-col w-full md:w-1/2">
-                    <label className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">{t("postal")}</label>
-                    <input value={postal} onChange={(e) => setPostal(e.target.value)} className={inputCls("postal")} />
-                  </div>
+                  {delivery === "shipping" ? (
+                    <>
+                      <div className="flex flex-col mb-5 md:w-1/2">
+                        <label className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">{t("island")}</label>
+                        <select value={island} onChange={(e) => setIsland(e.target.value)} className={`${inputCls("island")} appearance-none bg-white`}>
+                          <option value="">{t("selectIsland")}</option>
+                          {ISLANDS.map((i) => (
+                            <option key={i} value={i}>
+                              {i}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="flex flex-col mb-5">
+                        <label className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">{t("address")}</label>
+                        <input value={address} onChange={(e) => setAddress(e.target.value)} className={inputCls("address")} />
+                      </div>
+
+                      <div className="flex flex-col w-full md:w-1/2">
+                        <label className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">{t("postal")}</label>
+                        <input value={postal} onChange={(e) => setPostal(e.target.value)} className={inputCls("postal")} />
+                      </div>
+                    </>
+                  ) : (
+                    <p className="rounded-xl bg-stone-50 border border-stone-200 p-4 text-sm text-stone-600 leading-relaxed">{t("pickupNote")}</p>
+                  )}
                 </div>
 
                 <div className="mb-10">
@@ -545,6 +592,25 @@ export default function CheckoutPage() {
                       <span>{t("taxes")}</span>
                       <span className="text-white font-semibold">{igicAmount.toFixed(2)} &euro;</span>
                     </div>
+                    <div className="flex justify-between text-stone-400 text-sm">
+                      <span>{delivery === "pickup" ? t("summaryPickup") : t("summaryShipping")}</span>
+                      <span className="text-white font-semibold">
+                        {shippingAmount > 0 ? `${shippingAmount.toFixed(2)} €` : t("free")}
+                      </span>
+                    </div>
+                    {delivery === "shipping" && shippingAmount > 0 && (
+                      <div className="text-right text-[11px] text-sky-500">{t("freeShippingHint", { amount: missingForFree.toFixed(2) })}</div>
+                    )}
+                    {delivery === "shipping" && (
+                      <a
+                        href="https://wa.me/34633706676"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block text-right text-[11px] text-stone-400 hover:text-white underline underline-offset-2"
+                      >
+                        {t("bigOrders")}
+                      </a>
+                    )}
                     {updating && (
                       <div className="text-right text-[11px] text-sky-500 animate-pulse" role="status">
                         {t("pricingUpdating")}

@@ -37,7 +37,7 @@
   "featuredTitle": "Recomendados",
   "featuredBadge": "Recomendado",
   "outOfStock": "Agotado",
-  "deliveryNote": "Retirá tu pedido en Lanzarote o pedí el envío desde Lanzarote, con coste adicional según destino.",
+  "deliveryNote": "Retiro gratis en Playa Honda (Lanzarote), a coordinar. Envío a Canarias gratis desde 200 €; por debajo, 20 € (IGIC incluido).",
   "cartClose": "Cerrar carrito",
   "cartRemove": "Quitar",
   "cartDecrease": "Menos cajas",
@@ -97,7 +97,18 @@
     "paymentNotReady": "El pago aún se está preparando. Espera un momento e inténtalo de nuevo.",
     "paymentInitFailed": "No pudimos iniciar el pago. Revisa los datos e inténtalo de nuevo",
     "paymentRetry": "Reintentar",
-    "pricingUpdating": "Actualizando total..."
+    "pricingUpdating": "Actualizando total...",
+    "deliveryTitle": "Forma de entrega",
+    "deliveryShipping": "Envío a Canarias",
+    "deliveryShippingDesc": "Gratis desde {threshold} € de compra; por debajo, {fee} € (IGIC incluido).",
+    "deliveryPickup": "Retirar en Playa Honda (Lanzarote)",
+    "deliveryPickupDesc": "Gratis. Fecha de recogida a coordinar contigo.",
+    "pickupNote": "Te escribiremos para acordar el día y la hora de recogida en Playa Honda (Lanzarote). No necesitamos tu dirección.",
+    "summaryShipping": "Envío",
+    "summaryPickup": "Retirada en Playa Honda",
+    "free": "Gratis",
+    "freeShippingHint": "Te faltan {amount} € para el envío gratis.",
+    "bigOrders": "¿Pedido grande? Escríbenos por WhatsApp y coordinamos el envío."
   },
   "confirmationPage": {
     "thankYou": "¡Gracias por tu compra!",
@@ -266,7 +277,7 @@
         {
           "h": "6. Entrega",
           "p": [
-            "Puedes retirar tu pedido en Lanzarote o solicitar el envío desde Lanzarote, con coste adicional según destino. Consulta la página de Envíos y devoluciones para más detalle."
+            "Puedes retirar tu pedido gratis en Playa Honda (Lanzarote), a coordinar, o solicitar el envío a las Islas Canarias desde Lanzarote. El envío es gratuito para pedidos desde 200 € (importe de los productos con IGIC, tras descuentos) y cuesta 20 € (IGIC incluido) por debajo de ese importe; el coste se muestra en el resumen antes de pagar. Consulta la página de Envíos y devoluciones para más detalle."
           ]
         },
         {
@@ -294,15 +305,15 @@
       "title": "Envíos y devoluciones",
       "sections": [
         {
-          "h": "1. Retirada en Lanzarote",
+          "h": "1. Retirada en Playa Honda (Lanzarote)",
           "p": [
-            "Puedes retirar tu pedido en Lanzarote [DIRECCIÓN Y HORARIO DE RETIRADA A CONFIRMAR]."
+            "Puedes retirar tu pedido sin coste en Playa Honda (Lanzarote). El día y la hora de recogida se coordinan contigo por email o teléfono [DIRECCIÓN EXACTA Y HORARIO A CONFIRMAR]."
           ]
         },
         {
           "h": "2. Envíos",
           "p": [
-            "Los envíos salen desde Lanzarote y tienen un coste adicional según el destino. El coste se confirmará antes del pago [MECANISMO DE COTIZACIÓN A CONFIRMAR].",
+            "Los envíos salen desde Lanzarote con destino a las Islas Canarias. Son gratuitos para pedidos de 200 € o más (importe de los productos con IGIC, tras descuentos). Por debajo de 200 € el coste de envío es de 20 € (IGIC incluido), que se muestra en el resumen del pedido antes del pago. Para pedidos de gran volumen, escríbenos y acordamos el envío.",
             "Plazos de entrega: [PLAZOS]."
           ]
         },
