@@ -61,14 +61,13 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
       if (provinciaFilter.size > 0 && !provinciaFilter.has(w.provincia)) return false;
       return true;
     });
-    // Featured wines live in "Recomendados" until the user filters/sorts; then
-    // they join the grid so no result is hidden.
-    if (!isFiltering) list = list.filter((w) => !w.is_featured || !w.is_available);
+    // Featured wines are shown in "Recomendados" AND stay in their region
+    // sections, so each region lists its whole catalog.
     const availFirst = (a: CatalogWine, b: CatalogWine) => Number(b.is_available) - Number(a.is_available);
     if (sortPrice === "asc") list = [...list].sort((a, b) => availFirst(a, b) || a.price - b.price);
     else if (sortPrice === "desc") list = [...list].sort((a, b) => availFirst(a, b) || b.price - a.price);
     return list;
-  }, [catalogData, typeFilter, provinciaFilter, sortPrice, isFiltering]);
+  }, [catalogData, typeFilter, provinciaFilter, sortPrice]);
 
   const featuredWines = useMemo(
     () => catalogData.filter((w) => w.is_featured && w.is_available),
@@ -222,7 +221,7 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
           );
         })}
 
-        {filtered.length === 0 && (isFiltering || featuredWines.length === 0) && (
+        {filtered.length === 0 && (
           <div className="py-16 text-center text-stone-400 italic">{t("noResults")}</div>
         )}
 
