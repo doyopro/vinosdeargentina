@@ -12,6 +12,8 @@ const IGIC_RATE = 0.07;
 // SHIPPING_FEE (IGIC included) below it. Always computed here, never trusted from the client.
 const FREE_SHIPPING_THRESHOLD = 200;
 const SHIPPING_FEE = 20;
+// Minimum order (goods total after discount, IGIC included). Wines are sold by the bottle.
+const MIN_ORDER = 50;
 const round2 = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
 
 type DeliveryMethod = 'pickup' | 'shipping';
@@ -230,7 +232,7 @@ Deno.serve(async (req) => {
     }
 
     // price_retail se guarda CON IGIC incluido. Base imponible = price_retail / 1.07.
-    // Vino: precio por botella x box_size x qty. Pack: precio por pack x qty.
+    // Vino: precio por botella x qty (qty = botellas). Pack: precio por pack x qty.
     const orderLines = items.map((item) => {
       if (item.type === 'pack') {
         const pack = packsById.get(item.id)!;
@@ -249,9 +251,9 @@ Deno.serve(async (req) => {
       return {
         kind: 'product',
         id: product.id, sku: product.sku, name: product.name,
-        qty: item.qty, box_size: product.box_size,
+        qty: item.qty, box_size: 1,
         unit_price: product.price_retail,
-        line_total: round2(netUnit * item.qty * product.box_size),
+        line_total: round2(netUnit * item.qty),
       };
     });
     const subtotal = round2(orderLines.reduce((sum, line) => sum + line.line_total, 0));
@@ -301,6 +303,10 @@ Deno.serve(async (req) => {
     const baseImponible = round2(subtotal - valorDescuento);
     const igicAmount = round2(baseImponible * IGIC_RATE);
     const goodsTotal = round2(baseImponible + igicAmount);
+
+    if (goodsTotal < MIN_ORDER) {
+      return badRequest(`El pedido minimo es de ${MIN_ORDER} EUR.`);
+    }
 
     // Envio: retiro gratis; envio gratis desde 200 EUR (total de productos con IGIC),
     // 20 EUR (IGIC incluido) por debajo.

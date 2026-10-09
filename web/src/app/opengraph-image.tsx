@@ -32,7 +32,7 @@ export default function OpengraphImage() {
           Vinos de Argentina, directos a Canarias
         </div>
         <div style={{ display: "flex", fontSize: 28, marginTop: 36, color: "#e3a72f", letterSpacing: 6 }}>
-          CAJAS · PACKS · RETIRADA EN LANZAROTE
+          BOTELLAS · PACKS · RETIRADA EN LANZAROTE
         </div>
       </div>
     ),

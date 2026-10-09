@@ -4,6 +4,7 @@ export type DeliveryMethod = "pickup" | "shipping";
 
 export const FREE_SHIPPING_THRESHOLD = 200; // EUR, goods total after discount, IGIC included
 export const SHIPPING_FEE = 20; // EUR, IGIC included
+export const MIN_ORDER = 50; // EUR, goods total after discount, IGIC included
 
 // Pickup point sent as the order address (the order form requires one).
 export const PICKUP_ISLAND = "Lanzarote";

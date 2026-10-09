@@ -31,14 +31,14 @@ export const metadata: Metadata = {
   applicationName: "VinoArgentino.es",
   title: "VinoArgentino.es — Vinos de Argentina online",
   description:
-    "Vinos argentinos de altura, directos a Canarias. Cajas y packs con retirada gratis en Lanzarote y envío a las islas.",
+    "Vinos argentinos de altura, directos a Canarias. Por botella o en packs, con retirada gratis en Lanzarote y envío a Canarias.",
   openGraph: {
     type: "website",
     url: SITE_URL,
     siteName: "VinoArgentino.es",
     title: "VinoArgentino.es — Vinos de Argentina online",
     description:
-      "Vinos argentinos de altura, directos a Canarias. Cajas y packs con retirada gratis en Lanzarote y envío a las islas.",
+      "Vinos argentinos de altura, directos a Canarias. Por botella o en packs, con retirada gratis en Lanzarote y envío a Canarias.",
   },
 };
 

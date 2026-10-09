@@ -6,7 +6,7 @@ export const IGIC = 1.07;
 export const lineKey = (kind: "product" | "pack", id: string) => `${kind}:${id}`;
 export const keyOf = (item: CartItem) => lineKey(item.kind ?? "product", item.id);
 
-/** Net amount of a line. Wines: net bottle price x boxes x bottles per box. Packs: gross pack price / 1.07 x packs. */
+/** Net amount of a line. Wines: net bottle price x bottles. Packs: gross pack price / 1.07 x packs. */
 export function lineNet(item: CartItem): number {
   if (item.kind === "pack") return (item.price_retail / IGIC) * item.qty;
   return (item.price || 0) * (item.qty || 1) * (item.box || 1);
@@ -23,7 +23,11 @@ function normalize(raw: Record<string, CartItem>): Cart {
   const next: Cart = {};
   for (const [k, v] of Object.entries(raw)) {
     const kind = v.kind === "pack" ? "pack" : "product";
-    const item = { ...v, kind } as CartItem;
+    let item = { ...v, kind } as CartItem;
+    // Old carts counted boxes: convert to bottles (sold by the bottle now).
+    if (item.kind !== "pack" && (item.box || 1) > 1) {
+      item = { ...item, qty: (item.qty || 1) * item.box, box: 1 };
+    }
     next[lineKey(kind, v.id ?? k)] = item;
   }
   return next;

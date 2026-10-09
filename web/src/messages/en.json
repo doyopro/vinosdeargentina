@@ -3,7 +3,7 @@
   "heroSubtitle": "The global prestige of Argentine wine, from the immensity of the Andes straight to the Canary Islands.",
   "exploreCatalog": "Explore Catalog",
   "catalogTitle": "2026 Catalog",
-  "catalogSubtitle": "Exclusive sales by full boxes.",
+  "catalogSubtitle": "Sold by the bottle, no minimum case. Minimum order €50.",
   "filters": {
     "all": "All",
     "tinto": "Reds",
@@ -37,11 +37,11 @@
   "featuredTitle": "Recommended",
   "featuredBadge": "Recommended",
   "outOfStock": "Sold out",
-  "deliveryNote": "Free pick-up in Playa Honda (Lanzarote), to be arranged. Shipping to the Canary Islands is free from €200; below that, €20 (IGIC included).",
+  "deliveryNote": "Minimum order €50. Free pick-up in Playa Honda (Lanzarote), to be arranged. Shipping to the Canary Islands only: free from €200; below that, €20 (IGIC included).",
   "cartClose": "Close cart",
   "cartRemove": "Remove",
-  "cartDecrease": "Fewer boxes",
-  "cartIncrease": "More boxes",
+  "cartDecrease": "Remove one",
+  "cartIncrease": "Add one",
   "specialTitle": "Special Selection",
   "specialSubtitle": "Cases put together by us to discover Argentina",
   "packBottles": "{n, plural, one {# bottle} other {# bottles}}",
@@ -60,6 +60,8 @@
   "cartTitle": "Your Cart",
   "cartTotal": "Total",
   "checkout": "Proceed to Payment",
+  "bottleUnit": "Bottle (75 cl)",
+  "bottleUnitPlural": "btl.",
   "boxLabel": "Box of {n}",
   "boxesUnit": "Box(es)",
   "checkoutPage": {
@@ -108,7 +110,8 @@
     "summaryPickup": "Pick-up in Playa Honda",
     "free": "Free",
     "freeShippingHint": "You are €{amount} away from free shipping.",
-    "bigOrders": "Large order? Message us on WhatsApp and we will arrange the shipping."
+    "minOrderWarning": "The minimum order is €{min}. You are €{missing} short.",
+    "bigOrders": "Large order or wholesale? Message us on WhatsApp and we will arrange it."
   },
   "confirmationPage": {
     "thankYou": "Thank you for your purchase!",
@@ -137,7 +140,7 @@
         {
           "h": "2. Purpose",
           "p": [
-            "This website (VinoArgentino.es) presents and sells Argentine wines online, by the case and in packs, to customers aged 18 or over, with delivery to the Canary Islands.",
+            "This website (VinoArgentino.es) presents and sells Argentine wines online, by the bottle and in packs, to customers aged 18 or over, with delivery to the Canary Islands.",
             "Accessing and using the site makes you a user and implies acceptance of this legal notice."
           ]
         },
@@ -253,7 +256,7 @@
         {
           "h": "2. Products and prices",
           "p": [
-            "Prices are shown in euros and include IGIC. Wines are sold by the full case and in packs, as indicated on each product. We reserve the right to correct obvious pricing errors before confirming an order."
+            "Prices are shown in euros and include IGIC. Wines are sold by the bottle and in packs, with a minimum order of €50 (IGIC included, after discounts). For larger purchases or wholesale, contact us on WhatsApp. We reserve the right to correct obvious pricing errors before confirming an order."
           ]
         },
         {
@@ -313,7 +316,7 @@
         {
           "h": "2. Shipping",
           "p": [
-            "Orders ship from Lanzarote to the Canary Islands. Shipping is free for orders of €200 or more (product amount including IGIC, after discounts). Below €200 shipping costs €20 (IGIC included), shown in the order summary before payment. For large orders, write to us and we will arrange the shipping.",
+            "Orders ship from Lanzarote to the Canary Islands (we do not ship to mainland Spain). Shipping is free for orders of €200 or more (product amount including IGIC, after discounts). Below €200 shipping costs €20 (IGIC included), shown in the order summary before payment. For large orders, write to us and we will arrange the shipping.",
             "Delivery time: up to 7 days from payment confirmation. Pick-up at Playa Honda is arranged with you."
           ]
         },

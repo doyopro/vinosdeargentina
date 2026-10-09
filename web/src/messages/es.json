@@ -3,7 +3,7 @@
   "heroSubtitle": "El prestigio mundial del vino argentino, desde la inmensidad de los Andes directo a Islas Canarias.",
   "exploreCatalog": "Explorar Catálogo",
   "catalogTitle": "Catálogo 2026",
-  "catalogSubtitle": "Venta exclusiva por cajas completas.",
+  "catalogSubtitle": "Vendemos por botella, sin cajas mínimas. Pedido mínimo de 50 €.",
   "filters": {
     "all": "Todos",
     "tinto": "Tintos",
@@ -37,11 +37,11 @@
   "featuredTitle": "Recomendados",
   "featuredBadge": "Recomendado",
   "outOfStock": "Agotado",
-  "deliveryNote": "Retiro gratis en Playa Honda (Lanzarote), a coordinar. Envío a Canarias gratis desde 200 €; por debajo, 20 € (IGIC incluido).",
+  "deliveryNote": "Pedido mínimo 50 €. Retiro gratis en Playa Honda (Lanzarote), a coordinar. Envío solo a Canarias: gratis desde 200 €; por debajo, 20 € (IGIC incluido).",
   "cartClose": "Cerrar carrito",
   "cartRemove": "Quitar",
-  "cartDecrease": "Menos cajas",
-  "cartIncrease": "Más cajas",
+  "cartDecrease": "Quitar una",
+  "cartIncrease": "Añadir una",
   "specialTitle": "Selección Especial",
   "specialSubtitle": "Cajas armadas por nosotros para descubrir Argentina",
   "packBottles": "{n, plural, one {# botella} other {# botellas}}",
@@ -60,6 +60,8 @@
   "cartTitle": "Tu Carrito",
   "cartTotal": "Total",
   "checkout": "Proceder al Pago",
+  "bottleUnit": "Botella (75 cl)",
+  "bottleUnitPlural": "bot.",
   "boxLabel": "Caja de {n}",
   "boxesUnit": "Caja(s)",
   "checkoutPage": {
@@ -108,7 +110,8 @@
     "summaryPickup": "Retirada en Playa Honda",
     "free": "Gratis",
     "freeShippingHint": "Te faltan {amount} € para el envío gratis.",
-    "bigOrders": "¿Pedido grande? Escríbenos por WhatsApp y coordinamos el envío."
+    "minOrderWarning": "El pedido mínimo es de {min} €. Te faltan {missing} €.",
+    "bigOrders": "¿Pedido grande o compra mayorista? Escríbenos por WhatsApp y lo coordinamos."
   },
   "confirmationPage": {
     "thankYou": "¡Gracias por tu compra!",
@@ -137,7 +140,7 @@
         {
           "h": "2. Objeto",
           "p": [
-            "Este sitio web (VinoArgentino.es) tiene por objeto la presentación y la venta en línea de vinos argentinos, en cajas y packs, a clientes mayores de 18 años, con entrega en las Islas Canarias.",
+            "Este sitio web (VinoArgentino.es) tiene por objeto la presentación y la venta en línea de vinos argentinos, por botella y en packs, a clientes mayores de 18 años, con entrega en las Islas Canarias.",
             "El acceso y uso del sitio atribuye la condición de usuario e implica la aceptación de este aviso legal."
           ]
         },
@@ -253,7 +256,7 @@
         {
           "h": "2. Productos y precios",
           "p": [
-            "Los precios se muestran en euros e incluyen el IGIC. La venta se realiza por cajas completas y por packs, tal y como se indica en cada producto. Nos reservamos el derecho de corregir errores evidentes de precio antes de confirmar el pedido."
+            "Los precios se muestran en euros e incluyen el IGIC. La venta se realiza por botellas y por packs, con un pedido mínimo de 50 € (IGIC incluido, tras descuentos). Para compras superiores o canales mayoristas, consúltanos por WhatsApp. Nos reservamos el derecho de corregir errores evidentes de precio antes de confirmar el pedido."
           ]
         },
         {
@@ -313,7 +316,7 @@
         {
           "h": "2. Envíos",
           "p": [
-            "Los envíos salen desde Lanzarote con destino a las Islas Canarias. Son gratuitos para pedidos de 200 € o más (importe de los productos con IGIC, tras descuentos). Por debajo de 200 € el coste de envío es de 20 € (IGIC incluido), que se muestra en el resumen del pedido antes del pago. Para pedidos de gran volumen, escríbenos y acordamos el envío.",
+            "Los envíos salen desde Lanzarote con destino a las Islas Canarias (no realizamos envíos a la Península). Son gratuitos para pedidos de 200 € o más (importe de los productos con IGIC, tras descuentos). Por debajo de 200 € el coste de envío es de 20 € (IGIC incluido), que se muestra en el resumen del pedido antes del pago. Para pedidos de gran volumen, escríbenos y acordamos el envío.",
             "Plazo de entrega: hasta 7 días desde la confirmación del pago. La retirada en Playa Honda se acuerda contigo."
           ]
         },

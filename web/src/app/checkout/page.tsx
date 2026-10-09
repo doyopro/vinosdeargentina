@@ -26,7 +26,7 @@ export const dynamic = "force-dynamic";
 // Failure of the order/PaymentIntent call, carrying the server's message (or HTTP status).
 class InitError extends Error {}
 
-import { DeliveryMethod, FREE_SHIPPING_THRESHOLD, PICKUP_ADDRESS, PICKUP_ISLAND, PICKUP_POSTAL, SHIPPING_FEE, shippingFor } from "@/lib/shipping";
+import { DeliveryMethod, FREE_SHIPPING_THRESHOLD, PICKUP_ADDRESS, PICKUP_ISLAND, PICKUP_POSTAL, MIN_ORDER, SHIPPING_FEE, shippingFor } from "@/lib/shipping";
 
 const ISLANDS = ["Tenerife", "Gran Canaria", "La Palma", "La Gomera", "El Hierro", "Fuerteventura", "Lanzarote"];
 
@@ -123,8 +123,12 @@ export default function CheckoutPage() {
     [cartSig, name, email, phone, effAddress, effPostal, effIsland, delivery]
   );
 
+  // Minimum order, judged on the browser estimate so we never ask the server for a below-minimum order.
+  const clientGoods = Math.round(clientTotals.goodsTotal * 100) / 100;
+  const belowMin = clientGoods > 0 && clientGoods < MIN_ORDER;
+
   const isStale = !paymentInit || pricedSig !== pricingSig;
-  const updating = customerReady && items.length > 0 && isStale && !initFailed;
+  const updating = customerReady && items.length > 0 && isStale && !initFailed && !belowMin;
 
   // The server's numbers are the source of truth for what's shown and charged.
   // The browser estimate is only a provisional value until a fresh response lands.
@@ -142,12 +146,13 @@ export default function CheckoutPage() {
           descuentoAplicado: serverBreakdown.descuentoAplicado,
         }
       : clientTotals;
+  const missingForMin = Math.max(0, MIN_ORDER - clientGoods);
   const missingForFree = Math.max(0, FREE_SHIPPING_THRESHOLD - goodsTotal);
 
   // (Re)price on the server whenever the cart, the coupon or the customer data
   // change: new order + PaymentIntent. Debounced; stale responses are ignored.
   useEffect(() => {
-    if (!ready || items.length === 0 || !customerReady) return;
+    if (!ready || items.length === 0 || !customerReady || belowMin) return;
     if (pricedSig === pricingSig) return;
 
     // Cart/coupon edits: ~400ms. Customer-only edits wait longer to avoid
@@ -198,7 +203,7 @@ export default function CheckoutPage() {
 
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- pricingSig/cartSig cover every input the request reads
-  }, [ready, items.length, customerReady, pricingSig, pricedSig, initAttempt]);
+  }, [ready, items.length, customerReady, belowMin, pricingSig, pricedSig, initAttempt]);
 
   // Abort anything still in flight when leaving the page.
   useEffect(
@@ -286,6 +291,7 @@ export default function CheckoutPage() {
   }
 
   async function handlePayment() {
+    if (belowMin) return;
     if (!validateForm()) return;
     if (updating) return;
     if (!elementsRef.current || !paymentInit || isStale) {
@@ -496,9 +502,15 @@ export default function CheckoutPage() {
 
                 <DeliveryNote className="mb-5" />
 
+                {belowMin && (
+                  <p className="mb-4 text-sm font-semibold text-red-600" role="alert">
+                    {t("minOrderWarning", { min: MIN_ORDER, missing: missingForMin.toFixed(2) })}
+                  </p>
+                )}
+
                 <button
                   onClick={handlePayment}
-                  disabled={submitting || updating}
+                  disabled={submitting || updating || belowMin}
                   className="w-full bg-brand-900 hover:bg-brand-800 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-5 rounded-lg transition-all shadow-xl hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3 uppercase tracking-widest text-sm"
                 >
                   {updating ? t("pricingUpdating") : t("payNow")}
@@ -531,7 +543,7 @@ export default function CheckoutPage() {
                               <div className="text-[10px] text-stone-400 mt-1 uppercase font-bold tracking-widest">
                                 {item.kind === "pack"
                                   ? `${item.qty} × ${tc("packBottles", { n: item.bottles })}`
-                                  : `${item.qty} Caja(s) × ${item.box || 1} bot.`}
+                                  : `${item.qty} ${tc("bottleUnitPlural")}`}
                               </div>
                             </div>
                             <div className="text-sm font-bold text-sky-500 whitespace-nowrap">{itemTotal.toFixed(2)} &euro;</div>
@@ -601,7 +613,7 @@ export default function CheckoutPage() {
                     {delivery === "shipping" && shippingAmount > 0 && (
                       <div className="text-right text-[11px] text-sky-500">{t("freeShippingHint", { amount: missingForFree.toFixed(2) })}</div>
                     )}
-                    {delivery === "shipping" && (
+                    {(
                       <a
                         href="https://wa.me/34633706676"
                         target="_blank"

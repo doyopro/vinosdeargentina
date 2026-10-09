@@ -79,7 +79,7 @@ export function CartDrawer({ open, onClose }: Props) {
                     <div className="flex-1 min-w-0">
                       <h5 className="text-sm font-bold text-brand-900">{item.name}</h5>
                       <div className="text-xs text-stone-500">
-                        {isPack ? t("packBottles", { n: item.bottles }) : t("boxOf", { n: item.box })}
+                        {isPack ? t("packBottles", { n: item.bottles }) : t("bottleUnit")}
                       </div>
                     </div>
                     <div className="font-bold text-brand-900 whitespace-nowrap">
@@ -97,7 +97,7 @@ export function CartDrawer({ open, onClose }: Props) {
                         −
                       </button>
                       <span className="min-w-12 px-1 text-center text-xs font-bold whitespace-nowrap">
-                        {isPack ? item.qty : `${item.qty} ${t("boxesUnit")}`}
+                        {item.qty}
                       </span>
                       <button
                         onClick={() => setQty(key, item.qty + 1)}

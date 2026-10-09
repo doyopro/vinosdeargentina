@@ -52,7 +52,6 @@ export function WineDetail({ product, bodega }: { product: Product; bodega: Bode
   const wine = toCatalogWine(product);
   const qty = cart[lineKey("product", wine.id)]?.qty ?? 0;
   const soldOut = !product.is_available;
-  const hasCase = (product.box_size ?? 0) > 1;
 
   const pick = (es: string | null, en: string | null) => (locale === "en" ? (filled(en) ? en : es) : filled(es) ? es : en);
 
@@ -137,11 +136,6 @@ export function WineDetail({ product, bodega }: { product: Product; bodega: Bode
                 {tc("priceBottle", { price: eur(product.price_retail) })}{" "}
                 <span className="text-[11px] font-sans font-normal text-stone-400">{tc("incTax")}</span>
               </div>
-              {hasCase && (
-                <div className="mt-1 text-sm font-semibold text-sky-500">
-                  {tc("caseLine", { n: product.box_size, total: eur(product.price_retail * product.box_size) })}
-                </div>
-              )}
               <div className="mt-5 max-w-md">
                 {soldOut ? (
                   <div className="h-12 flex items-center justify-center rounded-lg bg-white/10 text-stone-300 text-xs font-bold uppercase tracking-widest">
@@ -164,7 +158,7 @@ export function WineDetail({ product, bodega }: { product: Product; bodega: Bode
                       onClick={() => add(wine, 1)}
                       className="flex-grow h-12 bg-sun-500 hover:bg-sun-600 text-brand-900 font-bold rounded-lg text-xs uppercase tracking-widest transition-colors"
                     >
-                      {hasCase ? tc("addCase", { n: product.box_size }) : tc("addToCart")}
+                      {tc("addToCart")}
                     </button>
                   </div>
                 )}

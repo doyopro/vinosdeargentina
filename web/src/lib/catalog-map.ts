@@ -8,7 +8,7 @@ export const toCatalogWine = (p: Product): CatalogWine => ({
   type: p.type,
   region: p.region,
   provincia: getProvinciaBodega(p.bodega),
-  box: p.box_size,
+  box: 1, // sold by the bottle: cart qty = bottles
   price: (p.price_retail || 0) / 1.07,
   bodega: p.bodega,
   name: p.name,

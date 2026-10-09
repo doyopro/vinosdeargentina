@@ -16,8 +16,6 @@ export function WineCard({ wine, qty, onChangeQty }: Props) {
   const { locale } = useLocaleSwitch();
 
   const unitGross = (wine.price * 1.07).toFixed(2).replace(".", ",");
-  const totalGross = (wine.price * 1.07 * wine.box).toFixed(2).replace(".", ",");
-  const hasCase = (wine.box ?? 0) > 1;
   const inCartCls = qty > 0 ? "ring-2 ring-sun-500" : "";
   const outOfStock = !wine.is_available;
 
@@ -38,9 +36,6 @@ export function WineCard({ wine, qty, onChangeQty }: Props) {
           />
         </Link>
         <div className="absolute top-3 right-3 flex flex-col gap-2">
-          <span className="bg-brand-900/90 text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
-            Caja de {wine.box}
-          </span>
           {outOfStock ? (
             <span className="bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
               {t("outOfStock")}
@@ -77,11 +72,6 @@ export function WineCard({ wine, qty, onChangeQty }: Props) {
               {t("priceBottle", { price: unitGross })}{" "}
               <span className="text-[10px] font-sans text-stone-400 font-normal">{t("incTax")}</span>
             </div>
-            {hasCase && (
-              <div className="text-sm font-semibold text-brand-800 mt-0.5">
-                {t("caseLine", { n: wine.box, total: totalGross })}
-              </div>
-            )}
           </div>
           {outOfStock ? (
             <div className="h-11 flex items-center justify-center rounded-lg bg-stone-200 text-stone-500 text-[10px] font-bold uppercase tracking-widest">
@@ -102,7 +92,7 @@ export function WineCard({ wine, qty, onChangeQty }: Props) {
                 onClick={() => onChangeQty(wine.id, 1)}
                 className="flex-grow text-white font-bold h-11 rounded-lg text-[10px] uppercase tracking-widest bg-brand-900 hover:bg-brand-800"
               >
-                {hasCase ? t("addCase", { n: wine.box }) : t("addToCart")}
+                {t("addToCart")}
               </button>
             </div>
           )}
