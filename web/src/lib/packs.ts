@@ -76,6 +76,7 @@ const PACK_NAME_EN: Record<string, string> = {
   "trio-llama": "Llama Trio",
   "duo-llama": "Llama Duo",
   "trio-buenos-aires": "Buenos Aires Trio",
+  "trio-malbec": "Malbec Trio",
 };
 
 export const packName = (pack: Pick<Pack, "slug" | "name">, locale: string) =>
