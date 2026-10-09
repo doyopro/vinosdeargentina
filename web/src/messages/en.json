@@ -36,7 +36,7 @@
   "addToCart": "Add to Cart",
   "featuredTitle": "Recommended",
   "featuredBadge": "Recommended",
-  "outOfStock": "Out of stock",
+  "outOfStock": "Sold out",
   "deliveryNote": "Pick up your order in Lanzarote, or have it shipped from Lanzarote at an additional cost depending on destination.",
   "cartClose": "Close cart",
   "cartRemove": "Remove",
@@ -392,7 +392,7 @@
     "viewWine": "View wine",
     "serve": "Serve at",
     "pairing": "Pairing",
-    "soldOut": "Out of stock",
+    "soldOut": "Sold out",
     "looseValue": "Value if bought separately"
   }
 }

@@ -36,7 +36,7 @@
   "addToCart": "Añadir al Carrito",
   "featuredTitle": "Recomendados",
   "featuredBadge": "Recomendado",
-  "outOfStock": "Sin stock",
+  "outOfStock": "Agotado",
   "deliveryNote": "Retirá tu pedido en Lanzarote o pedí el envío desde Lanzarote, con coste adicional según destino.",
   "cartClose": "Cerrar carrito",
   "cartRemove": "Quitar",
@@ -392,7 +392,7 @@
     "viewWine": "Ver ficha",
     "serve": "Servir a",
     "pairing": "Maridaje",
-    "soldOut": "Sin stock",
+    "soldOut": "Agotado",
     "looseValue": "Valor por separado"
   }
 }

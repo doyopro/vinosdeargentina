@@ -243,9 +243,9 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
         <PartnerStrip />
       </main>
 
-      <section className="bg-stone-900 text-stone-300 py-20 px-6 border-t-4 border-brand-800">
+      <section className="bg-stone-900 text-stone-300 py-10 md:py-12 px-6 border-t-4 border-brand-800">
         <div className="max-w-4xl mx-auto text-center">
-          <svg className="w-12 h-12 mx-auto text-sky-500 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-8 h-8 mx-auto text-sky-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -253,13 +253,13 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
               d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
             />
           </svg>
-          <h2 className="text-3xl md:text-4xl font-serif text-white mb-6">{t("horecaTitle")}</h2>
-          <p className="text-lg font-light leading-relaxed max-w-2xl mx-auto mb-10">{t("horecaSubtitle")}</p>
+          <h2 className="text-2xl md:text-3xl font-serif text-white mb-3">{t("horecaTitle")}</h2>
+          <p className="text-base font-light leading-relaxed max-w-xl mx-auto mb-6">{t("horecaSubtitle")}</p>
           <a
             href="https://wa.me/34633706676"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-3 px-8 py-4 border border-stone-600 hover:border-sky-500 hover:text-white rounded-sm transition-colors uppercase tracking-widest text-xs font-bold shadow-lg bg-white/5"
+            className="inline-flex items-center gap-3 px-6 py-3 border border-stone-600 hover:border-sky-500 hover:text-white rounded-sm transition-colors uppercase tracking-widest text-xs font-bold shadow-lg bg-white/5"
           >
             {t("horecaCta")}
           </a>
