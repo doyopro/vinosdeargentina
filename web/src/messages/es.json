@@ -10,7 +10,9 @@
     "tinto": "Tintos",
     "blanco": "Blancos",
     "rosado": "Rosados",
-    "title": "Filtros", "type": "Tipo", "clear": "Limpiar filtros",
+    "title": "Filtros",
+    "type": "Tipo",
+    "clear": "Limpiar filtros",
     "provincia": "Provincia",
     "todas": "Todas"
   },
@@ -136,7 +138,7 @@
           "h": "1. Titular del sitio web",
           "p": [
             "En cumplimiento de la Ley 34/2002, de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSI-CE), se informa de que el titular de este sitio web es:",
-            "Razón social: [RAZÓN SOCIAL] · NIF: [NIF] · Domicilio: [DOMICILIO] · Email: [EMAIL] · Teléfono: [TELÉFONO] · Datos registrales: [DATOS DEL REGISTRO MERCANTIL, SI APLICA]."
+            "Titular: Nicolas A. Civatti · NIF: X9258142K · Domicilio: Goleta 5, San Bartolomé, Las Palmas · Email: nicolas.doyopro@gmail.com · Teléfono: +34 633 706 676."
           ]
         },
         {
@@ -149,7 +151,7 @@
         {
           "h": "3. Propiedad intelectual e industrial",
           "p": [
-            "Los textos, fotografías, diseños, logotipos, marcas y demás contenidos del sitio son titularidad de [RAZÓN SOCIAL] o de terceros que han autorizado su uso, y están protegidos por la normativa de propiedad intelectual e industrial. Queda prohibida su reproducción, distribución o transformación sin autorización expresa. Las marcas y nombres de las bodegas y de los vinos pertenecen a sus respectivos titulares."
+            "Los textos, fotografías, diseños, logotipos, marcas y demás contenidos del sitio son titularidad de Nicolas A. Civatti o de terceros que han autorizado su uso, y están protegidos por la normativa de propiedad intelectual e industrial. Queda prohibida su reproducción, distribución o transformación sin autorización expresa. Las marcas y nombres de las bodegas y de los vinos pertenecen a sus respectivos titulares."
           ]
         },
         {
@@ -162,7 +164,7 @@
         {
           "h": "5. Legislación aplicable y jurisdicción",
           "p": [
-            "Este aviso legal se rige por la legislación española. Para cualquier controversia, y salvo que la normativa de consumidores establezca otro fuero, las partes se someterán a los juzgados y tribunales de [JURISDICCIÓN A CONFIRMAR]."
+            "Este aviso legal se rige por la legislación española. Para cualquier controversia, y salvo que la normativa de consumidores establezca otro fuero, las partes se someterán a los juzgados y tribunales de Arrecife (Lanzarote)."
           ]
         }
       ]
@@ -173,7 +175,7 @@
         {
           "h": "1. Responsable del tratamiento",
           "p": [
-            "[RAZÓN SOCIAL], NIF [NIF], con domicilio en [DOMICILIO]. Contacto en materia de protección de datos: [EMAIL]."
+            "Nicolas A. Civatti, NIF X9258142K, con domicilio en Goleta 5, San Bartolomé, Las Palmas. Contacto en materia de protección de datos: nicolas.doyopro@gmail.com."
           ]
         },
         {
@@ -194,20 +196,20 @@
         {
           "h": "4. Plazos de conservación",
           "p": [
-            "Conservaremos los datos mientras dure la relación comercial y, después, bloqueados durante los plazos de prescripción legales aplicables a las obligaciones fiscales, mercantiles y de consumo ([PLAZOS A CONFIRMAR])."
+            "Conservaremos los datos mientras dure la relación comercial y, después, bloqueados durante los plazos de prescripción legales aplicables a las obligaciones fiscales, mercantiles y de consumo (con carácter general, hasta seis años)."
           ]
         },
         {
           "h": "5. Destinatarios",
           "p": [
             "Stripe, como proveedor del servicio de pago. Supabase, como proveedor tecnológico de alojamiento de datos. Empresas de transporte o mensajería, cuando el pedido se envía. Administraciones públicas y autoridades, cuando exista obligación legal.",
-            "Algunos de estos proveedores pueden tratar datos fuera del Espacio Económico Europeo con las garantías adecuadas (por ejemplo, cláusulas contractuales tipo) [UBICACIÓN DE LOS SERVIDORES Y GARANTÍAS A CONFIRMAR]."
+            "Algunos de estos proveedores pueden tratar datos fuera del Espacio Económico Europeo con las garantías adecuadas (por ejemplo, cláusulas contractuales tipo). Los datos de la tienda se almacenan en servidores situados en la Unión Europea (Irlanda)."
           ]
         },
         {
           "h": "6. Tus derechos",
           "p": [
-            "Puedes ejercer los derechos de acceso, rectificación, supresión, oposición, limitación del tratamiento y portabilidad escribiendo a [EMAIL], indicando tu petición y adjuntando una copia de tu documento de identidad cuando sea necesario.",
+            "Puedes ejercer los derechos de acceso, rectificación, supresión, oposición, limitación del tratamiento y portabilidad escribiendo a nicolas.doyopro@gmail.com, indicando tu petición y adjuntando una copia de tu documento de identidad cuando sea necesario.",
             "Si consideras que tus datos no se tratan correctamente, puedes presentar una reclamación ante la Agencia Española de Protección de Datos (www.aepd.es)."
           ]
         }
@@ -229,7 +231,7 @@
             "Idioma: recuerda si prefieres español o inglés.",
             "Verificación de edad: recuerda que has confirmado tener 18 años o más.",
             "Datos temporales del pedido: durante el pago se guardan en tu navegador los datos de entrega para completar el proceso.",
-            "Pago: la pasarela de pago de Stripe puede utilizar sus propios mecanismos técnicos y de prevención del fraude mientras se carga el formulario de pago [CONFIRMAR]."
+            "Pago: la pasarela de pago de Stripe puede utilizar sus propios mecanismos técnicos y de prevención del fraude mientras se carga el formulario de pago."
           ]
         },
         {
@@ -252,7 +254,7 @@
         {
           "h": "1. Ámbito",
           "p": [
-            "Estas condiciones regulan la compra de vinos a través de este sitio web, cuyo titular es [RAZÓN SOCIAL] (NIF [NIF]). Al realizar un pedido, aceptas estas condiciones."
+            "Estas condiciones regulan la compra de vinos a través de este sitio web, cuyo titular es Nicolas A. Civatti (NIF X9258142K). Al realizar un pedido, aceptas estas condiciones."
           ]
         },
         {
@@ -270,7 +272,7 @@
         {
           "h": "4. Proceso de pedido",
           "p": [
-            "Añade los productos al carrito, completa tus datos de entrega y realiza el pago. Recibirás la confirmación del pedido por email [CONFIRMAR]. El contrato se entiende formalizado cuando se confirma el pago."
+            "Añade los productos al carrito, completa tus datos de entrega y realiza el pago. Recibirás la confirmación del pedido por email [PENDIENTE: confirmar cuando esté activo el email de pedido]. El contrato se entiende formalizado cuando se confirma el pago."
           ]
         },
         {
@@ -288,14 +290,14 @@
         {
           "h": "7. Derecho de desistimiento",
           "p": [
-            "Como consumidor tienes derecho a desistir de la compra en un plazo de 14 días naturales desde la recepción, sin necesidad de justificación, salvo las excepciones legales aplicables (por ejemplo, productos que se hayan desprecintado o que por su naturaleza no puedan devolverse) [CONFIRMAR EXCEPCIONES Y PROCEDIMIENTO].",
-            "Para ejercerlo, escribe a [EMAIL] indicando tu número de pedido."
+            "Como consumidor tienes derecho a desistir de la compra en un plazo de 14 días naturales desde la recepción, sin necesidad de justificación, salvo las excepciones legales aplicables (por ejemplo, productos que se hayan desprecintado o que por su naturaleza no puedan devolverse). En el caso de las botellas, solo aceptamos la devolución de productos sin abrir y en su embalaje original, y los costes de devolución corren a cargo del cliente.",
+            "Para ejercerlo, escribe a nicolas.doyopro@gmail.com indicando tu número de pedido."
           ]
         },
         {
           "h": "8. Garantía y atención al cliente",
           "p": [
-            "Los productos están amparados por la garantía legal de conformidad prevista en la normativa de consumidores [CONFIRMAR PLAZOS APLICABLES]. Para cualquier incidencia: [EMAIL] · [TELÉFONO]."
+            "Los productos están amparados por la garantía legal de conformidad prevista en la normativa de consumidores (tres años desde la entrega). Para cualquier incidencia: nicolas.doyopro@gmail.com · +34 633 706 676."
           ]
         },
         {
@@ -312,7 +314,7 @@
         {
           "h": "1. Retirada en Playa Honda (Lanzarote)",
           "p": [
-            "Puedes retirar tu pedido sin coste en Playa Honda (Lanzarote). El día y la hora de recogida se coordinan contigo por email o teléfono [DIRECCIÓN EXACTA Y HORARIO A CONFIRMAR]."
+            "Puedes retirar tu pedido sin coste en Playa Honda (Lanzarote). El día y la hora de recogida se coordinan contigo por email o teléfono. La dirección exacta y el horario te los indicamos al confirmar tu pedido."
           ]
         },
         {
@@ -325,13 +327,13 @@
         {
           "h": "3. Botella rota o dañada",
           "p": [
-            "Revisa el paquete al recibirlo. Si llega una botella rota o dañada, avísanos en un máximo de 48 horas desde la entrega escribiendo a [EMAIL] y adjunta fotos del paquete y del producto. Gestionaremos la reposición o el reembolso [CONFIRMAR]."
+            "Revisa el paquete al recibirlo. Si llega una botella rota o dañada, avísanos en un máximo de 48 horas desde la entrega escribiendo a nicolas.doyopro@gmail.com y adjunta fotos del paquete y del producto. Gestionaremos la reposición o el reembolso."
           ]
         },
         {
           "h": "4. Devoluciones",
           "p": [
-            "Las devoluciones se rigen por lo indicado en las Condiciones de compra (derecho de desistimiento). Escríbenos a [EMAIL] antes de enviar nada para indicarte cómo proceder [CONFIRMAR PROCEDIMIENTO Y COSTES DE DEVOLUCIÓN]."
+            "Las devoluciones se rigen por lo indicado en las Condiciones de compra (derecho de desistimiento). Escríbenos a nicolas.doyopro@gmail.com antes de enviar nada para indicarte cómo proceder. Salvo producto defectuoso o error nuestro, los costes de devolución corren a cargo del cliente."
           ]
         }
       ]

@@ -10,7 +10,9 @@
     "tinto": "Reds",
     "blanco": "Whites",
     "rosado": "Rosés",
-    "title": "Filters", "type": "Type", "clear": "Clear filters",
+    "title": "Filters",
+    "type": "Type",
+    "clear": "Clear filters",
     "provincia": "Province",
     "todas": "All"
   },
@@ -136,7 +138,7 @@
           "h": "1. Website owner",
           "p": [
             "In compliance with Spanish Law 34/2002 on Information Society Services and Electronic Commerce (LSSI-CE), the owner of this website is:",
-            "Company name: [RAZÓN SOCIAL] · Tax ID: [NIF] · Address: [DOMICILIO] · Email: [EMAIL] · Phone: [TELÉFONO] · Registry details: [COMMERCIAL REGISTRY DETAILS, IF APPLICABLE]."
+            "Owner: Nicolas A. Civatti · Tax ID: X9258142K · Address: Goleta 5, San Bartolomé, Las Palmas · Email: nicolas.doyopro@gmail.com · Phone: +34 633 706 676."
           ]
         },
         {
@@ -149,7 +151,7 @@
         {
           "h": "3. Intellectual and industrial property",
           "p": [
-            "Texts, photographs, designs, logos, trademarks and other content on the site belong to [RAZÓN SOCIAL] or to third parties who have authorised their use, and are protected by intellectual and industrial property law. Reproduction, distribution or modification without express authorisation is forbidden. Winery and wine names and trademarks belong to their respective owners."
+            "Texts, photographs, designs, logos, trademarks and other content on the site belong to Nicolas A. Civatti or to third parties who have authorised their use, and are protected by intellectual and industrial property law. Reproduction, distribution or modification without express authorisation is forbidden. Winery and wine names and trademarks belong to their respective owners."
           ]
         },
         {
@@ -162,7 +164,7 @@
         {
           "h": "5. Governing law and jurisdiction",
           "p": [
-            "This legal notice is governed by Spanish law. For any dispute, unless consumer law provides otherwise, the parties submit to the courts of [JURISDICTION TO BE CONFIRMED]."
+            "This legal notice is governed by Spanish law. For any dispute, unless consumer law provides otherwise, the parties submit to the courts of Arrecife (Lanzarote)."
           ]
         }
       ]
@@ -173,7 +175,7 @@
         {
           "h": "1. Data controller",
           "p": [
-            "[RAZÓN SOCIAL], Tax ID [NIF], registered at [DOMICILIO]. Data protection contact: [EMAIL]."
+            "Nicolas A. Civatti, Tax ID X9258142K, registered at Goleta 5, San Bartolomé, Las Palmas. Data protection contact: nicolas.doyopro@gmail.com."
           ]
         },
         {
@@ -194,20 +196,20 @@
         {
           "h": "4. Retention",
           "p": [
-            "We keep data for as long as the commercial relationship lasts and, afterwards, blocked for the statutory limitation periods applicable to tax, commercial and consumer obligations ([PERIODS TO BE CONFIRMED])."
+            "We keep data for as long as the commercial relationship lasts and, afterwards, blocked for the statutory limitation periods applicable to tax, commercial and consumer obligations (generally, up to six years)."
           ]
         },
         {
           "h": "5. Recipients",
           "p": [
             "Stripe, as payment service provider. Supabase, as technology provider hosting the data. Carriers or couriers, when the order is shipped. Public authorities, where legally required.",
-            "Some of these providers may process data outside the European Economic Area with appropriate safeguards (for example, standard contractual clauses) [SERVER LOCATION AND SAFEGUARDS TO BE CONFIRMED]."
+            "Some of these providers may process data outside the European Economic Area with appropriate safeguards (for example, standard contractual clauses). Shop data is stored on servers located in the European Union (Ireland)."
           ]
         },
         {
           "h": "6. Your rights",
           "p": [
-            "You can exercise your rights of access, rectification, erasure, objection, restriction and portability by writing to [EMAIL], stating your request and attaching a copy of your ID where necessary.",
+            "You can exercise your rights of access, rectification, erasure, objection, restriction and portability by writing to nicolas.doyopro@gmail.com, stating your request and attaching a copy of your ID where necessary.",
             "If you believe your data is not being handled properly, you can lodge a complaint with the Spanish Data Protection Agency (www.aepd.es)."
           ]
         }
@@ -229,7 +231,7 @@
             "Language: remembers whether you prefer Spanish or English.",
             "Age verification: remembers that you confirmed you are 18 or over.",
             "Temporary order data: during checkout your delivery details are kept in your browser to complete the process.",
-            "Payment: Stripe's payment gateway may use its own technical and fraud-prevention mechanisms while the payment form loads [TO BE CONFIRMED]."
+            "Payment: Stripe's payment gateway may use its own technical and fraud-prevention mechanisms while the payment form loads."
           ]
         },
         {
@@ -252,7 +254,7 @@
         {
           "h": "1. Scope",
           "p": [
-            "These terms govern the purchase of wines through this website, owned by [RAZÓN SOCIAL] (Tax ID [NIF]). By placing an order you accept these terms."
+            "These terms govern the purchase of wines through this website, owned by Nicolas A. Civatti (Tax ID X9258142K). By placing an order you accept these terms."
           ]
         },
         {
@@ -270,7 +272,7 @@
         {
           "h": "4. Ordering process",
           "p": [
-            "Add products to your cart, complete your delivery details and pay. You will receive an order confirmation by email [TO BE CONFIRMED]. The contract is formed once payment is confirmed."
+            "Add products to your cart, complete your delivery details and pay. You will receive an order confirmation by email [PENDING: confirm once order emails are live]. The contract is formed once payment is confirmed."
           ]
         },
         {
@@ -288,14 +290,14 @@
         {
           "h": "7. Right of withdrawal",
           "p": [
-            "As a consumer you have the right to withdraw from the purchase within 14 calendar days of receipt, without giving a reason, subject to the legal exceptions that apply (for example, products that have been unsealed or that cannot be returned by their nature) [EXCEPTIONS AND PROCEDURE TO BE CONFIRMED].",
-            "To exercise it, write to [EMAIL] stating your order number."
+            "As a consumer you have the right to withdraw from the purchase within 14 calendar days of receipt, without giving a reason, subject to the legal exceptions that apply (for example, products that have been unsealed or that cannot be returned by their nature). For bottles, we only accept returns of unopened products in their original packaging, and return costs are borne by the customer.",
+            "To exercise it, write to nicolas.doyopro@gmail.com stating your order number."
           ]
         },
         {
           "h": "8. Warranty and customer service",
           "p": [
-            "Products are covered by the legal guarantee of conformity under consumer law [APPLICABLE PERIODS TO BE CONFIRMED]. For any issue: [EMAIL] · [TELÉFONO]."
+            "Products are covered by the legal guarantee of conformity under consumer law (three years from delivery). For any issue: nicolas.doyopro@gmail.com · +34 633 706 676."
           ]
         },
         {
@@ -312,7 +314,7 @@
         {
           "h": "1. Pick-up in Playa Honda (Lanzarote)",
           "p": [
-            "You can pick up your order free of charge in Playa Honda (Lanzarote). The day and time are arranged with you by email or phone [EXACT ADDRESS AND HOURS TO BE CONFIRMED]."
+            "You can pick up your order free of charge in Playa Honda (Lanzarote). The day and time are arranged with you by email or phone. We will give you the exact address and hours when we confirm your order."
           ]
         },
         {
@@ -325,13 +327,13 @@
         {
           "h": "3. Broken or damaged bottle",
           "p": [
-            "Check the package when you receive it. If a bottle arrives broken or damaged, let us know within 48 hours of delivery by writing to [EMAIL], with photos of the package and the product. We will arrange a replacement or refund [TO BE CONFIRMED]."
+            "Check the package when you receive it. If a bottle arrives broken or damaged, let us know within 48 hours of delivery by writing to nicolas.doyopro@gmail.com, with photos of the package and the product. We will arrange a replacement or refund."
           ]
         },
         {
           "h": "4. Returns",
           "p": [
-            "Returns follow the Terms of purchase (right of withdrawal). Write to us at [EMAIL] before sending anything so we can tell you how to proceed [RETURN PROCEDURE AND COSTS TO BE CONFIRMED]."
+            "Returns follow the Terms of purchase (right of withdrawal). Write to us at nicolas.doyopro@gmail.com before sending anything so we can tell you how to proceed. Unless the product is defective or the error is ours, return costs are borne by the customer."
           ]
         }
       ]
