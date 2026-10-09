@@ -68,20 +68,14 @@ input[type="number"]::-webkit-outer-spin-button {
   margin: 0;
 }
 
-/* Lanzarote volcanic rock (picón): footer texture and thin edge strips,
-   to pair the two lands (Andes + Lanzarote) without darkening the catalog. */
+/* Lanzarote volcanic rock (picón): natural-color texture, with only a light
+   dark veil so the footer text stays readable. */
 .picon-bg {
-  background-color: #0f2a44;
+  background-color: #141210;
   background-image:
-    linear-gradient(rgba(15, 42, 68, 0.5), rgba(15, 42, 68, 0.66)),
+    linear-gradient(rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.4)),
     url("/images/picon-lanzarote.webp");
   background-size: cover;
   background-position: center;
-}
-.picon-edge {
-  height: 12px;
-  background-image: url("/images/picon-franja.webp");
-  background-size: cover;
-  background-position: center;
-  border-top: 1px solid rgba(227, 167, 47, 0.55);
+  border-top: 1px solid rgba(227, 167, 47, 0.4);
 }
