@@ -3,7 +3,11 @@
   "heroSubtitle": "El prestigio mundial del vino argentino, desde la inmensidad de los Andes directo a Islas Canarias.",
   "exploreCatalog": "Explorar Catálogo",
   "catalogTitle": "Catálogo 2026",
-  "catalogSubtitle": "Vendemos por botella, sin cajas mínimas. Pedido mínimo de 50 €.",
+  "catalogSubtitle": "Pedido mínimo 50 € por compra.",
+  "infoMin": "Pedido mínimo: 50 € por compra (IGIC incluido).",
+  "infoFree": "Envío gratis desde 200 €. Por debajo, 20 €.",
+  "infoCanarias": "Envíos solo a Canarias. No enviamos a la Península.",
+  "infoPickup": "Retirada gratis en Playa Honda (Lanzarote).",
   "filters": {
     "all": "Todos",
     "tinto": "Tintos",

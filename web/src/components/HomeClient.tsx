@@ -145,6 +145,14 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
           </div>
         </div>
 
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 -mt-8 text-sm text-brand-900">
+          {(["infoMin", "infoFree", "infoCanarias", "infoPickup"] as const).map((k) => (
+            <li key={k} className="bg-white border border-stone-200 rounded-xl px-4 py-3 leading-snug">
+              {t(k)}
+            </li>
+          ))}
+        </ul>
+
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-6">
           <div className="flex flex-wrap gap-2 md:gap-3">
             <button onClick={() => toggleType("all")} className={filterBtnCls(typeFilter.size === 0)}>

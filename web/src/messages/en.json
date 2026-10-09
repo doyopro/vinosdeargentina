@@ -3,7 +3,11 @@
   "heroSubtitle": "The global prestige of Argentine wine, from the immensity of the Andes straight to the Canary Islands.",
   "exploreCatalog": "Explore Catalog",
   "catalogTitle": "2026 Catalog",
-  "catalogSubtitle": "Sold by the bottle, no minimum case. Minimum order €50.",
+  "catalogSubtitle": "Minimum order €50 per purchase.",
+  "infoMin": "Minimum order: €50 per purchase (IGIC included).",
+  "infoFree": "Free shipping from €200. Below that, €20.",
+  "infoCanarias": "We ship to the Canary Islands only, not to mainland Spain.",
+  "infoPickup": "Free pick-up in Playa Honda (Lanzarote).",
   "filters": {
     "all": "All",
     "tinto": "Reds",
