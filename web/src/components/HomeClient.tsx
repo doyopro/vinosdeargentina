@@ -292,7 +292,7 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
             />
           </svg>
           <h2 className="text-2xl md:text-3xl font-serif text-white mb-3">{t("horecaTitle")}</h2>
-          <p className="text-base font-light leading-relaxed max-w-xl mx-auto mb-6">{t("horecaSubtitle")}</p>
+          <p className="text-base font-light leading-relaxed max-w-xl md:max-w-4xl mx-auto mb-6 text-balance">{t("horecaSubtitle")}</p>
           <a
             href="https://wa.me/34633706676"
             target="_blank"
