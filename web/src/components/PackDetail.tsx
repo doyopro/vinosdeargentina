@@ -51,7 +51,7 @@ export function PackDetail({ pack, others }: { pack: Pack; others: Pack[] }) {
           aria-hidden
           className="absolute inset-0 bg-[radial-gradient(ellipse_55%_70%_at_78%_50%,rgba(116,172,223,0.28),transparent_70%)]"
         />
-        <div className="relative max-w-6xl mx-auto px-5 py-10 md:py-16 grid grid-cols-1 md:grid-cols-[1.15fr_0.85fr] gap-6 md:gap-10 items-center">
+        <div className="relative max-w-6xl mx-auto px-5 py-10 md:py-16 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 items-center">
           <div>
             <Link href="/" className="text-xs text-stone-400 hover:text-sky-500 transition-colors">
               {t("backToShop")}
@@ -108,7 +108,7 @@ export function PackDetail({ pack, others }: { pack: Pack; others: Pack[] }) {
             </div>
           </div>
 
-          <div className="relative h-72 sm:h-[26rem] md:h-80 lg:h-[28rem] order-first md:order-none flex items-end justify-center [--s:0.7] sm:[--s:1] md:[--s:0.7] lg:[--s:1]">
+          <div className="relative h-72 sm:h-[29rem] md:h-72 lg:h-[26rem] xl:h-[30rem] order-first md:order-none flex items-end justify-center [--s:0.62] sm:[--s:1] md:[--s:0.63] lg:[--s:0.85] xl:[--s:1]">
             <PackCollage images={packImages(pack)} size="hero" />
           </div>
         </div>

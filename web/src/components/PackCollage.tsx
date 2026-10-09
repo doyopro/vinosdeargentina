@@ -22,10 +22,10 @@ export function PackCollage({ images, size = "card" }: Props) {
 
   // Fixed stage (px) so the composition is deterministic; every bottle shares the
   // same height, grouped around the centre in a shallow fan.
-  const stageW = mini ? 88 : hero ? 460 : 300;
-  const stageH = mini ? 64 : hero ? 390 : 252;
-  const spread = stageW * (mini ? 0.92 : 0.87);
-  const heightByCount = [0, 0.96, 0.94, 0.9, 0.8, 0.73, 0.67];
+  const stageW = mini ? 88 : hero ? 540 : 300;
+  const stageH = mini ? 64 : hero ? 450 : 252;
+  const spread = stageW * (mini ? 0.92 : hero ? 0.98 : 0.87);
+  const heightByCount = hero ? [0, 0.96, 0.95, 0.93, 0.88, 0.83, 0.78] : [0, 0.96, 0.94, 0.9, 0.8, 0.73, 0.67];
   const bottleH = Math.round(stageH * (heightByCount[Math.min(n, 6)] ?? 0.6));
   const canvasW = bottleH * ASPECT;
   const step = n > 1 ? Math.min((spread - canvasW) / (n - 1), canvasW * 0.95) : 0;
