@@ -100,7 +100,7 @@
     "pricingUpdating": "Updating total...",
     "deliveryTitle": "Delivery method",
     "deliveryShipping": "Shipping to the Canary Islands",
-    "deliveryShippingDesc": "Free from €{threshold}; below that, €{fee} (IGIC included).",
+    "deliveryShippingDesc": "Free from €{threshold}; below that, €{fee} (IGIC included). Delivery within 7 days at most.",
     "deliveryPickup": "Pick up in Playa Honda (Lanzarote)",
     "deliveryPickupDesc": "Free. Pick-up date to be arranged with you.",
     "pickupNote": "We will contact you to agree the day and time for pick-up in Playa Honda (Lanzarote). We don't need your address.",
@@ -112,7 +112,7 @@
   },
   "confirmationPage": {
     "thankYou": "Thank you for your purchase!",
-    "successMessage": "Your order has been confirmed and processed. You will receive an email shortly.",
+    "successMessage": "Your order has been confirmed and processed. We will contact you by email or WhatsApp to arrange delivery.",
     "errorTitle": "Attention",
     "errorMessage": "Payment was completed, but there was an error syncing with the database. Please contact support.",
     "orderNumber": "Order Number",
@@ -314,7 +314,7 @@
           "h": "2. Shipping",
           "p": [
             "Orders ship from Lanzarote to the Canary Islands. Shipping is free for orders of €200 or more (product amount including IGIC, after discounts). Below €200 shipping costs €20 (IGIC included), shown in the order summary before payment. For large orders, write to us and we will arrange the shipping.",
-            "Delivery times: [PLAZOS]."
+            "Delivery time: up to 7 days from payment confirmation. Pick-up at Playa Honda is arranged with you."
           ]
         },
         {

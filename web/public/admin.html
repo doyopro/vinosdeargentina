@@ -1217,7 +1217,7 @@
             },
 
             loadOrdersTable: async function () {
-                const { data: orders } = await this.db.from('orders').select('*').order('created_at', { ascending: false });
+                const { data: orders } = await this.db.from('orders').select('*').eq('payment_status', 'paid').order('created_at', { ascending: false });
                 if (!orders || orders.length === 0) {
                     document.getElementById('all-orders-body').innerHTML = `<tr><td colspan="6" style="text-align:center;">${this.adminTranslations[this.currentLang].no_order_data}</td></tr>`;
                     return;

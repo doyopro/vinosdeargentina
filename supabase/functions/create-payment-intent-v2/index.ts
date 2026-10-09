@@ -330,6 +330,13 @@ Deno.serve(async (req) => {
       promo_type: promoAplicado.tipo || 'NINGUNO',
     };
 
+    // Limpieza: borra pedidos que nunca se pagaron (más de 24 h pendientes).
+    await supabase
+      .from('orders')
+      .delete()
+      .eq('payment_status', 'pending')
+      .lt('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+
     const { data: orderData, error: orderError } = await supabase
       .from('orders')
       .insert([orderPayload])

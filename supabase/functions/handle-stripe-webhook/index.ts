@@ -97,7 +97,7 @@ Deno.serve(async (req) => {
     const order = updatedOrders[0];
     const items: OrderLine[] = Array.isArray(order.items) ? order.items : [];
 
-    // 5. Descuento de stock JIT (puede quedar negativo a propósito)
+    // 5. Descuento de stock JIT (nunca baja de 0)
     for (const line of items) {
       if (!line || !line.id) continue;
       const decrement = (line.qty || 0) * (line.box_size || 0);
@@ -116,7 +116,7 @@ Deno.serve(async (req) => {
 
       const { error: stockError } = await supabase
         .from('products')
-        .update({ stock: (product.stock || 0) - decrement })
+        .update({ stock: Math.max(0, (product.stock || 0) - decrement) })
         .eq('id', line.id);
 
       if (stockError) {
