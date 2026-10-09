@@ -72,10 +72,24 @@ input[type="number"]::-webkit-outer-spin-button {
    dark veil so the footer text stays readable. */
 .picon-bg {
   background-color: #141210;
+  /* Layers: soft navy fade at the top (ties in with the hero tone), dark veil
+     for legibility, then the rock tile at native resolution (1:1, no
+     stretching). The tile is mirrored so it repeats seamlessly. */
   background-image:
-    linear-gradient(rgba(0, 0, 0, 0.38), rgba(0, 0, 0, 0.52)),
-    url("/images/picon-lanzarote.webp");
-  background-size: cover;
-  background-position: center;
+    linear-gradient(180deg, rgba(15, 42, 68, 0.26) 0%, rgba(15, 42, 68, 0) 60%),
+    linear-gradient(rgba(0, 0, 0, 0.36), rgba(0, 0, 0, 0.5)),
+    url("/images/picon-tile-m.webp");
+  background-size: auto, auto, 1584px 792px;
+  background-position: 0 0, 0 0, center top;
+  background-repeat: no-repeat, no-repeat, repeat;
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+}
+@media (min-width: 769px) {
+  .picon-bg {
+    background-image:
+      linear-gradient(180deg, rgba(15, 42, 68, 0.26) 0%, rgba(15, 42, 68, 0) 60%),
+      linear-gradient(rgba(0, 0, 0, 0.36), rgba(0, 0, 0, 0.5)),
+      url("/images/picon-tile.webp");
+    background-size: auto, auto, 3168px 792px;
+  }
 }
