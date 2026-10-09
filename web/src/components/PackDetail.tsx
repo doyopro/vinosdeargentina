@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { useLocaleSwitch } from "@/lib/i18n";
 import { useCart } from "@/lib/CartContext";
 import { lineKey } from "@/lib/cart";
-import { packBottleCount, packImages, packLoosePrice, toPackLine } from "@/lib/packs";
+import { packBottleCount, packImages, packLoosePrice, packName, toPackLine } from "@/lib/packs";
 import { PackCollage } from "@/components/PackCollage";
 import { Pack } from "@/lib/types";
 
@@ -57,7 +57,7 @@ export function PackDetail({ pack, others }: { pack: Pack; others: Pack[] }) {
               {t("backToShop")}
             </Link>
             <div className="mt-5 text-[11px] font-bold uppercase tracking-widest text-sky-500">{pack.collection || t("label")}</div>
-            <h1 className="mt-2 text-4xl md:text-6xl font-serif font-bold text-white leading-tight">{pack.name}</h1>
+            <h1 className="mt-2 text-4xl md:text-6xl font-serif font-bold text-white leading-tight">{packName(pack, locale)}</h1>
             {filled(description) && <p className="mt-3 text-stone-300 leading-relaxed max-w-xl">{description}</p>}
             <ul className="mt-5 flex flex-wrap gap-2">
               <li className="px-3.5 py-1 rounded-full border border-sky-500/50 text-sky-500 text-xs font-medium">
@@ -86,18 +86,18 @@ export function PackDetail({ pack, others }: { pack: Pack; others: Pack[] }) {
                 ) : (
                   <div className="flex items-center gap-3">
                     <div className="flex items-center bg-white/10 text-white rounded-lg h-12">
-                      <button onClick={() => addPack(toPackLine(pack), -1)} aria-label={tc("cartDecrease")} className="w-11 font-bold text-lg">
+                      <button onClick={() => addPack(toPackLine(pack, locale), -1)} aria-label={tc("cartDecrease")} className="w-11 font-bold text-lg">
                         −
                       </button>
                       <span className="w-9 text-center text-sm font-bold" aria-live="polite">
                         {qty}
                       </span>
-                      <button onClick={() => addPack(toPackLine(pack), 1)} aria-label={tc("cartIncrease")} className="w-11 font-bold text-lg">
+                      <button onClick={() => addPack(toPackLine(pack, locale), 1)} aria-label={tc("cartIncrease")} className="w-11 font-bold text-lg">
                         +
                       </button>
                     </div>
                     <button
-                      onClick={() => addPack(toPackLine(pack), 1)}
+                      onClick={() => addPack(toPackLine(pack, locale), 1)}
                       className="flex-grow h-12 bg-sun-500 hover:bg-sun-600 text-brand-900 font-bold rounded-lg text-xs uppercase tracking-widest transition-colors"
                     >
                       {t("addPack")}
@@ -210,7 +210,7 @@ export function PackDetail({ pack, others }: { pack: Pack; others: Pack[] }) {
                     href={`/pack/${o.slug}`}
                     className="block rounded-xl border border-stone-100 bg-stone-50 hover:border-sky-500/60 p-4 transition-colors"
                   >
-                    <div className="font-serif font-bold text-brand-900">{o.name}</div>
+                    <div className="font-serif font-bold text-brand-900">{packName(o, locale)}</div>
                     <div className="text-xs text-stone-500 mt-0.5">
                       {t("bottlesLine", { n: packBottleCount(o) })} · {eur(o.price_retail)} €
                     </div>

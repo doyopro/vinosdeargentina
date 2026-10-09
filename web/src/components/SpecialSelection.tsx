@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useCart } from "@/lib/CartContext";
+import { useLocaleSwitch } from "@/lib/i18n";
 import { lineKey } from "@/lib/cart";
 import { toPackLine } from "@/lib/packs";
 import { Pack } from "@/lib/types";
@@ -10,6 +11,7 @@ import { PackCard } from "@/components/PackCard";
 
 export function SpecialSelection({ packs }: { packs: Pack[] }) {
   const t = useTranslations();
+  const { locale } = useLocaleSwitch();
   const { cart, addPack } = useCart();
   const trackRef = useRef<HTMLDivElement>(null);
   const [edges, setEdges] = useState({ start: true, end: false });
@@ -80,7 +82,7 @@ export function SpecialSelection({ packs }: { packs: Pack[] }) {
             <PackCard
               pack={pack}
               qty={cart[lineKey("pack", pack.id)]?.qty ?? 0}
-              onChangeQty={(p, change) => addPack(toPackLine(p), change)}
+              onChangeQty={(p, change) => addPack(toPackLine(p, locale), change)}
             />
           </div>
         ))}

@@ -69,6 +69,18 @@ export async function fetchPack(slug: string): Promise<Pack | null> {
   return pack.items.length > 0 ? pack : null;
 }
 
+// English names by slug (no accents on trio/duo). Unlisted packs fall back to `name`.
+const PACK_NAME_EN: Record<string, string> = {
+  "cata-argentina-completa": "Complete Argentina Tasting Set",
+  "trio-premium": "Premium Trio",
+  "trio-llama": "Llama Trio",
+  "duo-llama": "Llama Duo",
+  "trio-buenos-aires": "Buenos Aires Trio",
+};
+
+export const packName = (pack: Pick<Pack, "slug" | "name">, locale: string) =>
+  locale === "en" ? PACK_NAME_EN[pack.slug] ?? pack.name : pack.name;
+
 export const packBottleCount = (pack: Pack) => pack.items.reduce((sum, i) => sum + i.bottles, 0);
 
 /** One image per bottle (a product repeated `bottles` times shows up that many times). */
@@ -81,9 +93,9 @@ export function packImages(pack: Pack): PackImage[] {
 /** Price of the same bottles bought one by one (gross, IGIC included). */
 export const packLoosePrice = (pack: Pack) => pack.items.reduce((sum, i) => sum + i.product.price_retail * i.bottles, 0);
 
-export const toPackLine = (pack: Pack): Omit<PackLine, "qty" | "kind"> => ({
+export const toPackLine = (pack: Pack, locale = "es"): Omit<PackLine, "qty" | "kind"> => ({
   id: pack.id,
-  name: pack.name,
+  name: packName(pack, locale),
   bottles: packBottleCount(pack),
   price_retail: pack.price_retail,
   images: packImages(pack),

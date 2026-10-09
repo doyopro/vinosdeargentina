@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useLocaleSwitch } from "@/lib/i18n";
 import { Pack } from "@/lib/types";
-import { packBottleCount, packImages, packLoosePrice } from "@/lib/packs";
+import { packBottleCount, packImages, packLoosePrice, packName } from "@/lib/packs";
 import { PackCollage } from "@/components/PackCollage";
 
 interface Props {
@@ -39,7 +39,7 @@ export function PackCard({ pack, qty, onChangeQty }: Props) {
           className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_58%,rgba(116,172,223,0.30),rgba(116,172,223,0.08)_55%,transparent_75%)]"
         />
         <div aria-hidden className="absolute bottom-3 left-1/2 -translate-x-1/2 h-4 w-52 rounded-[50%] bg-brand-900/15 blur-md" />
-        <Link href={`/pack/${pack.slug}`} aria-label={pack.name} className="relative">
+        <Link href={`/pack/${pack.slug}`} aria-label={packName(pack, locale)} className="relative">
           <PackCollage images={packImages(pack)} />
         </Link>
         <div className="absolute top-3 right-3 flex flex-col items-end gap-2">
@@ -58,7 +58,7 @@ export function PackCard({ pack, qty, onChangeQty }: Props) {
         {pack.collection && <span className="text-[10px] font-bold uppercase text-stone-400 mb-1">{pack.collection}</span>}
         <h4 className="text-xl font-serif font-bold text-brand-900 mb-2">
           <Link href={`/pack/${pack.slug}`} className="hover:text-brand-700 transition-colors">
-            {pack.name}
+            {packName(pack, locale)}
           </Link>
         </h4>
         <p className="text-sm text-stone-600 mb-3 leading-relaxed">{description}</p>
@@ -121,7 +121,7 @@ export function PackCard({ pack, qty, onChangeQty }: Props) {
             </div>
             <button
               onClick={() => onChangeQty(pack, 1)}
-              aria-label={t("packAddAria", { name: pack.name })}
+              aria-label={t("packAddAria", { name: packName(pack, locale) })}
               className="flex-grow text-white font-bold h-11 rounded-lg text-[10px] uppercase tracking-widest bg-brand-900 hover:bg-brand-800"
             >
               {t("addToCart")}
