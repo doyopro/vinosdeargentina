@@ -37,26 +37,31 @@
   );
 }
 
-/* Desktop: 4 large photos — left and right columns full height, two stacked
-   in the middle. The bottles-on-barrel shot sits in the right column, away
-   from the centered text. */
+/* Desktop: 12 cols x 6 rows, 9 photos of deliberately uneven sizes (a wide
+   landscape, a tall portrait column, a big square, a panoramic strip...) so it
+   reads as a collage rather than a regular grid. Same tiles as before. */
 .gridDesktop {
   composes: grid;
-  grid-template-columns: 5fr 3fr 4fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(6, 1fr);
   grid-template-areas:
-    "a b c"
-    "a d c";
+    "a a a a a b b c c c c c"
+    "a a a a a b b c c c c c"
+    "a a a a a b b e e e d d"
+    "f f g g g b b e e e d d"
+    "f f g g g h h h h i i i"
+    "f f g g g h h h h i i i";
 }
 
-/* Tablet: 3 photos. */
+/* Tablet: 4 cols x 3 rows, 7 photos (1 big square, 4 small squares, 2 wide). */
 .gridTablet {
   composes: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   grid-template-areas:
-    "a b"
-    "a c";
+    "a a b c"
+    "a a d d"
+    "e f f g";
 }
 
 /* Mobile: one full-bleed photo (no seams behind the text). */
@@ -78,4 +83,19 @@
 }
 .d {
   grid-area: d;
+}
+.e {
+  grid-area: e;
+}
+.f {
+  grid-area: f;
+}
+.g {
+  grid-area: g;
+}
+.h {
+  grid-area: h;
+}
+.i {
+  grid-area: i;
 }
