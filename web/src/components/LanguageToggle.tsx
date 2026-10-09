@@ -17,8 +17,8 @@ export function LanguageToggle({ variant = "light" }: { variant?: "light" | "dar
         : "px-3 py-1 text-[10px] font-bold rounded-full text-white hover:bg-white/20 transition-all";
     }
     return active
-      ? "px-4 py-1.5 text-xs font-bold rounded-full bg-wine-900 text-white transition-all shadow-sm"
-      : "px-4 py-1.5 text-xs font-bold rounded-full text-stone-500 hover:text-wine-900 transition-all";
+      ? "px-4 py-1.5 text-xs font-bold rounded-full bg-brand-900 text-white transition-all shadow-sm"
+      : "px-4 py-1.5 text-xs font-bold rounded-full text-stone-500 hover:text-brand-900 transition-all";
   };
 
   return (

@@ -17,7 +17,7 @@ const filled = (v: string | null | undefined): v is string => typeof v === "stri
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="bg-white rounded-2xl border border-stone-100 shadow-sm p-6 md:p-8">
-      <h2 className="text-2xl font-serif font-bold text-wine-900 mb-4">{title}</h2>
+      <h2 className="text-2xl font-serif font-bold text-brand-900 mb-4">{title}</h2>
       {children}
     </section>
   );
@@ -46,21 +46,21 @@ export function PackDetail({ pack, others }: { pack: Pack; others: Pack[] }) {
 
   return (
     <article className="bg-stone-50">
-      <header className="relative overflow-hidden bg-wine-900">
+      <header className="relative overflow-hidden bg-brand-900">
         <div
           aria-hidden
-          className="absolute inset-0 bg-[radial-gradient(ellipse_55%_70%_at_78%_50%,rgba(200,159,93,0.28),transparent_70%)]"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_55%_70%_at_78%_50%,rgba(116,172,223,0.28),transparent_70%)]"
         />
         <div className="relative max-w-6xl mx-auto px-5 py-10 md:py-16 grid grid-cols-1 md:grid-cols-[1.15fr_0.85fr] gap-6 md:gap-10 items-center">
           <div>
-            <Link href="/" className="text-xs text-stone-400 hover:text-gold-500 transition-colors">
+            <Link href="/" className="text-xs text-stone-400 hover:text-sky-500 transition-colors">
               {t("backToShop")}
             </Link>
-            <div className="mt-5 text-[11px] font-bold uppercase tracking-widest text-gold-500">{pack.collection || t("label")}</div>
+            <div className="mt-5 text-[11px] font-bold uppercase tracking-widest text-sky-500">{pack.collection || t("label")}</div>
             <h1 className="mt-2 text-4xl md:text-6xl font-serif font-bold text-white leading-tight">{pack.name}</h1>
             {filled(description) && <p className="mt-3 text-stone-300 leading-relaxed max-w-xl">{description}</p>}
             <ul className="mt-5 flex flex-wrap gap-2">
-              <li className="px-3.5 py-1 rounded-full border border-gold-500/50 text-gold-500 text-xs font-medium">
+              <li className="px-3.5 py-1 rounded-full border border-sky-500/50 text-sky-500 text-xs font-medium">
                 {t("bottlesLine", { n: bottles })}
               </li>
               {saving > 0 && (
@@ -98,7 +98,7 @@ export function PackDetail({ pack, others }: { pack: Pack; others: Pack[] }) {
                     </div>
                     <button
                       onClick={() => addPack(toPackLine(pack), 1)}
-                      className="flex-grow h-12 bg-gold-500 hover:bg-gold-600 text-wine-900 font-bold rounded-lg text-xs uppercase tracking-widest transition-colors"
+                      className="flex-grow h-12 bg-sun-500 hover:bg-sun-600 text-brand-900 font-bold rounded-lg text-xs uppercase tracking-widest transition-colors"
                     >
                       {t("addPack")}
                     </button>
@@ -138,11 +138,11 @@ export function PackDetail({ pack, others }: { pack: Pack; others: Pack[] }) {
                 <li key={w.id} className="flex gap-4 rounded-xl border border-stone-100 bg-stone-50 p-4">
                   <div className="relative w-16 h-28 flex-shrink-0">
                     {w.image_url && (
-                      <Image src={w.image_url} alt={w.name} fill sizes="64px" className="object-contain drop-shadow-[0_6px_8px_rgba(43,7,16,0.25)]" />
+                      <Image src={w.image_url} alt={w.name} fill sizes="64px" className="object-contain drop-shadow-[0_6px_8px_rgba(15,42,68,0.25)]" />
                     )}
                   </div>
                   <div className="min-w-0 flex-grow">
-                    <h3 className="font-serif font-bold text-wine-900 text-lg leading-snug">
+                    <h3 className="font-serif font-bold text-brand-900 text-lg leading-snug">
                       {n > 1 ? `${n} × ` : ""}
                       {w.name}
                     </h3>
@@ -150,7 +150,7 @@ export function PackDetail({ pack, others }: { pack: Pack; others: Pack[] }) {
                     {profile.length > 0 && (
                       <ul className="mt-2 flex flex-wrap gap-1.5">
                         {profile.map((chip) => (
-                          <li key={chip} className="px-2.5 py-0.5 rounded-full border border-gold-500/50 text-gold-600 text-[11px] font-medium">
+                          <li key={chip} className="px-2.5 py-0.5 rounded-full border border-sky-500/50 text-sky-700 text-[11px] font-medium">
                             {chip}
                           </li>
                         ))}
@@ -175,7 +175,7 @@ export function PackDetail({ pack, others }: { pack: Pack; others: Pack[] }) {
                     {w.sku && (
                       <Link
                         href={`/vino/${w.sku}`}
-                        className="mt-3 inline-block text-[10px] font-bold uppercase tracking-widest text-wine-800 underline underline-offset-2"
+                        className="mt-3 inline-block text-[10px] font-bold uppercase tracking-widest text-brand-800 underline underline-offset-2"
                       >
                         {t("viewWine")}
                       </Link>
@@ -208,9 +208,9 @@ export function PackDetail({ pack, others }: { pack: Pack; others: Pack[] }) {
                 <li key={o.id}>
                   <Link
                     href={`/pack/${o.slug}`}
-                    className="block rounded-xl border border-stone-100 bg-stone-50 hover:border-gold-500/60 p-4 transition-colors"
+                    className="block rounded-xl border border-stone-100 bg-stone-50 hover:border-sky-500/60 p-4 transition-colors"
                   >
-                    <div className="font-serif font-bold text-wine-900">{o.name}</div>
+                    <div className="font-serif font-bold text-brand-900">{o.name}</div>
                     <div className="text-xs text-stone-500 mt-0.5">
                       {t("bottlesLine", { n: packBottleCount(o) })} · {eur(o.price_retail)} €
                     </div>

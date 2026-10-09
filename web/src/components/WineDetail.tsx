@@ -34,8 +34,8 @@ function Icon({ d, className = "w-5 h-5" }: { d: string; className?: string }) {
 function Section({ title, icon, children }: { title: string; icon?: string; children: ReactNode }) {
   return (
     <section className="bg-white rounded-2xl border border-stone-100 shadow-sm p-6 md:p-8">
-      <h2 className="text-2xl font-serif font-bold text-wine-900 mb-4 flex items-center gap-2">
-        {icon && <Icon d={icon} className="w-5 h-5 text-gold-500" />}
+      <h2 className="text-2xl font-serif font-bold text-brand-900 mb-4 flex items-center gap-2">
+        {icon && <Icon d={icon} className="w-5 h-5 text-sky-500" />}
         {title}
       </h2>
       {children}
@@ -98,26 +98,26 @@ export function WineDetail({ product, bodega }: { product: Product; bodega: Bode
   return (
     <article className="bg-stone-50">
       {/* a) Band header */}
-      <header className="relative overflow-hidden bg-wine-900">
+      <header className="relative overflow-hidden bg-brand-900">
         <div
           aria-hidden
-          className="absolute inset-0 bg-[radial-gradient(ellipse_55%_70%_at_78%_50%,rgba(200,159,93,0.28),transparent_70%)]"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_55%_70%_at_78%_50%,rgba(116,172,223,0.28),transparent_70%)]"
         />
         <div className="relative max-w-6xl mx-auto px-5 py-10 md:py-16 grid grid-cols-1 md:grid-cols-[1.15fr_0.85fr] gap-6 md:gap-10 items-center">
           <div>
-            <Link href="/" className="text-xs text-stone-400 hover:text-gold-500 transition-colors">
+            <Link href="/" className="text-xs text-stone-400 hover:text-sky-500 transition-colors">
               {t("backToShop")}
             </Link>
             <div className="mt-5">
               {product.bodega_slug ? (
                 <Link
                   href={`/bodegas/${product.bodega_slug}`}
-                  className="text-[11px] font-bold uppercase tracking-widest text-gold-500 hover:text-white transition-colors"
+                  className="text-[11px] font-bold uppercase tracking-widest text-sky-500 hover:text-white transition-colors"
                 >
                   {product.bodega}
                 </Link>
               ) : (
-                <span className="text-[11px] font-bold uppercase tracking-widest text-gold-500">{product.bodega}</span>
+                <span className="text-[11px] font-bold uppercase tracking-widest text-sky-500">{product.bodega}</span>
               )}
             </div>
             <h1 className="mt-2 text-4xl md:text-6xl font-serif font-bold text-white leading-tight">{product.name}</h1>
@@ -125,7 +125,7 @@ export function WineDetail({ product, bodega }: { product: Product; bodega: Bode
             {profile.length > 0 && (
               <ul className="mt-5 flex flex-wrap gap-2">
                 {profile.map((chip) => (
-                  <li key={chip} className="px-3.5 py-1 rounded-full border border-gold-500/50 text-gold-500 text-xs font-medium">
+                  <li key={chip} className="px-3.5 py-1 rounded-full border border-sky-500/50 text-sky-500 text-xs font-medium">
                     {chip}
                   </li>
                 ))}
@@ -138,7 +138,7 @@ export function WineDetail({ product, bodega }: { product: Product; bodega: Bode
                 <span className="text-[11px] font-sans font-normal text-stone-400">{tc("incTax")}</span>
               </div>
               {hasCase && (
-                <div className="mt-1 text-sm font-semibold text-gold-500">
+                <div className="mt-1 text-sm font-semibold text-sky-500">
                   {tc("caseLine", { n: product.box_size, total: eur(product.price_retail * product.box_size) })}
                 </div>
               )}
@@ -162,7 +162,7 @@ export function WineDetail({ product, bodega }: { product: Product; bodega: Bode
                     </div>
                     <button
                       onClick={() => add(wine, 1)}
-                      className="flex-grow h-12 bg-gold-500 hover:bg-gold-600 text-wine-900 font-bold rounded-lg text-xs uppercase tracking-widest transition-colors"
+                      className="flex-grow h-12 bg-sun-500 hover:bg-sun-600 text-brand-900 font-bold rounded-lg text-xs uppercase tracking-widest transition-colors"
                     >
                       {hasCase ? tc("addCase", { n: product.box_size }) : tc("addToCart")}
                     </button>
@@ -198,9 +198,9 @@ export function WineDetail({ product, bodega }: { product: Product; bodega: Bode
           <ul className="grid grid-cols-2 md:grid-cols-5 gap-3 -mt-16 md:-mt-20 relative z-10">
             {shownFacts.map(([label, icon, value]) => (
               <li key={label} className="bg-white rounded-xl border border-stone-100 shadow-md p-4 text-center">
-                <Icon d={icon} className="w-6 h-6 mx-auto text-gold-500" />
+                <Icon d={icon} className="w-6 h-6 mx-auto text-sky-500" />
                 <div className="mt-2 text-[10px] font-bold uppercase tracking-widest text-stone-400">{label}</div>
-                <div className="mt-0.5 text-sm font-semibold text-wine-900 break-words">{value}</div>
+                <div className="mt-0.5 text-sm font-semibold text-brand-900 break-words">{value}</div>
               </li>
             ))}
           </ul>
@@ -239,7 +239,7 @@ export function WineDetail({ product, bodega }: { product: Product; bodega: Bode
               <ul className="space-y-2 text-sm text-stone-700 leading-relaxed">
                 {winemakingItems.map((item) => (
                   <li key={item} className="flex gap-3">
-                    <span aria-hidden className="mt-2 h-1.5 w-1.5 rounded-full bg-gold-500 flex-shrink-0" />
+                    <span aria-hidden className="mt-2 h-1.5 w-1.5 rounded-full bg-sun-500 flex-shrink-0" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -257,7 +257,7 @@ export function WineDetail({ product, bodega }: { product: Product; bodega: Bode
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                 {shownTastes.map(([label, value]) => (
                   <div key={label} className="rounded-xl bg-stone-50 border border-stone-100 p-4">
-                    <h3 className="text-[11px] font-bold uppercase tracking-widest text-gold-600 mb-1.5">{label}</h3>
+                    <h3 className="text-[11px] font-bold uppercase tracking-widest text-sky-700 mb-1.5">{label}</h3>
                     <p className="text-sm text-stone-700 leading-relaxed">{value}</p>
                   </div>
                 ))}
@@ -270,8 +270,8 @@ export function WineDetail({ product, bodega }: { product: Product; bodega: Bode
 
         {/* f) Did you know */}
         {(filled(learnTitle) || filled(learnBody)) && (
-          <aside className="rounded-2xl border border-gold-500/40 bg-gradient-to-b from-gold-500/15 to-gold-500/5 p-6 md:p-8">
-            <h2 className="text-2xl font-serif font-bold text-wine-900 mb-2">{filled(learnTitle) ? learnTitle : t("didYouKnow")}</h2>
+          <aside className="rounded-2xl border border-sky-500/40 bg-gradient-to-b from-sky-500/15 to-sky-500/5 p-6 md:p-8">
+            <h2 className="text-2xl font-serif font-bold text-brand-900 mb-2">{filled(learnTitle) ? learnTitle : t("didYouKnow")}</h2>
             {filled(learnBody) && <p className="text-sm text-stone-700 leading-relaxed">{learnBody}</p>}
           </aside>
         )}

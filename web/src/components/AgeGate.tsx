@@ -51,18 +51,18 @@ export function AgeGate() {
       aria-labelledby="age-gate-title"
       className="fixed inset-0 z-[300] flex items-center justify-center px-5 bg-black/45 backdrop-blur-[6px]"
     >
-      <div className="w-full max-w-[420px] rounded-3xl bg-stone-50 border border-gold-500/30 shadow-2xl p-8 md:p-10 text-center">
+      <div className="w-full max-w-[420px] rounded-3xl bg-stone-50 border border-sky-500/30 shadow-2xl p-8 md:p-10 text-center">
         <div className="canary-stripe h-1 w-16 rounded-full mx-auto mb-6" aria-hidden />
-        <p id="age-gate-title" className="font-serif text-3xl text-wine-900 tracking-wide">
+        <p id="age-gate-title" className="font-serif text-3xl text-brand-900 tracking-wide">
           {t("title")}
         </p>
-        <p className="mt-6 text-xl font-semibold text-wine-900">{t("question")}</p>
+        <p className="mt-6 text-xl font-semibold text-brand-900">{t("question")}</p>
         <p className="mt-2 text-xs text-stone-500">{t("hint")}</p>
         <div className="mt-8 flex flex-col gap-3">
           <button
             autoFocus
             onClick={accept}
-            className="w-full bg-wine-900 hover:bg-wine-800 text-white font-bold py-4 rounded-xl uppercase tracking-widest text-xs shadow-md transition-colors"
+            className="w-full bg-brand-900 hover:bg-brand-800 text-white font-bold py-4 rounded-xl uppercase tracking-widest text-xs shadow-md transition-colors"
           >
             {t("yes")}
           </button>

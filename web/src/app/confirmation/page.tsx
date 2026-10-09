@@ -73,12 +73,12 @@ function ConfirmationInner() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-wine-900 flex items-center justify-center py-12 px-4">
+    <div className="min-h-screen bg-brand-900 flex items-center justify-center py-12 px-4">
       <div className="canary-stripe h-2 w-full fixed top-0 z-[100]" />
       <LanguageToggle variant="dark" />
 
       <main className="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden text-center p-10 md:p-14 relative">
-        <div className="absolute top-0 left-0 w-full h-2 bg-gold-500" />
+        <div className="absolute top-0 left-0 w-full h-2 bg-sun-500" />
 
         <div
           className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8 border shadow-sm ${
@@ -88,7 +88,7 @@ function ConfirmationInner() {
           <span className="text-3xl">{errored ? "!" : "✓"}</span>
         </div>
 
-        <h1 className="text-3xl md:text-4xl font-serif text-wine-900 mb-4">
+        <h1 className="text-3xl md:text-4xl font-serif text-brand-900 mb-4">
           {errored ? t("errorTitle") : t("thankYou")}
         </h1>
 
@@ -98,13 +98,13 @@ function ConfirmationInner() {
 
         <div className="bg-stone-50 rounded-2xl p-6 mb-10 border border-stone-100 relative group">
           <span className="text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] block mb-2">{t("orderNumber")}</span>
-          <code className="text-lg font-bold text-wine-900 tracking-tight">{orderId}</code>
+          <code className="text-lg font-bold text-brand-900 tracking-tight">{orderId}</code>
         </div>
 
         <div className="flex flex-col gap-4">
           <Link
             href="/"
-            className="w-full bg-wine-900 hover:bg-black text-white font-bold py-5 rounded-xl transition-all shadow-xl active:scale-95 uppercase tracking-widest text-[10px] flex items-center justify-center gap-2"
+            className="w-full bg-brand-900 hover:bg-black text-white font-bold py-5 rounded-xl transition-all shadow-xl active:scale-95 uppercase tracking-widest text-[10px] flex items-center justify-center gap-2"
           >
             {t("backToStore")}
           </Link>

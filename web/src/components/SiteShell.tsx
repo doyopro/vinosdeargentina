@@ -14,7 +14,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
     <>
       <div className="canary-stripe h-2 w-full fixed top-0 z-[100]" />
       <LanguageToggle />
-      <header className="bg-wine-900 pt-8 pb-5 px-5 border-b border-wine-800">
+      <header className="bg-brand-900 pt-8 pb-5 px-5 border-b border-brand-800">
         <div className="max-w-6xl mx-auto flex items-center justify-between pr-36 sm:pr-40">
           <Link href="/" className="flex flex-col leading-tight" aria-label="VinoArgentino.es">
             <Wordmark className="font-serif text-xl md:text-2xl tracking-wide" />

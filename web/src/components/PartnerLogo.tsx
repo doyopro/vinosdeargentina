@@ -11,7 +11,7 @@ export function PartnerLogo({ className = "" }: { className?: string }) {
       target="_blank"
       rel="noopener"
       aria-label="De Altura Wines"
-      className={`font-serif tracking-wide hover:text-gold-500 transition-colors ${className}`}
+      className={`font-serif tracking-wide hover:text-sky-500 transition-colors ${className}`}
     >
       De Altura Wines
     </a>

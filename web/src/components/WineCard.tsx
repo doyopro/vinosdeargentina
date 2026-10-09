@@ -18,7 +18,7 @@ export function WineCard({ wine, qty, onChangeQty }: Props) {
   const unitGross = (wine.price * 1.07).toFixed(2).replace(".", ",");
   const totalGross = (wine.price * 1.07 * wine.box).toFixed(2).replace(".", ",");
   const hasCase = (wine.box ?? 0) > 1;
-  const inCartCls = qty > 0 ? "ring-2 ring-gold-500" : "";
+  const inCartCls = qty > 0 ? "ring-2 ring-sun-500" : "";
   const outOfStock = !wine.is_available;
 
   const rawNotes = (locale === "en" ? wine.notes_en : wine.notes_es) || "";
@@ -38,7 +38,7 @@ export function WineCard({ wine, qty, onChangeQty }: Props) {
           />
         </Link>
         <div className="absolute top-3 right-3 flex flex-col gap-2">
-          <span className="bg-wine-900/90 text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
+          <span className="bg-brand-900/90 text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
             Caja de {wine.box}
           </span>
           {outOfStock ? (
@@ -47,7 +47,7 @@ export function WineCard({ wine, qty, onChangeQty }: Props) {
             </span>
           ) : (
             wine.is_featured && (
-              <span className="bg-gold-500 text-wine-900 text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-md">
+              <span className="bg-sun-500 text-brand-900 text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-md">
                 {t("featuredBadge")}
               </span>
             )
@@ -57,7 +57,7 @@ export function WineCard({ wine, qty, onChangeQty }: Props) {
       <div className="p-5 flex flex-col flex-grow">
         <div className="mb-2">
           {wine.bodega_slug ? (
-            <Link href={`/bodegas/${wine.bodega_slug}`} className="text-[10px] font-bold uppercase text-stone-400 hover:text-wine-800 transition-colors">
+            <Link href={`/bodegas/${wine.bodega_slug}`} className="text-[10px] font-bold uppercase text-stone-400 hover:text-brand-800 transition-colors">
               {wine.bodega}
             </Link>
           ) : (
@@ -65,20 +65,20 @@ export function WineCard({ wine, qty, onChangeQty }: Props) {
           )}
           <span className="block text-[9px] text-stone-500 font-medium">{wine.provincia}, Argentina</span>
         </div>
-        <h4 className="text-xl font-serif font-bold text-wine-900 mb-2">
-          <Link href={`/vino/${wine.sku}`} className="hover:text-wine-700 transition-colors">
+        <h4 className="text-xl font-serif font-bold text-brand-900 mb-2">
+          <Link href={`/vino/${wine.sku}`} className="hover:text-brand-700 transition-colors">
             {wine.name}
           </Link>
         </h4>
         <p className="text-sm text-stone-600 mb-4 leading-relaxed whitespace-pre-line">{notes}</p>
         <div className="mt-auto border-t border-stone-100 pt-5">
           <div className="mb-4">
-            <div className="text-2xl font-serif font-bold text-wine-900">
+            <div className="text-2xl font-serif font-bold text-brand-900">
               {t("priceBottle", { price: unitGross })}{" "}
               <span className="text-[10px] font-sans text-stone-400 font-normal">{t("incTax")}</span>
             </div>
             {hasCase && (
-              <div className="text-sm font-semibold text-wine-800 mt-0.5">
+              <div className="text-sm font-semibold text-brand-800 mt-0.5">
                 {t("caseLine", { n: wine.box, total: totalGross })}
               </div>
             )}
@@ -100,7 +100,7 @@ export function WineCard({ wine, qty, onChangeQty }: Props) {
               </div>
               <button
                 onClick={() => onChangeQty(wine.id, 1)}
-                className="flex-grow text-white font-bold h-11 rounded-lg text-[10px] uppercase tracking-widest bg-wine-900 hover:bg-wine-800"
+                className="flex-grow text-white font-bold h-11 rounded-lg text-[10px] uppercase tracking-widest bg-brand-900 hover:bg-brand-800"
               >
                 {hasCase ? t("addCase", { n: wine.box }) : t("addToCart")}
               </button>

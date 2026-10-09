@@ -54,7 +54,7 @@ export function PackCollage({ images, size = "card" }: Props) {
               alt={img.alt}
               fill
               sizes={mini ? "40px" : "120px"}
-              className="object-contain drop-shadow-[0_8px_10px_rgba(43,7,16,0.28)]"
+              className="object-contain drop-shadow-[0_8px_10px_rgba(15,42,68,0.28)]"
             />
           </div>
         );

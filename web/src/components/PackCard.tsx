@@ -30,24 +30,24 @@ export function PackCard({ pack, qty, onChangeQty }: Props) {
   return (
     <article
       className={`flex flex-col bg-white rounded-xl shadow-sm hover:shadow-lg transition-all border border-stone-100 overflow-hidden h-full ${
-        qty > 0 ? "ring-2 ring-gold-500" : ""
+        qty > 0 ? "ring-2 ring-sun-500" : ""
       }`}
     >
       <div className="relative h-72 bg-stone-50 flex items-end justify-center pb-5 overflow-hidden">
         <div
           aria-hidden
-          className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_58%,rgba(200,159,93,0.30),rgba(200,159,93,0.08)_55%,transparent_75%)]"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_58%,rgba(116,172,223,0.30),rgba(116,172,223,0.08)_55%,transparent_75%)]"
         />
-        <div aria-hidden className="absolute bottom-3 left-1/2 -translate-x-1/2 h-4 w-52 rounded-[50%] bg-wine-900/15 blur-md" />
+        <div aria-hidden className="absolute bottom-3 left-1/2 -translate-x-1/2 h-4 w-52 rounded-[50%] bg-brand-900/15 blur-md" />
         <Link href={`/pack/${pack.slug}`} aria-label={pack.name} className="relative">
           <PackCollage images={packImages(pack)} />
         </Link>
         <div className="absolute top-3 right-3 flex flex-col items-end gap-2">
-          <span className="bg-wine-900/90 text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
+          <span className="bg-brand-900/90 text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
             {t("packBottles", { n: bottles })}
           </span>
           {pack.is_featured && (
-            <span className="bg-gold-500 text-wine-900 text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-md">
+            <span className="bg-sun-500 text-brand-900 text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-md">
               {t("packFeatured")}
             </span>
           )}
@@ -56,15 +56,15 @@ export function PackCard({ pack, qty, onChangeQty }: Props) {
 
       <div className="p-5 flex flex-col flex-grow">
         {pack.collection && <span className="text-[10px] font-bold uppercase text-stone-400 mb-1">{pack.collection}</span>}
-        <h4 className="text-xl font-serif font-bold text-wine-900 mb-2">
-          <Link href={`/pack/${pack.slug}`} className="hover:text-wine-700 transition-colors">
+        <h4 className="text-xl font-serif font-bold text-brand-900 mb-2">
+          <Link href={`/pack/${pack.slug}`} className="hover:text-brand-700 transition-colors">
             {pack.name}
           </Link>
         </h4>
         <p className="text-sm text-stone-600 mb-3 leading-relaxed">{description}</p>
         <Link
           href={`/pack/${pack.slug}`}
-          className="self-start text-[10px] font-bold uppercase tracking-widest text-wine-800 underline underline-offset-2 mb-4"
+          className="self-start text-[10px] font-bold uppercase tracking-widest text-brand-800 underline underline-offset-2 mb-4"
         >
           {t("packSeeDetail")}
         </Link>
@@ -75,7 +75,7 @@ export function PackCard({ pack, qty, onChangeQty }: Props) {
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
             aria-controls={listId}
-            className="md:hidden text-[10px] font-bold uppercase tracking-widest text-wine-800 underline underline-offset-2 mb-2"
+            className="md:hidden text-[10px] font-bold uppercase tracking-widest text-brand-800 underline underline-offset-2 mb-2"
           >
             {open ? t("packHideWines") : t("packShowWines")}
           </button>
@@ -99,7 +99,7 @@ export function PackCard({ pack, qty, onChangeQty }: Props) {
           <div className="flex justify-between items-end mb-4">
             <div className="flex flex-col">
               {saving > 0 && <s className="text-xs text-stone-400">{euros(loose)} €</s>}
-              <div className="text-2xl font-serif font-bold text-wine-900">
+              <div className="text-2xl font-serif font-bold text-brand-900">
                 {euros(pack.price_retail)} € <span className="text-[10px] font-sans text-stone-400 font-normal">{t("incTax")}</span>
               </div>
             </div>
@@ -122,7 +122,7 @@ export function PackCard({ pack, qty, onChangeQty }: Props) {
             <button
               onClick={() => onChangeQty(pack, 1)}
               aria-label={t("packAddAria", { name: pack.name })}
-              className="flex-grow text-white font-bold h-11 rounded-lg text-[10px] uppercase tracking-widest bg-wine-900 hover:bg-wine-800"
+              className="flex-grow text-white font-bold h-11 rounded-lg text-[10px] uppercase tracking-widest bg-brand-900 hover:bg-brand-800"
             >
               {t("addToCart")}
             </button>

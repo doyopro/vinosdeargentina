@@ -77,20 +77,20 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
 
   const filterBtnCls = (active: boolean) =>
     active
-      ? "filter-btn bg-wine-900 text-white border-wine-900 border px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest rounded-full shadow-sm transition-colors"
-      : "filter-btn bg-white text-stone-600 border-stone-200 border px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest rounded-full shadow-sm hover:border-wine-700 transition-colors";
+      ? "filter-btn bg-brand-900 text-white border-brand-900 border px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest rounded-full shadow-sm transition-colors"
+      : "filter-btn bg-white text-stone-600 border-stone-200 border px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest rounded-full shadow-sm hover:border-brand-700 transition-colors";
 
   const provinciaBtnCls = (active: boolean) =>
     active
-      ? "filter-btn bg-wine-900 text-white border-wine-900 border px-4 py-2 text-[10px] font-bold uppercase rounded-full transition-colors"
-      : "filter-btn bg-white text-stone-600 border-stone-200 border px-4 py-2 text-[10px] font-bold uppercase rounded-full hover:border-wine-700";
+      ? "filter-btn bg-brand-900 text-white border-brand-900 border px-4 py-2 text-[10px] font-bold uppercase rounded-full transition-colors"
+      : "filter-btn bg-white text-stone-600 border-stone-200 border px-4 py-2 text-[10px] font-bold uppercase rounded-full hover:border-brand-700";
 
   return (
     <>
       <div className="canary-stripe h-2.5 w-full fixed top-0 z-[100] shadow-md" />
       <LanguageToggle />
 
-      <header className="relative bg-wine-900 pt-28 pb-20 px-4 sm:pt-32 sm:pb-24 sm:px-6 lg:pt-40 lg:pb-32 overflow-hidden">
+      <header className="relative bg-brand-900 pt-28 pb-20 px-4 sm:pt-32 sm:pb-24 sm:px-6 lg:pt-40 lg:pb-32 overflow-hidden">
         <HeroCollage />
 
         <div className="max-w-5xl mx-auto relative z-10 text-center flex flex-col items-center mt-6 isolate">
@@ -101,8 +101,8 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
               behind the text regardless of paint-order quirks between dev
               and the production build. */}
           <div aria-hidden className={`${glowStyles.glow} -z-10`} />
-          <div className="relative inline-flex items-center justify-center gap-2 sm:gap-3 max-w-full px-4 sm:px-5 py-2 rounded-full bg-black/70 border border-gold-500/50 backdrop-blur-md mb-6 sm:mb-8 shadow-[0_0_15px_rgba(0,0,0,0.4)]">
-            <svg className="hidden sm:block w-4 h-4 text-gold-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="relative inline-flex items-center justify-center gap-2 sm:gap-3 max-w-full px-4 sm:px-5 py-2 rounded-full bg-black/70 border border-sky-500/50 backdrop-blur-md mb-6 sm:mb-8 shadow-[0_0_15px_rgba(0,0,0,0.4)]">
+            <svg className="hidden sm:block w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -110,7 +110,7 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
                 d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
               />
             </svg>
-            <span className="text-[10px] font-bold text-gold-500 tracking-[0.12em] sm:tracking-[0.2em] uppercase text-center leading-snug">{t("badge")}</span>
+            <span className="text-[10px] font-bold text-sky-500 tracking-[0.12em] sm:tracking-[0.2em] uppercase text-center leading-snug">{t("badge")}</span>
           </div>
           <h1
             className="relative text-[clamp(1.9rem,8.6vw,3.75rem)] sm:text-6xl md:text-7xl lg:text-8xl font-serif text-white mb-6 sm:mb-8 tracking-tight leading-tight whitespace-nowrap"
@@ -131,7 +131,7 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
           </p>
           <a
             href="#catalog"
-            className="relative bg-gold-500 hover:bg-gold-600 text-wine-900 font-bold px-8 sm:px-10 py-4 sm:py-5 rounded-sm transition-colors uppercase tracking-widest text-xs shadow-xl"
+            className="relative bg-sun-500 hover:bg-sun-600 text-brand-900 font-bold px-8 sm:px-10 py-4 sm:py-5 rounded-sm transition-colors uppercase tracking-widest text-xs shadow-xl"
           >
             {t("exploreCatalog")}
           </a>
@@ -141,7 +141,7 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
       <main id="catalog" className="max-w-6xl mx-auto px-4 py-20 space-y-16">
         <div className="flex flex-col md:flex-row justify-between items-end mb-10 pb-6 border-b border-stone-200">
           <div>
-            <h2 className="text-4xl font-serif text-wine-900">{t("catalogTitle")}</h2>
+            <h2 className="text-4xl font-serif text-brand-900">{t("catalogTitle")}</h2>
             <p className="text-stone-500 mt-2 font-medium">{t("catalogSubtitle")}</p>
           </div>
         </div>
@@ -190,10 +190,10 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
         </div>
 
         {!isFiltering && featuredWines.length > 0 && (
-          <section aria-labelledby="featured-title" className="rounded-2xl border border-gold-500/30 bg-gradient-to-b from-gold-500/10 to-transparent p-5 md:p-8">
+          <section aria-labelledby="featured-title" className="rounded-2xl border border-sky-500/30 bg-gradient-to-b from-sky-500/10 to-transparent p-5 md:p-8">
             <div className="flex items-center gap-3 mb-6">
-              <span className="h-px w-8 bg-gold-500" aria-hidden />
-              <h3 id="featured-title" className="text-3xl font-serif text-wine-900">
+              <span className="h-px w-8 bg-sun-500" aria-hidden />
+              <h3 id="featured-title" className="text-3xl font-serif text-brand-900">
                 {t("featuredTitle")}
               </h3>
             </div>
@@ -243,9 +243,9 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
         <PartnerStrip />
       </main>
 
-      <section className="bg-stone-900 text-stone-300 py-20 px-6 border-t-4 border-wine-800">
+      <section className="bg-stone-900 text-stone-300 py-20 px-6 border-t-4 border-brand-800">
         <div className="max-w-4xl mx-auto text-center">
-          <svg className="w-12 h-12 mx-auto text-gold-500 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-12 h-12 mx-auto text-sky-500 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -259,18 +259,18 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
             href="https://wa.me/34633706676"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-3 px-8 py-4 border border-stone-600 hover:border-gold-500 hover:text-white rounded-sm transition-colors uppercase tracking-widest text-xs font-bold shadow-lg bg-white/5"
+            className="inline-flex items-center gap-3 px-8 py-4 border border-stone-600 hover:border-sky-500 hover:text-white rounded-sm transition-colors uppercase tracking-widest text-xs font-bold shadow-lg bg-white/5"
           >
             {t("horecaCta")}
           </a>
         </div>
       </section>
 
-      <footer className="bg-wine-900 pt-16 pb-12 px-6 border-t border-wine-800 relative z-10">
+      <footer className="bg-brand-900 pt-16 pb-12 px-6 border-t border-brand-800 relative z-10">
         <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
           <Wordmark className="font-serif text-3xl md:text-4xl tracking-wide drop-shadow-md" />
           <Tagline className="mt-2 mb-6" />
-          <div className="w-24 h-px bg-gold-500/30 mb-8" />
+          <div className="w-24 h-px bg-sun-500/30 mb-8" />
           <DeliveryNote variant="dark" className="max-w-xl text-left mb-6" />
           <FooterLinks className="mb-5" />
           <PartnerCredit className="mb-4" />
@@ -279,7 +279,7 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
             href="https://www.doyo.pro/"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-stone-500 hover:text-gold-500 transition-colors text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 group mt-2"
+            className="text-stone-500 hover:text-sky-500 transition-colors text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 group mt-2"
           >
             {t("poweredBy")}
             <svg

@@ -48,11 +48,11 @@ export function CartDrawer({ open, onClose }: Props) {
         }`}
       >
         <div className="sticky top-0 z-10 bg-white border-b border-stone-100 flex justify-between items-center pl-6 pr-3 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
-          <h3 className="text-2xl font-serif text-wine-900 font-bold">{t("cartTitle")}</h3>
+          <h3 className="text-2xl font-serif text-brand-900 font-bold">{t("cartTitle")}</h3>
           <button
             onClick={onClose}
             aria-label={t("cartClose")}
-            className="w-11 h-11 flex items-center justify-center rounded-full text-stone-500 hover:text-wine-900 hover:bg-stone-100 transition-colors"
+            className="w-11 h-11 flex items-center justify-center rounded-full text-stone-500 hover:text-brand-900 hover:bg-stone-100 transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6L6 18" />
@@ -77,12 +77,12 @@ export function CartDrawer({ open, onClose }: Props) {
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <h5 className="text-sm font-bold text-wine-900">{item.name}</h5>
+                      <h5 className="text-sm font-bold text-brand-900">{item.name}</h5>
                       <div className="text-xs text-stone-500">
                         {isPack ? t("packBottles", { n: item.bottles }) : t("boxOf", { n: item.box })}
                       </div>
                     </div>
-                    <div className="font-bold text-wine-900 whitespace-nowrap">
+                    <div className="font-bold text-brand-900 whitespace-nowrap">
                       {itemTotal.toFixed(2).replace(".", ",")} €
                     </div>
                   </div>
@@ -123,7 +123,7 @@ export function CartDrawer({ open, onClose }: Props) {
         <div className="px-6 pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] border-t border-stone-100">
           <div className="flex justify-between items-center mb-4">
             <span className="text-stone-500 font-medium">{t("cartTotal")}</span>
-            <div className="text-3xl font-serif text-wine-900 font-bold">
+            <div className="text-3xl font-serif text-brand-900 font-bold">
               {total.toFixed(2).replace(".", ",")} €
             </div>
           </div>
@@ -131,7 +131,7 @@ export function CartDrawer({ open, onClose }: Props) {
           <button
             onClick={processCheckout}
             disabled={items.length === 0}
-            className="w-full bg-wine-900 hover:bg-wine-800 disabled:bg-stone-300 disabled:cursor-not-allowed text-white font-bold h-12 rounded-lg text-xs uppercase tracking-widest transition-colors"
+            className="w-full bg-brand-900 hover:bg-brand-800 disabled:bg-stone-300 disabled:cursor-not-allowed text-white font-bold h-12 rounded-lg text-xs uppercase tracking-widest transition-colors"
           >
             {t("checkout")}
           </button>

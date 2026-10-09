@@ -16,12 +16,12 @@ export function SpecialSelection({ packs }: { packs: Pack[] }) {
   return (
     <section
       aria-labelledby="special-title"
-      className="rounded-2xl border border-gold-500/30 bg-gradient-to-b from-wine-900/[0.06] to-transparent p-5 md:p-8"
+      className="rounded-2xl border border-sky-500/30 bg-gradient-to-b from-brand-900/[0.06] to-transparent p-5 md:p-8"
     >
       <div className="mb-6">
         <div className="flex items-center gap-3">
-          <span className="h-px w-8 bg-gold-500" aria-hidden />
-          <h3 id="special-title" className="text-3xl font-serif text-wine-900">
+          <span className="h-px w-8 bg-sun-500" aria-hidden />
+          <h3 id="special-title" className="text-3xl font-serif text-brand-900">
             {t("specialTitle")}
           </h3>
         </div>

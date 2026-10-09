@@ -313,7 +313,7 @@ export default function CheckoutPage() {
   }
 
   const inputCls = (field: string) =>
-    `p-3 border rounded-lg focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 outline-none transition-all ${
+    `p-3 border rounded-lg focus:ring-2 focus:ring-sun-500/20 focus:border-sky-500 outline-none transition-all ${
       errors[field] ? "border-red-500 bg-red-50" : "border-stone-200"
     }`;
 
@@ -324,13 +324,13 @@ export default function CheckoutPage() {
 
       <div className="max-w-6xl mx-auto px-4 py-12 md:py-20">
         <div className="mb-8">
-          <Link href="/" className="inline-flex items-center text-sm font-semibold text-wine-800 hover:text-gold-600 transition-colors">
+          <Link href="/" className="inline-flex items-center text-sm font-semibold text-brand-800 hover:text-sky-700 transition-colors">
             &larr; {t("backToShop")}
           </Link>
         </div>
 
         <header className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-serif text-wine-900 mb-4">{t("title")}</h1>
+          <h1 className="text-4xl md:text-5xl font-serif text-brand-900 mb-4">{t("title")}</h1>
           <p className="text-stone-500 font-medium">{t("subtitle")}</p>
         </header>
 
@@ -339,7 +339,7 @@ export default function CheckoutPage() {
             {ready && items.length === 0 ? (
               <div className="text-center py-10">
                 <p>{t("emptyCart")}</p>
-                <Link href="/" className="mt-4 inline-block text-gold-600 underline text-sm">
+                <Link href="/" className="mt-4 inline-block text-sky-700 underline text-sm">
                   {t("backToShopLink")}
                 </Link>
               </div>
@@ -347,10 +347,10 @@ export default function CheckoutPage() {
               <div>
                 <div className="mb-10">
                   <div className="flex items-center gap-3 mb-6">
-                    <span className="w-8 h-8 rounded-full bg-wine-900 text-white flex items-center justify-center text-sm font-bold">
+                    <span className="w-8 h-8 rounded-full bg-brand-900 text-white flex items-center justify-center text-sm font-bold">
                       1
                     </span>
-                    <h2 className="text-xl font-serif text-wine-900 font-bold">{t("step1")}</h2>
+                    <h2 className="text-xl font-serif text-brand-900 font-bold">{t("step1")}</h2>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
@@ -397,10 +397,10 @@ export default function CheckoutPage() {
 
                 <div className="mb-10">
                   <div className="flex items-center gap-3 mb-6">
-                    <span className="w-8 h-8 rounded-full bg-wine-900 text-white flex items-center justify-center text-sm font-bold">
+                    <span className="w-8 h-8 rounded-full bg-brand-900 text-white flex items-center justify-center text-sm font-bold">
                       2
                     </span>
-                    <h2 className="text-xl font-serif text-wine-900 font-bold">{t("step2")}</h2>
+                    <h2 className="text-xl font-serif text-brand-900 font-bold">{t("step2")}</h2>
                   </div>
                   <div ref={stripeContainerRef} className="p-4 border border-stone-200 rounded-xl bg-stone-50" />
                   {stripeError && (
@@ -430,12 +430,12 @@ export default function CheckoutPage() {
                       value={promoCodeInput}
                       onChange={(e) => setPromoCodeInput(e.target.value)}
                       placeholder={t("promoPlaceholder")}
-                      className="flex-1 p-3 border border-stone-200 rounded-lg focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 outline-none transition-all text-sm"
+                      className="flex-1 p-3 border border-stone-200 rounded-lg focus:ring-2 focus:ring-sun-500/20 focus:border-sky-500 outline-none transition-all text-sm"
                     />
                     <button
                       type="button"
                       onClick={applyPromo}
-                      className="px-6 py-3 bg-gold-500 hover:bg-gold-600 text-wine-900 font-bold rounded-lg transition-all text-[10px] uppercase tracking-widest shadow-sm"
+                      className="px-6 py-3 bg-sun-500 hover:bg-sun-600 text-brand-900 font-bold rounded-lg transition-all text-[10px] uppercase tracking-widest shadow-sm"
                     >
                       {t("apply")}
                     </button>
@@ -452,7 +452,7 @@ export default function CheckoutPage() {
                 <button
                   onClick={handlePayment}
                   disabled={submitting || updating}
-                  className="w-full bg-wine-900 hover:bg-wine-800 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-5 rounded-lg transition-all shadow-xl hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3 uppercase tracking-widest text-sm"
+                  className="w-full bg-brand-900 hover:bg-brand-800 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-5 rounded-lg transition-all shadow-xl hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3 uppercase tracking-widest text-sm"
                 >
                   {updating ? t("pricingUpdating") : t("payNow")}
                 </button>
@@ -461,7 +461,7 @@ export default function CheckoutPage() {
           </div>
 
           <div className="lg:col-span-5 order-1 lg:order-2">
-            <div className="bg-wine-900 text-white p-6 md:p-8 rounded-2xl shadow-xl sticky top-24">
+            <div className="bg-brand-900 text-white p-6 md:p-8 rounded-2xl shadow-xl sticky top-24">
               <h2 className="text-2xl font-serif mb-6 border-b border-white/10 pb-4 flex justify-between items-center">
                 {t("yourOrder")}
               </h2>
@@ -487,7 +487,7 @@ export default function CheckoutPage() {
                                   : `${item.qty} Caja(s) × ${item.box || 1} bot.`}
                               </div>
                             </div>
-                            <div className="text-sm font-bold text-gold-500 whitespace-nowrap">{itemTotal.toFixed(2)} &euro;</div>
+                            <div className="text-sm font-bold text-sky-500 whitespace-nowrap">{itemTotal.toFixed(2)} &euro;</div>
                           </div>
                           <div className="mt-3 flex items-center justify-between">
                             <div className="flex items-center bg-white/10 rounded-lg h-8">
@@ -530,7 +530,7 @@ export default function CheckoutPage() {
                       <span className="text-white font-semibold">{importeBruto.toFixed(2)} &euro;</span>
                     </div>
                     {descuentoAplicado > 0 && (
-                      <div className="flex justify-between text-gold-500 text-sm font-medium">
+                      <div className="flex justify-between text-sky-500 text-sm font-medium">
                         <div>
                           {t("discount")} <span className="text-stone-400 text-xs ml-1">({labelDescuento})</span>
                         </div>
@@ -546,13 +546,13 @@ export default function CheckoutPage() {
                       <span className="text-white font-semibold">{igicAmount.toFixed(2)} &euro;</span>
                     </div>
                     {updating && (
-                      <div className="text-right text-[11px] text-gold-500 animate-pulse" role="status">
+                      <div className="text-right text-[11px] text-sky-500 animate-pulse" role="status">
                         {t("pricingUpdating")}
                       </div>
                     )}
                     <div className="flex justify-between items-center pt-4 text-white">
                       <span className="text-lg font-bold">{t("total")}</span>
-                      <span className="text-3xl font-serif font-bold text-gold-500">{totalAmount.toFixed(2)} &euro;</span>
+                      <span className="text-3xl font-serif font-bold text-sky-500">{totalAmount.toFixed(2)} &euro;</span>
                     </div>
                   </div>
                 </>
@@ -563,11 +563,11 @@ export default function CheckoutPage() {
       </div>
 
       <div
-        className={`fixed inset-0 bg-wine-900/90 backdrop-blur-md z-[2000] flex flex-col items-center justify-center text-white transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-brand-900/90 backdrop-blur-md z-[2000] flex flex-col items-center justify-center text-white transition-opacity duration-300 ${
           submitting ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
-        <div className="w-16 h-16 border-4 border-white/20 border-t-gold-500 rounded-full animate-spin mb-6" />
+        <div className="w-16 h-16 border-4 border-white/20 border-t-sky-500 rounded-full animate-spin mb-6" />
         <p className="font-serif text-xl animate-pulse">{t("processingPayment")}</p>
       </div>
     </>

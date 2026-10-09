@@ -1,13 +1,20 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-wine-900: #2b0710;
-  --color-wine-800: #3e0c18;
-  --color-wine-700: #5a1224;
-  --color-wine-600: #7a1832;
+  /* Brand: Atlántico (deep Atlantic navy) + celeste argentino + canary sun.
+     "wine-600" is reserved for red-wine (Tinto) accents only. */
+  --color-brand-900: #0f2a44;
+  --color-brand-800: #173a5c;
+  --color-brand-700: #1f4d7a;
+  --color-brand-600: #2a6399;
 
-  --color-gold-500: #c89f5d;
-  --color-gold-600: #a67f43;
+  --color-sky-500: #74acdf;
+  --color-sky-700: #2a6fa8;
+
+  --color-sun-500: #e3a72f;
+  --color-sun-600: #c98f1c;
+
+  --color-wine-600: #7a1832;
 
   --color-stone-50: #faf9f7;
   --color-stone-100: #f2f0eb;
