@@ -102,7 +102,7 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
               behind the text regardless of paint-order quirks between dev
               and the production build. */}
           <div aria-hidden className={`${glowStyles.glow} -z-10`} />
-          <div className="relative inline-flex items-center justify-center gap-2 sm:gap-3 max-w-full px-4 sm:px-5 py-2 rounded-full bg-black/70 border border-sky-500/50 backdrop-blur-md mb-6 sm:mb-8 shadow-[0_0_15px_rgba(0,0,0,0.4)]">
+          <div className="relative inline-flex items-center justify-center gap-2 sm:gap-3 max-w-full px-4 sm:px-5 py-2 rounded-full bg-brand-900/60 border border-sky-500/40 backdrop-blur-md mb-6 sm:mb-8">
             <svg className="hidden sm:block w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
@@ -111,22 +111,22 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
                 d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
               />
             </svg>
-            <span className="text-[10px] font-bold text-sky-500 tracking-[0.12em] sm:tracking-[0.2em] uppercase text-center leading-snug">{t("badge")}</span>
+            <span className="text-[10px] font-semibold text-sky-500 tracking-[0.14em] sm:tracking-[0.24em] uppercase text-center leading-snug">{t("badge")}</span>
           </div>
           <h1
-            className="relative text-[clamp(1.9rem,8.6vw,3.75rem)] sm:text-6xl md:text-7xl lg:text-8xl font-serif text-white mb-6 sm:mb-8 tracking-tight leading-tight whitespace-nowrap"
-            style={{ textShadow: "0 2px 16px rgba(0,0,0,0.55)" }}
+            className="relative text-[clamp(1.9rem,8.6vw,3.75rem)] sm:text-6xl md:text-7xl lg:text-8xl font-serif text-white mb-6 sm:mb-8 tracking-[-0.015em] leading-tight whitespace-nowrap"
+            style={{ textShadow: "0 2px 20px rgba(10,28,46,0.6)" }}
           >
             <Wordmark />
           </h1>
-          <div className="relative flex flex-col w-44 sm:w-56 md:w-64 h-3 md:h-4 mb-6 sm:mb-10 rounded-sm overflow-hidden border border-white/10">
+          <div className="relative flex flex-col w-28 sm:w-36 md:w-44 h-2 mb-6 sm:mb-8 rounded-sm overflow-hidden">
             <div className="h-1/3 w-full bg-[#74ACDF]" />
             <div className="h-1/3 w-full bg-white" />
             <div className="h-1/3 w-full bg-[#74ACDF]" />
           </div>
           <p
-            className="relative text-[clamp(1rem,4.2vw,1.35rem)] sm:text-2xl md:text-3xl text-stone-100 font-semibold max-w-[34ch] sm:max-w-3xl mx-auto leading-snug sm:leading-relaxed mb-8 sm:mb-10"
-            style={{ textShadow: "0 1px 10px rgba(0,0,0,0.5)" }}
+            className="relative text-[clamp(1rem,4.2vw,1.2rem)] sm:text-xl md:text-2xl text-stone-100 font-light text-balance max-w-[30ch] sm:max-w-xl md:max-w-2xl mx-auto leading-relaxed mb-8 sm:mb-10"
+            style={{ textShadow: "0 1px 12px rgba(10,28,46,0.6)" }}
           >
             {t("heroSubtitle")}
           </p>
@@ -134,8 +134,11 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
             href="#catalog"
             className="relative bg-sun-500 hover:bg-sun-600 text-brand-900 font-bold px-8 sm:px-10 py-4 sm:py-5 rounded-sm transition-colors uppercase tracking-widest text-xs shadow-xl"
           >
-            {t("exploreCatalog")}
+            {t("exploreCatalog")} <span aria-hidden>→</span>
           </a>
+          <p className="relative mt-6 text-[10px] sm:text-[11px] tracking-[0.18em] uppercase text-stone-200/80 text-balance max-w-[34ch] sm:max-w-none">
+            {t("heroPerks")}
+          </p>
         </div>
       </header>
 

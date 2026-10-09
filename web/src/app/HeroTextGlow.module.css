@@ -22,10 +22,10 @@
      the ellipse targets the title+ruler+subtitle span between them. */
   background: radial-gradient(
     ellipse 320px 440px at 50% 56%,
-    rgba(0, 0, 0, 0.94) 0%,
-    rgba(0, 0, 0, 0.88) 45%,
-    rgba(0, 0, 0, 0.55) 75%,
-    rgba(0, 0, 0, 0) 100%
+    rgba(10, 28, 46, 0.68) 0%,
+    rgba(10, 28, 46, 0.63) 45%,
+    rgba(10, 28, 46, 0.4) 75%,
+    rgba(10, 28, 46, 0.0) 100%
   );
 }
 
@@ -33,10 +33,10 @@
   .glow {
     background: radial-gradient(
       ellipse 480px 280px at 50% 50%,
-      rgba(0, 0, 0, 0.94) 0%,
-      rgba(0, 0, 0, 0.85) 45%,
-      rgba(0, 0, 0, 0.5) 75%,
-      rgba(0, 0, 0, 0) 100%
+      rgba(10, 28, 46, 0.68) 0%,
+      rgba(10, 28, 46, 0.61) 45%,
+      rgba(10, 28, 46, 0.36) 75%,
+      rgba(10, 28, 46, 0.0) 100%
     );
   }
 }
@@ -45,10 +45,10 @@
   .glow {
     background: radial-gradient(
       ellipse 620px 320px at 50% 48%,
-      rgba(0, 0, 0, 0.92) 0%,
-      rgba(0, 0, 0, 0.82) 45%,
-      rgba(0, 0, 0, 0.46) 75%,
-      rgba(0, 0, 0, 0) 100%
+      rgba(10, 28, 46, 0.66) 0%,
+      rgba(10, 28, 46, 0.59) 45%,
+      rgba(10, 28, 46, 0.33) 75%,
+      rgba(10, 28, 46, 0.0) 100%
     );
   }
 }

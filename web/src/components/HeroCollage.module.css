@@ -6,11 +6,11 @@
 
 .grid {
   display: grid;
-  gap: 3px;
+  gap: 2px;
   width: 100%;
   height: 100%;
-  /* Near-black, never maroon: this is what shows through the 3px seams. */
-  background: #060505;
+  /* Thin, light hairlines between photos (editorial look) instead of black seams. */
+  background: rgba(226, 232, 240, 0.55);
 }
 
 .tile {
@@ -18,28 +18,45 @@
   overflow: hidden;
 }
 
-/* Desktop: 6 cols x 4 rows, 9 photos, zero gaps, sizes varied
-   (3 big squares, 2 tall verticals, 4 wide strips). */
-.gridDesktop {
-  composes: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(4, 1fr);
-  grid-template-areas:
-    "a a b c c d"
-    "a a b e e d"
-    "f f g g h h"
-    "f f g g i i";
+/* One shared grade for every photo so the set reads as a single piece:
+   slightly desaturated, plus a brand-navy veil (darker at top and bottom,
+   lighter in the middle) that also keeps the centered copy legible. */
+.tile img {
+  filter: saturate(0.82) contrast(1.05);
+}
+.tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(15, 42, 68, 0.62) 0%,
+    rgba(15, 42, 68, 0.42) 45%,
+    rgba(15, 42, 68, 0.66) 100%
+  );
 }
 
-/* Tablet: 4 cols x 3 rows, 7 photos (1 big square, 4 small squares, 2 wide). */
+/* Desktop: 4 large photos — left and right columns full height, two stacked
+   in the middle. The bottles-on-barrel shot sits in the right column, away
+   from the centered text. */
+.gridDesktop {
+  composes: grid;
+  grid-template-columns: 5fr 3fr 4fr;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas:
+    "a b c"
+    "a d c";
+}
+
+/* Tablet: 3 photos. */
 .gridTablet {
   composes: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
   grid-template-areas:
-    "a a b c"
-    "a a d d"
-    "e f f g";
+    "a b"
+    "a c";
 }
 
 /* Mobile: one full-bleed photo (no seams behind the text). */
@@ -61,19 +78,4 @@
 }
 .d {
   grid-area: d;
-}
-.e {
-  grid-area: e;
-}
-.f {
-  grid-area: f;
-}
-.g {
-  grid-area: g;
-}
-.h {
-  grid-area: h;
-}
-.i {
-  grid-area: i;
 }
