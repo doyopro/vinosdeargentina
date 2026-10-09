@@ -10,14 +10,14 @@ import { Tagline } from "@/components/Tagline";
 export function SiteFooter() {
   const t = useTranslations();
   return (
-    <footer className="picon-bg pt-12 pb-10 px-6 relative z-10">
+    <footer className="picon-bg border-t border-sun-500/40 pt-12 pb-10 px-6 relative z-10">
       <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
         <Wordmark className="font-serif text-2xl tracking-wide" />
         <Tagline className="mt-1 mb-6" />
         <DeliveryNote variant="dark" className="max-w-xl text-left mb-6" />
         <FooterLinks className="mb-5" />
         <PartnerCredit className="mb-4" />
-        <p className="text-stone-400 text-xs font-light">{t("footerCopyright")}</p>
+        <p className="text-stone-300 text-xs font-light">{t("footerCopyright")}</p>
       </div>
     </footer>
   );

@@ -7,9 +7,9 @@ import { PartnerLogo } from "@/components/PartnerLogo";
 export function PartnerCredit({ className = "" }: { className?: string }) {
   const t = useTranslations("partner");
   return (
-    <p className={`flex flex-wrap items-center justify-center gap-x-2 text-[11px] text-stone-400 ${className}`}>
+    <p className={`flex flex-wrap items-center justify-center gap-x-2 text-[11px] text-stone-300 ${className}`}>
       <span>{t("collab")}</span>
-      <PartnerLogo className="text-sm text-stone-200" />
+      <PartnerLogo className="text-sm text-white" />
     </p>
   );
 }

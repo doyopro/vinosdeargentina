@@ -73,9 +73,9 @@ input[type="number"]::-webkit-outer-spin-button {
 .picon-bg {
   background-color: #141210;
   background-image:
-    linear-gradient(rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.4)),
+    linear-gradient(rgba(0, 0, 0, 0.38), rgba(0, 0, 0, 0.52)),
     url("/images/picon-lanzarote.webp");
   background-size: cover;
   background-position: center;
-  border-top: 1px solid rgba(227, 167, 47, 0.4);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
 }

@@ -19,7 +19,7 @@ export function FooterLinks({ className = "" }: { className?: string }) {
         {t("bodegas")}
       </Link>
       {LEGAL_LINKS.map((l) => (
-        <Link key={l.href} href={l.href} className="text-[11px] text-stone-400 hover:text-sky-500 transition-colors">
+        <Link key={l.href} href={l.href} className="text-[11px] text-stone-200 hover:text-sky-500 transition-colors">
           {t(l.key)}
         </Link>
       ))}

@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 // Small, discreet delivery policy note. No shipping cost is ever added to totals.
 export function DeliveryNote({ variant = "light", className = "" }: { variant?: "light" | "dark"; className?: string }) {
   const t = useTranslations();
-  const tone = variant === "dark" ? "text-stone-400" : "text-stone-500";
+  const tone = variant === "dark" ? "text-stone-200" : "text-stone-500";
   return (
     <p className={`flex items-start gap-2 text-[11px] leading-relaxed ${tone} ${className}`}>
       <svg

@@ -282,7 +282,8 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
         <PartnerStrip />
       </main>
 
-      <section className="bg-stone-900 text-stone-300 py-10 md:py-12 px-6 border-t-4 border-brand-800">
+      <div className="picon-bg">
+      <section className="text-stone-100 py-10 md:py-12 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <svg className="w-8 h-8 mx-auto text-sky-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -298,14 +299,14 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
             href="https://wa.me/34633706676"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-3 px-6 py-3 border border-stone-600 hover:border-sky-500 hover:text-white rounded-sm transition-colors uppercase tracking-widest text-xs font-bold shadow-lg bg-white/5"
+            className="inline-flex items-center gap-3 px-6 py-3 border border-stone-300/70 text-white hover:border-sky-500 rounded-sm transition-colors uppercase tracking-widest text-xs font-bold shadow-lg bg-black/30"
           >
             {t("horecaCta")}
           </a>
         </div>
       </section>
 
-      <footer className="picon-bg pt-16 pb-12 px-6 relative z-10">
+      <footer className="border-t border-sun-500/40 pt-16 pb-12 px-6 relative z-10">
         <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
           <Wordmark className="font-serif text-3xl md:text-4xl tracking-wide drop-shadow-md" />
           <Tagline className="mt-2 mb-6" />
@@ -313,12 +314,12 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
           <DeliveryNote variant="dark" className="max-w-xl text-left mb-6" />
           <FooterLinks className="mb-5" />
           <PartnerCredit className="mb-4" />
-          <p className="text-stone-400 text-xs font-light mb-4">{t("footerCopyright")}</p>
+          <p className="text-stone-300 text-xs font-light mb-4">{t("footerCopyright")}</p>
           <a
             href="https://www.doyo.pro/"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-stone-500 hover:text-sky-500 transition-colors text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 group mt-2"
+            className="text-stone-400 hover:text-sky-500 transition-colors text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 group mt-2"
           >
             {t("poweredBy")}
             <svg
@@ -332,6 +333,7 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
           </a>
         </div>
       </footer>
+      </div>
 
       <CartFab />
     </>
