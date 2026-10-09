@@ -27,6 +27,7 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
   const [typeFilter, setTypeFilter] = useState<Set<WineType>>(new Set());
   const [provinciaFilter, setProvinciaFilter] = useState<Set<string>>(new Set());
   const [sortPrice, setSortPrice] = useState<"default" | "asc" | "desc">("default");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const updateQty = (id: string, change: number) => {
     const wine = catalogData.find((w) => w.id === id);
@@ -53,6 +54,7 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
     });
   };
 
+  const activeFilterCount = typeFilter.size + provinciaFilter.size + (sortPrice !== "default" ? 1 : 0);
   const isFiltering = typeFilter.size > 0 || provinciaFilter.size > 0 || sortPrice !== "default";
 
   const filtered = useMemo(() => {
@@ -138,60 +140,90 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
       </header>
 
       <main id="catalog" className="max-w-6xl mx-auto px-4 py-12 md:py-16 space-y-16">
-        <section className="mb-2!">
-          <h2 className="text-3xl md:text-4xl font-serif text-brand-900 mb-5">{t("catalogTitle")}</h2>
-          <dl className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-stone-200 border border-stone-200 rounded-xl overflow-hidden">
-            {(["Min", "Free", "Canarias", "Pickup"] as const).map((k) => (
-              <div key={k} className="bg-white px-4 py-3">
-                <dt className="text-[10px] font-bold uppercase tracking-widest text-sun-600">{t(`info${k}Label`)}</dt>
-                <dd className="mt-0.5 text-sm font-semibold text-brand-900 leading-snug">{t(`info${k}Value`)}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
-
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-6">
-          <div className="flex flex-wrap gap-2 md:gap-3">
-            <button onClick={() => toggleType("all")} className={filterBtnCls(typeFilter.size === 0)}>
-              {t("filters.all")}
-            </button>
-            <div className="w-px h-6 bg-stone-300 mx-1 hidden sm:block self-center" />
-            <button onClick={() => toggleType("tinto")} className={filterBtnCls(typeFilter.has("tinto"))}>
-              {t("filters.tinto")}
-            </button>
-            <button onClick={() => toggleType("blanco")} className={filterBtnCls(typeFilter.has("blanco"))}>
-              {t("filters.blanco")}
-            </button>
-            <button onClick={() => toggleType("rosado")} className={filterBtnCls(typeFilter.has("rosado"))}>
-              {t("filters.rosado")}
-            </button>
+        <section className="mb-8! space-y-4">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-serif text-brand-900">{t("catalogTitle")}</h2>
+            <p className="mt-2 text-xs md:text-sm text-stone-500 leading-relaxed">{t("catalogInfo")}</p>
           </div>
-          <div className="flex flex-wrap gap-3 w-full lg:w-auto">
+
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setFiltersOpen((o) => !o)}
+              aria-expanded={filtersOpen}
+              aria-controls="filters-panel"
+              className="flex-none inline-flex items-center gap-2 bg-white text-brand-900 border border-stone-200 px-4 h-11 text-[10px] font-bold uppercase tracking-widest rounded-lg shadow-sm hover:border-brand-700 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M7 12h10M10 18h4" />
+              </svg>
+              {t("filters.title")}
+              {activeFilterCount > 0 && (
+                <span className="bg-sun-500 text-brand-900 rounded-full min-w-5 h-5 px-1 flex items-center justify-center text-[10px]">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
             <select
               value={sortPrice}
               onChange={(e) => setSortPrice(e.target.value as "default" | "asc" | "desc")}
-              className="bg-white text-stone-600 border border-stone-200 px-4 py-2.5 text-[10px] font-bold uppercase rounded-md shadow-sm focus:outline-none w-full sm:w-auto"
+              aria-label={t("sort.default")}
+              className="flex-1 sm:flex-none sm:w-60 min-w-0 bg-white text-stone-600 border border-stone-200 px-3 h-11 text-[10px] font-bold uppercase rounded-lg shadow-sm focus:outline-none"
             >
               <option value="default">{t("sort.default")}</option>
               <option value="asc">{t("sort.asc")}</option>
               <option value="desc">{t("sort.desc")}</option>
             </select>
           </div>
-        </div>
 
-        <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-10 pb-6 border-b border-stone-100">
-          <div className="text-xs font-bold uppercase text-stone-400 tracking-widest py-2.5 pr-2">
-            {t("filters.provincia")}
-          </div>
-          <button onClick={() => toggleProvincia("todas_prov")} className={provinciaBtnCls(provinciaFilter.size === 0)}>
-            {t("filters.todas")}
-          </button>
-          {PROVINCIAS.map((p) => (
-            <button key={p} onClick={() => toggleProvincia(p)} className={provinciaBtnCls(provinciaFilter.has(p))}>
-              {p}
-            </button>
-          ))}
-        </div>
+          {filtersOpen && (
+            <div id="filters-panel" className="rounded-xl border border-stone-200 bg-white p-4 md:p-5 space-y-5 shadow-sm">
+              <div>
+                <div className="text-[10px] font-bold uppercase text-stone-400 tracking-widest mb-2">{t("filters.type")}</div>
+                <div className="flex flex-wrap gap-2">
+                  <button onClick={() => toggleType("all")} className={filterBtnCls(typeFilter.size === 0)}>
+                    {t("filters.all")}
+                  </button>
+                  <button onClick={() => toggleType("tinto")} className={filterBtnCls(typeFilter.has("tinto"))}>
+                    {t("filters.tinto")}
+                  </button>
+                  <button onClick={() => toggleType("blanco")} className={filterBtnCls(typeFilter.has("blanco"))}>
+                    {t("filters.blanco")}
+                  </button>
+                  <button onClick={() => toggleType("rosado")} className={filterBtnCls(typeFilter.has("rosado"))}>
+                    {t("filters.rosado")}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] font-bold uppercase text-stone-400 tracking-widest mb-2">{t("filters.provincia")}</div>
+                <div className="flex flex-wrap gap-2">
+                  <button onClick={() => toggleProvincia("todas_prov")} className={provinciaBtnCls(provinciaFilter.size === 0)}>
+                    {t("filters.todas")}
+                  </button>
+                  {PROVINCIAS.map((p) => (
+                    <button key={p} onClick={() => toggleProvincia(p)} className={provinciaBtnCls(provinciaFilter.has(p))}>
+                      {p}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {isFiltering && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTypeFilter(new Set());
+                    setProvinciaFilter(new Set());
+                    setSortPrice("default");
+                  }}
+                  className="text-xs font-semibold text-brand-700 underline underline-offset-2"
+                >
+                  {t("filters.clear")}
+                </button>
+              )}
+            </div>
+          )}
+        </section>
 
         {!isFiltering && featuredWines.length > 0 && (
           <section aria-labelledby="featured-title" className="rounded-2xl border border-sky-500/30 bg-gradient-to-b from-sky-500/10 to-transparent p-5 md:p-8">
