@@ -4,6 +4,20 @@
   z-index: 0;
 }
 
+/* Volcanic-rock grain over the whole mosaic (one overlay, so the grain size is
+   the same on every photo). Multiply keeps the photos' color and adds the
+   dark, rough texture of Lanzarote's picón on top of the navy veil. */
+.wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: url("/images/picon-lanzarote.webp") center / cover;
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+
 .grid {
   display: grid;
   gap: 2px;
@@ -31,9 +45,9 @@
   pointer-events: none;
   background: linear-gradient(
     180deg,
-    rgba(15, 42, 68, 0.62) 0%,
-    rgba(15, 42, 68, 0.42) 45%,
-    rgba(15, 42, 68, 0.66) 100%
+    rgba(15, 42, 68, 0.52) 0%,
+    rgba(15, 42, 68, 0.34) 45%,
+    rgba(15, 42, 68, 0.56) 100%
   );
 }
 
