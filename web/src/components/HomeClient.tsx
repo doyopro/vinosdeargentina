@@ -138,7 +138,7 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
       </header>
 
       <main id="catalog" className="max-w-6xl mx-auto px-4 py-12 md:py-16 space-y-16">
-        <section className="-mb-8">
+        <section className="mb-2!">
           <h2 className="text-3xl md:text-4xl font-serif text-brand-900 mb-5">{t("catalogTitle")}</h2>
           <dl className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-stone-200 border border-stone-200 rounded-xl overflow-hidden">
             {(["Min", "Free", "Canarias", "Pickup"] as const).map((k) => (
