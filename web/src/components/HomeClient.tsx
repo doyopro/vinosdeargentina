@@ -140,6 +140,7 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
             {t("heroPerks")}
           </p>
         </div>
+        <div aria-hidden className="picon-edge absolute inset-x-0 bottom-0 z-10" />
       </header>
 
       <main id="catalog" className="max-w-6xl mx-auto px-4 py-12 md:py-16 space-y-16">
@@ -305,7 +306,8 @@ export function HomeClient({ wines: catalogData, packs }: { wines: CatalogWine[]
         </div>
       </section>
 
-      <footer className="bg-brand-900 pt-16 pb-12 px-6 border-t border-brand-800 relative z-10">
+      <footer className="picon-bg pt-16 pb-12 px-6 relative z-10">
+        <div aria-hidden className="picon-edge absolute inset-x-0 top-0" />
         <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
           <Wordmark className="font-serif text-3xl md:text-4xl tracking-wide drop-shadow-md" />
           <Tagline className="mt-2 mb-6" />

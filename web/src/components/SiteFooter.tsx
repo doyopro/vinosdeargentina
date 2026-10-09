@@ -10,7 +10,8 @@ import { Tagline } from "@/components/Tagline";
 export function SiteFooter() {
   const t = useTranslations();
   return (
-    <footer className="bg-brand-900 pt-12 pb-10 px-6 border-t border-brand-800 relative z-10">
+    <footer className="picon-bg pt-12 pb-10 px-6 relative z-10">
+      <div aria-hidden className="picon-edge absolute inset-x-0 top-0" />
       <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
         <Wordmark className="font-serif text-2xl tracking-wide" />
         <Tagline className="mt-1 mb-6" />
