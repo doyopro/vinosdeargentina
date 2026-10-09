@@ -7,8 +7,8 @@ export function LanguageToggle({ variant = "light" }: { variant?: "light" | "dar
 
   const wrapperCls =
     variant === "dark"
-      ? "fixed top-6 right-6 z-[110] flex bg-white/10 backdrop-blur-md p-1 rounded-full border border-white/10"
-      : "fixed top-6 right-6 z-[110] flex bg-white/90 backdrop-blur-md p-1 rounded-full shadow-lg border border-stone-200";
+      ? "fixed top-6 right-6 z-[104] flex bg-white/10 backdrop-blur-md p-1 rounded-full border border-white/10"
+      : "fixed top-6 right-6 z-[104] flex bg-white/90 backdrop-blur-md p-1 rounded-full shadow-lg border border-stone-200";
 
   const btnCls = (active: boolean) => {
     if (variant === "dark") {
