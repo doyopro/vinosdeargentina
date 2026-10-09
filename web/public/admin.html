@@ -481,6 +481,63 @@
             }
         }
 
+        /* --- MOBILE: tables become cards (labels come from <th>, see labelTables) --- */
+        @media (max-width: 768px) {
+            .table-wrapper { overflow-x: visible; }
+            table, table[style] { min-width: 0 !important; display: block; background: transparent; }
+            thead { display: none; }
+            tbody { display: block; }
+            tbody tr {
+                display: block;
+                background: var(--white);
+                border: 1px solid #E2E8F0;
+                border-radius: 12px;
+                margin-bottom: 12px;
+                padding: 4px 14px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+            }
+            tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 14px;
+                padding: 9px 0;
+                white-space: normal;
+                text-align: right !important;
+                border-bottom: 1px solid #F1F5F9;
+                font-size: 0.9rem;
+            }
+            tbody td:last-child { border-bottom: none; }
+            tbody td::before {
+                content: attr(data-label);
+                flex-shrink: 0;
+                max-width: 45%;
+                text-align: left;
+                font-size: 0.68rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+                color: var(--text-muted);
+            }
+            tbody td[data-label=""]::before { display: none; }
+            tbody td[colspan] { display: block; text-align: center !important; }
+            tbody td[colspan]::before { display: none; }
+            tbody tr:hover td { background: transparent; }
+            /* Inventory: keep only what is useful on the phone */
+            #inventory-body td:nth-child(2),
+            #inventory-body td:nth-child(3),
+            #inventory-body td:nth-child(5),
+            #inventory-body td:nth-child(6),
+            #inventory-body td:nth-child(7),
+            #inventory-body td:nth-child(8),
+            #inventory-body td:nth-child(11) { display: none; }
+            #inventory-body td:nth-child(1) { font-size: 1rem; padding-top: 12px; }
+            #inventory-body td:nth-child(1)::before { display: none; }
+            .input-stock { width: 84px; padding: 10px; font-size: 1rem; }
+            .btn-action { min-height: 44px; min-width: 44px; }
+            .main-content { padding-top: 10px; }
+        }
+
         @media (max-width: 1024px) {
             [style*="grid-template-columns: 2fr 1fr"] {
                 grid-template-columns: 1fr !important;
@@ -1762,6 +1819,24 @@
                 this.loadDashboardData();
             }
         };
+
+        // Copy each column header into its cells (data-label) so mobile CSS can show it on cards.
+        function labelTables() {
+            document.querySelectorAll('table').forEach(t => {
+                const heads = [...t.querySelectorAll('thead th')].map(th => th.textContent.replace(/\s+/g, ' ').trim());
+                t.querySelectorAll('tbody tr').forEach(tr => {
+                    [...tr.children].forEach((td, i) => {
+                        if (!td.hasAttribute('colspan')) td.dataset.label = heads[i] || '';
+                    });
+                });
+            });
+        }
+        let labelQueued = false;
+        new MutationObserver(() => {
+            if (labelQueued) return;
+            labelQueued = true;
+            requestAnimationFrame(() => { labelQueued = false; labelTables(); });
+        }).observe(document.body, { childList: true, subtree: true, characterData: true });
 
         document.addEventListener('DOMContentLoaded', () => app.start());
     </script>
