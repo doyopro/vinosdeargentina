@@ -31,21 +31,14 @@ export const metadata: Metadata = {
   applicationName: "VinoArgentino.es",
   title: "VinoArgentino.es — Vinos de Argentina online",
   description:
-    "El prestigio mundial del vino argentino, desde la inmensidad de los Andes directo a Islas Canarias. Catálogo exclusivo.",
+    "Vinos argentinos de altura, directos a Canarias. Cajas y packs con retirada gratis en Lanzarote y envío a las islas.",
   openGraph: {
     type: "website",
     url: SITE_URL,
     siteName: "VinoArgentino.es",
     title: "VinoArgentino.es — Vinos de Argentina online",
     description:
-      "El prestigio mundial del vino argentino, desde la inmensidad de los Andes directo a Islas Canarias. Catálogo exclusivo.",
-    images: [
-      {
-        url: "https://pzzbvinbyzaxrshlmlcn.supabase.co/storage/v1/object/public/product-images/banner-compartir.jpg",
-        width: 1200,
-        height: 630,
-      },
-    ],
+      "Vinos argentinos de altura, directos a Canarias. Cajas y packs con retirada gratis en Lanzarote y envío a las islas.",
   },
 };
 
