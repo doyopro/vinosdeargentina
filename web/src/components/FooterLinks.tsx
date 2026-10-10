@@ -15,6 +15,9 @@ export function FooterLinks({ className = "" }: { className?: string }) {
   const t = useTranslations("footerNav");
   return (
     <nav aria-label={t("label")} className={`flex flex-wrap justify-center gap-x-5 gap-y-2 ${className}`}>
+      <Link href="/packs" className="text-[11px] font-bold uppercase tracking-widest text-sky-500 hover:text-white transition-colors">
+        {t("packs")}
+      </Link>
       <Link href="/bodegas" className="text-[11px] font-bold uppercase tracking-widest text-sky-500 hover:text-white transition-colors">
         {t("bodegas")}
       </Link>

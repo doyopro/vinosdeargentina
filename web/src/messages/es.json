@@ -347,7 +347,8 @@
     "privacidad": "Privacidad",
     "cookies": "Cookies",
     "condiciones": "Condiciones de compra",
-    "envios": "Envíos y devoluciones"
+    "envios": "Envíos y devoluciones",
+    "packs": "Packs"
   },
   "bodegasPage": {
     "title": "Bodegas",
@@ -414,5 +415,19 @@
     "looseValue": "Valor por separado"
   },
   "carouselPrev": "Packs anteriores",
-  "carouselNext": "Packs siguientes"
+  "carouselNext": "Packs siguientes",
+  "packsPage": {
+    "eyebrow": "Selección y descuentos",
+    "title": "Packs y ofertas",
+    "subtitle": "Packs de vinos argentinos de altura, pensados para regalar o descubrir, y descuentos automáticos en pedidos grandes.",
+    "packsTitle": "Packs de selección",
+    "packsSubtitle": "Cada pack tiene precio cerrado y ahorras frente a comprar las botellas sueltas.",
+    "offersTitle": "Descuentos por volumen",
+    "offersSubtitle": "Cuanto más pides, menos pagas. Sin códigos.",
+    "tierPct": "{pct}% de descuento",
+    "tierFrom": "En pedidos desde {amount} € (sin IGIC)",
+    "offersNote": "El descuento se aplica solo en el carrito. No se acumula con otros descuentos: se aplica el mayor. El envío no tiene descuento (gratis desde 200 € y 20 € por debajo). Pedido mínimo 50 €.",
+    "catalogCta": "Ver el catálogo completo"
+  },
+  "specialAll": "Ver todos los packs"
 }

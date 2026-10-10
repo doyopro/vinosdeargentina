@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useCart } from "@/lib/CartContext";
 import { useLocaleSwitch } from "@/lib/i18n";
@@ -55,6 +56,9 @@ export function SpecialSelection({ packs }: { packs: Pack[] }) {
             </h3>
           </div>
           <p className="mt-2 text-stone-500 font-medium">{t("specialSubtitle")}</p>
+          <Link href="/packs" className="mt-2 inline-block text-xs font-bold uppercase tracking-widest text-brand-800 underline underline-offset-4 hover:text-sky-700">
+            {t("specialAll")}
+          </Link>
         </div>
         {packs.length > 1 && (
           <div className="flex gap-2">

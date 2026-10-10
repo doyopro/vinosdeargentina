@@ -12,6 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   return [
     { url: `${SITE_URL}/`, lastModified: now, changeFrequency: "daily", priority: 1 },
+    { url: `${SITE_URL}/packs`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     ...products.map((p) => ({ url: `${SITE_URL}/vino/${p.sku}`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 })),
     ...packs.map((p) => ({ url: `${SITE_URL}/pack/${p.slug}`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.7 })),
     { url: `${SITE_URL}/bodegas`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },

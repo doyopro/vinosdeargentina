@@ -347,7 +347,8 @@
     "privacidad": "Privacy",
     "cookies": "Cookies",
     "condiciones": "Terms of purchase",
-    "envios": "Shipping & returns"
+    "envios": "Shipping & returns",
+    "packs": "Packs"
   },
   "bodegasPage": {
     "title": "Wineries",
@@ -414,5 +415,19 @@
     "looseValue": "Value if bought separately"
   },
   "carouselPrev": "Previous packs",
-  "carouselNext": "Next packs"
+  "carouselNext": "Next packs",
+  "packsPage": {
+    "eyebrow": "Selections and discounts",
+    "title": "Packs & offers",
+    "subtitle": "Packs of high-altitude Argentine wines, made for gifting or discovering, plus automatic discounts on larger orders.",
+    "packsTitle": "Selection packs",
+    "packsSubtitle": "Each pack has a fixed price, so you save versus buying the bottles separately.",
+    "offersTitle": "Volume discounts",
+    "offersSubtitle": "The more you order, the less you pay. No codes needed.",
+    "tierPct": "{pct}% off",
+    "tierFrom": "On orders from €{amount} (excl. IGIC)",
+    "offersNote": "The discount applies automatically in the cart. It cannot be combined with other discounts: the largest one applies. Shipping is never discounted (free from €200, €20 below). Minimum order €50.",
+    "catalogCta": "See the full catalog"
+  },
+  "specialAll": "See all packs"
 }
