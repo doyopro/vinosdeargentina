@@ -1520,7 +1520,7 @@
                     const { data: orders } = await this.db.from('orders').select('*').order('created_at', { ascending: false });
                     const { data: resellers } = await this.db.from('resellers').select('*');
                     const { data: products } = await this.db.from('products').select('*');
-                    const { data: expenses } = await this.db.from('tax_expenses').select('doc_date, igic_amount');
+                    const { data: expenses } = await this.db.from('tax_expenses').select('doc_date, igic_amount, cost_amount');
 
                     // KPI TOTALS
                     let grossSales = 0, discounts = 0, netIncome = 0, taxes = 0, commissions = 0;
@@ -1633,7 +1633,9 @@
                     }
 
                     // MARGEN = ventas netas - coste de la mercancía - comisiones de socios
-                    const marginAmount = netIncome - totalCOGS - commissions;
+                    let extraCosts = 0;
+                    (expenses || []).forEach(g => { if (inPeriod(g.doc_date + 'T12:00:00')) extraCosts += parseFloat(g.cost_amount) || 0; });
+                    const marginAmount = netIncome - totalCOGS - commissions - extraCosts;
                     const marginPercent = netIncome > 0 ? ((marginAmount / netIncome) * 100).toFixed(1) : 0;
 
                     let stockBottles = 0, invValue = 0;
@@ -1647,7 +1649,7 @@
                     set('metric-net-sub', paidCount + (paidCount === 1 ? ' pedido' : ' pedidos') + (discounts > 0 ? ' · desc. ' + fmt(discounts) : ''));
                     set('metric-margin-amount', fmt(marginAmount));
                     set('metric-margin-percent', marginPercent + '%');
-                    set('metric-margin-sub', 'Coste ' + fmt(totalCOGS) + (commissions > 0 ? ' · Comisiones ' + fmt(commissions) : ''));
+                    set('metric-margin-sub', 'Coste ' + fmt(totalCOGS) + (commissions > 0 ? ' · Comisiones ' + fmt(commissions) : '') + (extraCosts > 0 ? ' · Extras ' + fmt(extraCosts) : ''));
                     set('metric-collected', fmt(collected));
                     set('metric-collected-sub', 'IGIC incluido');
                     set('metric-pending', fmt(pendingTotal));
