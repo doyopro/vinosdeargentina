@@ -556,14 +556,15 @@
             tbody td[colspan]::before { display: none; }
             tbody tr:hover td { background: transparent; }
             /* Inventory: keep only what is useful on the phone */
-            #inventory-body td:nth-child(2),
-            #inventory-body td:nth-child(3),
             #inventory-body td:nth-child(5),
             #inventory-body td:nth-child(6),
-            #inventory-body td:nth-child(7),
             #inventory-body td:nth-child(8),
-            #inventory-body td:nth-child(11) { display: none; }
+            #inventory-body td:nth-child(9),
+            #inventory-body td:nth-child(10),
+            #inventory-body td:nth-child(11),
+            #inventory-body td:nth-child(14) { display: none; }
             #inventory-body td:nth-child(1) { font-size: 1rem; padding-top: 12px; }
+            #inventory-body td:nth-child(1) { justify-content: flex-start; text-align: left !important; }
             #inventory-body td:nth-child(1)::before { display: none; }
             .input-stock { width: 84px; padding: 10px; font-size: 1rem; }
             .btn-action { min-height: 44px; min-width: 44px; }
@@ -609,6 +610,28 @@
         .mv-summary div:nth-child(4) { border-top: 1px solid #d5e0ec; margin-top: 6px; padding-top: 8px; color: var(--sidebar-bg); }
         #view-manual h4 { font-family: 'Playfair Display', serif; color: var(--sidebar-bg); font-size: 1.15rem; }
         #view-manual h4::after { content: ""; display: block; width: 36px; height: 2px; background: var(--brand-gold); margin-top: 6px; }
+
+        /* ---- Dashboard: reparto y móvil ---- */
+        .dash-split { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 25px; margin-bottom: 40px; align-items: start; }
+        .dash-split > .panel { margin-bottom: 0; min-width: 0; }
+        .table-wrapper { overflow-x: auto; }
+        #top-wines-body > div { gap: 12px; }
+        @media (max-width: 1700px) { .dash-split { grid-template-columns: minmax(0, 1fr); } }
+        @media (max-width: 768px) {
+            #view-dashboard h4 { font-size: 0.62rem; letter-spacing: 0.04em; }
+            #view-dashboard h4 + div { width: 30px !important; height: 30px !important; font-size: 0.85rem !important; }
+            #view-dashboard .grid > div { padding: 14px !important; }
+            #view-dashboard .grid h2 { font-size: 1.35rem !important; }
+            tbody td { flex-wrap: wrap; justify-content: flex-end; }
+            tbody td::before { margin-right: auto; }
+            tbody td br { display: none; }
+            tbody td .btn-action { margin: 0 0 0 6px !important; }
+        }
+
+        @media (min-width: 769px) {
+            #view-inventory table th:first-child, #view-inventory table td:first-child { position: sticky; left: 0; background: #fff; z-index: 2; box-shadow: 2px 0 4px rgba(15, 42, 68, 0.06); }
+            #view-inventory table th:first-child { background: #f7fafd; }
+        }
 </style>
 </head>
 
@@ -758,7 +781,7 @@
                     class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-start justify-between gap-2 mb-4">
                         <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
-                            data-i18n="metric_boxes_sold">Cajas</h4>
+                            data-i18n="metric_boxes_sold">Botellas</h4>
                         <div
                             class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
                             <i class="fa-solid fa-boxes-stacked"></i>
@@ -801,9 +824,54 @@
                     </div>
                 </div>
 
+                <div
+                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-start justify-between gap-2 mb-4">
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
+                            data-i18n="metric_pending">Pendiente de cobro</h4>
+                        <div
+                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-hourglass-half"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-2 mt-auto">
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-pending">0.00 €</h2>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-start justify-between gap-2 mb-4">
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
+                            data-i18n="metric_stock">Stock (botellas)</h4>
+                        <div
+                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-wine-bottle"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-2 mt-auto">
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-stock">0.00 €</h2>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-start justify-between gap-2 mb-4">
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
+                            data-i18n="metric_inv_value">Valor del inventario</h4>
+                        <div
+                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-warehouse"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-2 mt-auto">
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-inv-value">0.00 €</h2>
+                    </div>
+                </div>
+
             </div>
 
-            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 25px; margin-bottom: 40px;">
+            <div class="dash-split">
                 <div class="panel">
                     <div class="panel-header">
                         <h3 data-i18n="recent_orders_title"><i class="fa-solid fa-clock-rotate-left"></i> Últimos
@@ -818,7 +886,7 @@
                                     <th data-i18n="table_origin_promo">Origen / Promo</th>
                                     <th data-i18n="table_total">Total</th>
                                     <th data-i18n="table_payment_status">Estado Pago</th>
-                                    <th data-i18n="table_logistics">Logística (WhatsApp)</th>
+                                    <th data-i18n="table_logistics">Logística</th>
                                 </tr>
                             </thead>
                             <tbody id="recent-orders-body">
@@ -920,6 +988,9 @@
                         <thead>
                             <tr>
                                 <th data-i18n="table_product">Producto (Bodega)</th>
+                                <th style="text-align: center;" data-i18n="table_stock">Stock JIT</th>
+                                <th style="text-align: center;" data-i18n="table_available">Disponible</th>
+                                <th style="text-align: right;" data-i18n="table_action">Acción</th>
                                 <th data-i18n="table_cost_martin">💰 Costo Martín</th>
                                 <th data-i18n="table_arancel">🛃 Arancel 10%</th>
                                 <th data-i18n="table_cost_real">✅ Costo real</th>
@@ -930,9 +1001,6 @@
                                 <th data-i18n="table_retail">🛍️ PVP Retail</th>
                                 <th data-i18n="table_margin_retail">↗ Mg. Retail</th>
                                 <th data-i18n="table_tax_retail">+ IGIC Retail</th>
-                                <th style="text-align: center;" data-i18n="table_stock">Stock JIT</th>
-                                <th style="text-align: center;" data-i18n="table_available">Disponible</th>
-                                <th style="text-align: right;" data-i18n="table_action">Acción</th>
                             </tr>
                         </thead>
                         <tbody id="inventory-body"></tbody>
@@ -1079,7 +1147,7 @@
                     nav_store: 'Volver a la Tienda', nav_logout: 'Cerrar Sesión', loading: 'Cargando...',
                     metric_revenue: 'Ingresos Netos', metric_orders: 'Pedidos Exitosos', metric_tax: 'Impuestos (IGIC)', metric_alerts: 'Vinos a Reponer',
                     recent_orders_title: 'Últimos Pedidos Recibidos', table_id: 'ID / Ref', table_customer: 'Cliente', table_total: 'Total',
-                    table_payment_status: 'Estado Pago', table_logistics: 'Logística (WhatsApp)', orders_mgmt_title: 'Gestión de Órdenes',
+                    table_payment_status: 'Estado Pago', table_logistics: 'Logística', orders_mgmt_title: 'Gestión de Órdenes',
                     table_ref: 'Ref. Pedido', table_customer_info: 'Cliente info', table_destination: 'Destino', table_amount: 'Importe',
                     table_logistics_short: 'Logística', inventory_title: 'Desglose Financiero y Control de Stock',
                     inventory_subtitle: '✅ Costo real = costo Martín + arancel 10% | Margen % sobre costo real, basado en (PVP/1.07 - costo real) | Stock Negativo = Pendiente de Reposición',
@@ -1119,8 +1187,8 @@
                     metric_gross_sales: 'Ventas Brutas', metric_discounts: 'Descuentos Aplicados', metric_net_income: 'Ingresos Netos',
                     metric_partner_commissions: 'Comisiones a Socios', table_origin_promo: 'Origen / Promo', origin_organic: 'Orgánico',
                     origin_coupon: 'Cupón', origin_partner: 'Socio',
-                    metric_boxes_sold: 'Cajas Vendidas', metric_total_cogs: 'Coste Total (COGS)', metric_gross_margin: 'Margen Bruto',
-                    top_wines_title: 'Top Vinos Más Vendidos', top_wine_name: 'Vino', top_wine_boxes: 'Cajas', top_wine_revenue: 'Ingreso'
+                    metric_boxes_sold: 'Botellas Vendidas', metric_pending: 'Pendiente de cobro', metric_stock: 'Stock (botellas)', metric_inv_value: 'Valor del inventario', delivered_upper: 'ENTREGADO', mark_paid: 'Marcar cobrado', metric_total_cogs: 'Coste Total (COGS)', metric_gross_margin: 'Margen Bruto',
+                    top_wines_title: 'Top Vinos Más Vendidos', top_wine_name: 'Vino', top_wine_boxes: 'botellas', top_wine_revenue: 'Ingreso'
                 },
                 en: {
                     nav_dashboard: 'Dashboard', nav_orders: 'Sales & Shipping', nav_manual: 'New sale', nav_inventory: 'Catalog & Pricing', nav_crm: 'Customer CRM', nav_promos: 'Coupons & Promos', nav_resellers: 'Resellers (Partners)',
@@ -1167,8 +1235,8 @@
                     metric_gross_sales: 'Gross Sales', metric_discounts: 'Discounts Applied', metric_net_income: 'Net Revenue',
                     metric_partner_commissions: 'Partner Commissions', table_origin_promo: 'Source / Promo', origin_organic: 'Organic',
                     origin_coupon: 'Coupon', origin_partner: 'Partner',
-                    metric_boxes_sold: 'Boxes Sold', metric_total_cogs: 'Total Cost (COGS)', metric_gross_margin: 'Gross Margin',
-                    top_wines_title: 'Top Wines Sold', top_wine_name: 'Wine', top_wine_boxes: 'Boxes', top_wine_revenue: 'Revenue'
+                    metric_boxes_sold: 'Bottles Sold', metric_pending: 'Pending payment', metric_stock: 'Stock (bottles)', metric_inv_value: 'Inventory value', delivered_upper: 'DELIVERED', mark_paid: 'Mark as paid', metric_total_cogs: 'Total Cost (COGS)', metric_gross_margin: 'Gross Margin',
+                    top_wines_title: 'Top Wines Sold', top_wine_name: 'Wine', top_wine_boxes: 'bottles', top_wine_revenue: 'Revenue'
                 }
             },
 
@@ -1238,6 +1306,22 @@
                 if (viewId === 'crm') this.loadCRM();
                 if (viewId === 'promos') this.loadPromos();
                 if (viewId === 'resellers') this.loadResellers();
+            },
+
+            shipText: function (o) {
+                const t = this.adminTranslations[this.currentLang];
+                if (o.shipping_status === 'delivered') return `<i class="fa-solid fa-check"></i> ${t.delivered_upper}`;
+                if (o.shipping_status === 'shipped') return `<i class="fa-solid fa-check"></i> ${t.shipped_upper}`;
+                return `<i class="fa-solid fa-truck"></i> ${t.preparing_upper}`;
+            },
+
+            markAsPaid: async function (orderId) {
+                if (!confirm('¿Marcar este pedido como cobrado?')) return;
+                const { error } = await this.db.from('orders').update({ payment_status: 'paid' }).eq('id', orderId).eq('sale_channel', 'manual');
+                if (error) { alert('No se pudo actualizar: ' + error.message); return; }
+                const active = document.querySelector('.nav-item.active');
+                const view = active ? active.getAttribute('onclick').match(/'([^']+)'/)[1] : 'dashboard';
+                if (view === 'orders') this.loadOrdersTable(); else this.loadDashboardData();
             },
 
             downloadInvoice: async function (orderId) {
@@ -1396,7 +1480,7 @@
                     // KPI TOTALS
                     let grossSales = 0, discounts = 0, netIncome = 0, taxes = 0, commissions = 0;
                     let totalBoxes = 0, totalCOGS = 0;
-                    let paidCount = 0;
+                    let paidCount = 0, pendingTotal = 0;
                     let recentRows = '';
 
                     // TOP PRODUCTS TRACKING
@@ -1404,6 +1488,9 @@
 
                     if (orders && orders.length > 0) {
                         orders.forEach((o, index) => {
+                            if (o.payment_status === 'pending' && o.sale_channel === 'manual') {
+                                pendingTotal += parseFloat(o.total_amount) || 0;
+                            }
                             if (o.payment_status === 'paid') {
                                 // MOTOR DE REGLAS: Extraer valores guardados en la orden
                                 const subtotal = parseFloat(o.subtotal_bruto || o.total_amount / 1.07);
@@ -1422,14 +1509,14 @@
                                     o.items.forEach(item => {
                                         // COGS con costo real (costo Martín + arancel 10%); ver processOrderItem
                                         const r = processOrderItem(item, products);
-                                        totalBoxes += r.boxes;
+                                        totalBoxes += r.bottles;
                                         totalCOGS += r.cogs;
 
                                         // TOP PRODUCTOS: Agrupar por nombre
                                         if (!productSales[r.name]) {
                                             productSales[r.name] = { boxes: 0, revenue: 0 };
                                         }
-                                        productSales[r.name].boxes += r.boxes;
+                                        productSales[r.name].boxes += r.bottles;
                                         productSales[r.name].revenue += r.revenueNet;
                                     });
                                 }
@@ -1449,9 +1536,9 @@
                                 const badgeClass = o.payment_status === 'paid' ? 'badge-paid' : 'badge-pending';
                                 const statusText = o.payment_status === 'paid' ? this.adminTranslations[this.currentLang].paid_upper : this.adminTranslations[this.currentLang].pending_upper;
 
-                                const isShipped = o.shipping_status === 'shipped';
+                                const isShipped = o.shipping_status === 'shipped' || o.shipping_status === 'delivered';
                                 const shipBadge = isShipped ? 'badge-paid' : 'badge-pending';
-                                const shipText = isShipped ? `<i class="fa-solid fa-check"></i> ${this.adminTranslations[this.currentLang].shipped_upper}` : `<i class="fa-solid fa-truck"></i> ${this.adminTranslations[this.currentLang].preparing_upper}`;
+                                const shipText = this.shipText(o);
 
                                 // ORIGEN / PROMO
                                 let originHtml = `<span style="color: var(--text-muted);">-</span>`;
@@ -1466,7 +1553,7 @@
                                     <td>${o.customer_name}</td>
                                     <td>${originHtml}</td>
                                     <td><strong>${parseFloat(o.total_amount).toFixed(2)} €</strong></td>
-                                    <td><span class="status-badge ${badgeClass}">${statusText}</span></td>
+                                    <td><span class="status-badge ${badgeClass}">${statusText}</span>${o.payment_status === 'pending' && o.sale_channel === 'manual' ? `<br><button class="btn-action" onclick="app.markAsPaid('${o.id}')" style="margin-top:6px; padding: 4px 10px; background: var(--brand-gold); color: var(--text-main); border: none; border-radius: 4px; font-size: 0.72rem; font-weight: 700; cursor: pointer;"><i class="fa-solid fa-check"></i> ${this.adminTranslations[this.currentLang].mark_paid}</button>` : ''}</td>
                                     <td>
                                         <span class="status-badge ${shipBadge}">${shipText}</span>
                                         ${!isShipped && o.payment_status === 'paid' ? `
@@ -1498,6 +1585,15 @@
                     document.getElementById('metric-cogs').textContent = totalCOGS.toFixed(2) + ' €';
                     document.getElementById('metric-margin-amount').textContent = marginAmount.toFixed(2) + ' €';
                     document.getElementById('metric-margin-percent').textContent = marginPercent + '%';
+                    document.getElementById('metric-pending').textContent = pendingTotal.toFixed(2) + ' €';
+                    let stockBottles = 0, invValue = 0;
+                    (products || []).forEach(pr => {
+                        const st = parseInt(pr.stock) || 0;
+                        stockBottles += st;
+                        invValue += st * costBreakdown(pr.price_cost_net).costoReal;
+                    });
+                    document.getElementById('metric-stock').textContent = stockBottles;
+                    document.getElementById('metric-inv-value').textContent = invValue.toFixed(2) + ' €';
 
                     // TOP VINOS RANKING
                     const topVinos = Object.entries(productSales)
@@ -1522,7 +1618,7 @@
             },
 
             loadOrdersTable: async function () {
-                const { data: orders } = await this.db.from('orders').select('*').eq('payment_status', 'paid').order('created_at', { ascending: false });
+                const { data: orders } = await this.db.from('orders').select('*').or('payment_status.eq.paid,sale_channel.eq.manual').order('created_at', { ascending: false });
                 if (!orders || orders.length === 0) {
                     document.getElementById('all-orders-body').innerHTML = `<tr><td colspan="6" style="text-align:center;">${this.adminTranslations[this.currentLang].no_order_data}</td></tr>`;
                     return;
@@ -1533,15 +1629,15 @@
 
                     const isShipped = o.shipping_status === 'shipped' || o.shipping_status === 'delivered';
                     const shipBadge = isShipped ? 'badge-paid' : 'badge-pending';
-                    const shipText = isShipped ? `<i class="fa-solid fa-check"></i> ${this.adminTranslations[this.currentLang].shipped_upper}` : `<i class="fa-solid fa-truck"></i> ${this.adminTranslations[this.currentLang].preparing_upper}`;
+                    const shipText = this.shipText(o);
 
                     return `<tr>
                         <td><strong>#${o.id.slice(0, 8).toUpperCase()}</strong><br><small>${new Date(o.created_at).toLocaleDateString()}</small>
                             ${o.invoice_number ? `<br><small style="color: var(--text-muted);">${o.invoice_number}</small> <button class="btn-action" onclick="app.downloadInvoice('${o.id}')" title="Descargar factura PDF" style="padding: 3px 8px; background: var(--brand-gold); color: var(--text-main); border: none; border-radius: 4px; cursor: pointer;"><i class="fa-solid fa-file-pdf"></i></button>` : ''}</td>
-                        <td>${o.customer_name}<br><small style="color: var(--text-muted)">${o.customer_email}</small></td>
+                        <td>${o.customer_name}<br><small style="color: var(--text-muted)">${/@manual\.local$/.test(o.customer_email || '') ? '' : o.customer_email}</small></td>
                         <td>${o.island || 'N/A'}</td>
                         <td><strong>${parseFloat(o.total_amount).toFixed(2)} €</strong></td>
-                        <td><span class="status-badge ${badgeClass}">${statusText}</span></td>
+                        <td><span class="status-badge ${badgeClass}">${statusText}</span>${o.payment_status === 'pending' && o.sale_channel === 'manual' ? `<br><button class="btn-action" onclick="app.markAsPaid('${o.id}')" style="margin-top:6px; padding: 4px 10px; background: var(--brand-gold); color: var(--text-main); border: none; border-radius: 4px; font-size: 0.72rem; font-weight: 700; cursor: pointer;"><i class="fa-solid fa-check"></i> ${this.adminTranslations[this.currentLang].mark_paid}</button>` : ''}</td>
                         <td>
                             <span class="status-badge ${shipBadge}">${shipText}</span>
                             ${!isShipped && o.payment_status === 'paid' ? `
@@ -1597,40 +1693,49 @@
 
                     return `<tr>
                         <td><strong>${p.name}</strong><br><small style="color: var(--text-muted)">${p.bodega || p.region}</small></td>
-                        <td class="finance-value" style="color: var(--text-muted);">💰 ${costoMartin.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].cost_martin_label}</small></td>
-                        <td class="finance-value" style="color: var(--text-muted);">🛃 ${arancel.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].arancel_label}</small></td>
-                        <td class="finance-value" style="color: var(--text-main);">✅ ${costoReal.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].cost_real_label}</small></td>
-                        <td class="finance-value" style="color: var(--tax-color);">🧾 ${igicImportacion.toFixed(3)} €<br><small>${this.adminTranslations[this.currentLang].igic_import_label}</small></td>
-                        
-                        <td class="finance-value" style="color: var(--text-muted);">🍽️ ${priceHorecaTotal.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].horeca_label}</small></td>
-                        <td class="finance-value" style="color: var(--text-main);">
-                            <span class="math-symbol">↗</span><span class="margin-percent">${marginPercentHoreca.toFixed(1)}%</span>${marginHoreca.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].margin_horeca_label}</small>
-                        </td>
-                        <td class="finance-value" style="color: var(--tax-color);"><span class="math-symbol">+</span>${igicHoreca.toFixed(2)} €<br><small>IGIC HORECA</small></td>
-
-                        <td class="finance-value" style="color: var(--brand-gold);">🛍️ ${priceRetailTotal.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].retail_label}</small></td>
-                        <td class="finance-value" style="color: var(--text-main);">
-                            <span class="math-symbol">↗</span><span class="margin-percent">${marginPercentRetail.toFixed(1)}%</span>${marginRetail.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].margin_retail_label}</small>
-                        </td>
-                        <td class="finance-value" style="color: var(--tax-color);"><span class="math-symbol">+</span>${igicRetail.toFixed(2)} €<br><small>IGIC Retail</small></td>
-
-                        <td style="text-align: center;"><input type="number" class="input-stock ${stockClass}" id="inv-${p.id}" value="${p.stock || 0}"></td>
+                        <td style="text-align: center;"><input type="number" class="input-stock ${stockClass}" id="inv-${p.id}" value="${p.stock || 0}" data-orig="${p.stock || 0}"></td>
                         <td style="text-align: center;">
                             <button class="btn-action" onclick="app.toggleAvailability('${p.id}', ${!p.is_available})" title="${this.adminTranslations[this.currentLang].table_available}" style="padding: 4px 8px; background: var(--sidebar-hover); border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
                                 <i class="fa-solid fa-toggle-${p.is_available ? 'on' : 'off'}"></i>
                             </button>
                         </td>
                         <td style="text-align: right;"><button class="btn-action" onclick="app.updateSingleStock('${p.id}', event)"><i class="fa-solid fa-floppy-disk"></i></button></td>
+                        <td class="finance-value" style="color: var(--text-muted);">💰 ${costoMartin.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].cost_martin_label}</small></td>
+                        <td class="finance-value" style="color: var(--text-muted);">🛃 ${arancel.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].arancel_label}</small></td>
+                        <td class="finance-value" style="color: var(--text-main);">✅ ${costoReal.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].cost_real_label}</small></td>
+                        <td class="finance-value" style="color: var(--tax-color);">🧾 ${igicImportacion.toFixed(3)} €<br><small>${this.adminTranslations[this.currentLang].igic_import_label}</small></td>
+                        <td class="finance-value" style="color: var(--text-muted);">🍽️ ${priceHorecaTotal.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].horeca_label}</small></td>
+                        <td class="finance-value" style="color: var(--text-main);">
+                            <span class="math-symbol">↗</span><span class="margin-percent">${marginPercentHoreca.toFixed(1)}%</span>${marginHoreca.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].margin_horeca_label}</small>
+                        </td>
+                        <td class="finance-value" style="color: var(--tax-color);"><span class="math-symbol">+</span>${igicHoreca.toFixed(2)} €<br><small>IGIC HORECA</small></td>
+                        <td class="finance-value" style="color: var(--brand-gold);">🛍️ ${priceRetailTotal.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].retail_label}</small></td>
+                        <td class="finance-value" style="color: var(--text-main);">
+                            <span class="math-symbol">↗</span><span class="margin-percent">${marginPercentRetail.toFixed(1)}%</span>${marginRetail.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].margin_retail_label}</small>
+                        </td>
+                        <td class="finance-value" style="color: var(--tax-color);"><span class="math-symbol">+</span>${igicRetail.toFixed(2)} €<br><small>IGIC Retail</small></td>
                     </tr>`;
                 }).join('');
             },
 
             updateSingleStock: async function (id, event) {
-                const newVal = document.getElementById('inv-' + id).value;
+                const input = document.getElementById('inv-' + id);
+                const newVal = parseInt(input.value);
+                const oldVal = parseInt(input.dataset.orig) || 0;
+                if (isNaN(newVal) || newVal < 0) { alert('Introduce un stock válido (0 o más).'); return; }
                 const { error } = await this.db.from('products').update({ stock: newVal }).eq('id', id);
                 if (error) {
                     alert(this.adminTranslations[this.currentLang].error_stock_update + error.message);
                 } else {
+                    // Deja constancia en el historial de movimientos (ajuste manual)
+                    if (newVal !== oldVal) {
+                        const { error: movErr } = await this.db.from('stock_movements').insert({
+                            product_id: id, movement_type: 'ajuste', quantity: newVal - oldVal,
+                            note: 'Ajuste manual desde Catálogo (' + oldVal + ' → ' + newVal + ')', created_by: 'admin'
+                        });
+                        if (movErr) alert('Stock guardado, pero no se pudo anotar en el historial: ' + movErr.message);
+                    }
+                    input.dataset.orig = newVal;
                     const btn = event.currentTarget;
                     const originalHTML = btn.innerHTML;
                     btn.style.background = 'var(--success)';
@@ -1663,12 +1768,14 @@
                 const customers = {};
                 orders.forEach(o => {
                     if (o.payment_status !== 'paid') return;
+                    if (o.customer_name === 'Consumidor final') return; // ventas sin cliente identificado
 
-                    const email = o.customer_email;
+                    const isPlaceholder = /@manual\.local$/.test(o.customer_email || '');
+                    const email = isPlaceholder ? 'nombre:' + o.customer_name : o.customer_email;
                     if (!customers[email]) {
                         customers[email] = {
                             name: o.customer_name,
-                            email: email,
+                            email: isPlaceholder ? '—' : email,
                             phone: o.customer_phone || '-',
                             totalSpent: 0,
                             orderCount: 0,
