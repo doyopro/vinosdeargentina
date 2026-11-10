@@ -120,7 +120,7 @@ Deno.serve(async (req) => {
     for (const [productId, decrement] of decrements) {
       const { data: product, error: productError } = await supabase
         .from('products')
-        .select('stock')
+        .select('stock, price_cost_net')
         .eq('id', productId)
         .single();
 
@@ -136,6 +136,23 @@ Deno.serve(async (req) => {
 
       if (stockError) {
         console.error(`Error descontando stock de ${productId}:`, stockError);
+        continue;
+      }
+
+      // Historial de stock: venta web, con el coste unitario del momento (neto + 10% arancel).
+      const costNet = product.price_cost_net != null ? Number(product.price_cost_net) : null;
+      const unitCost = costNet != null ? Math.round(costNet * 1.1 * 100) / 100 : null;
+      const { error: movError } = await supabase.from('stock_movements').insert({
+        product_id: productId,
+        movement_type: 'venta_web',
+        quantity: -decrement,
+        unit_cost_net: unitCost,
+        order_id: order.id,
+        note: 'Stripe ' + paymentIntent.id,
+        created_by: 'webhook',
+      });
+      if (movError) {
+        console.error(`Error registrando movimiento de ${productId}:`, movError);
       }
     }
 
