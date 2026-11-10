@@ -8,7 +8,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -21,17 +21,19 @@
 
     <style>
         :root {
-            --sidebar-bg: #2B0710;
-            --sidebar-hover: #3E0C18;
-            --brand-gold: #C89F5D;
-            --bg-light: #F4F7F6;
-            --text-main: #2C3E50;
-            --text-muted: #7F8C8D;
+            /* Paleta "Atlántico" (misma que la tienda) */
+            --sidebar-bg: #0f2a44;
+            --sidebar-hover: #173a5c;
+            --brand-gold: #e3a72f;
+            --sky: #74acdf;
+            --bg-light: #f3f6fa;
+            --text-main: #0f2a44;
+            --text-muted: #5b7088;
             --white: #FFFFFF;
             --success: #10B981;
             --danger: #EF4444;
             --warning: #F59E0B;
-            --tax-color: #8B5CF6;
+            --tax-color: #3f7cc0;
         }
 
         * {
@@ -41,7 +43,7 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             background-color: var(--bg-light);
             color: var(--text-main);
             display: flex;
@@ -90,23 +92,39 @@
         }
 
         .brand {
-            padding: 30px 20px;
+            padding: 28px 14px 22px;
             text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(227, 167, 47, 0.35);
         }
 
         .brand h2 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.4rem;
-            color: var(--brand-gold);
-            letter-spacing: 1px;
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: #fff;
+            letter-spacing: -0.01em;
+            white-space: nowrap;
+        }
+
+        .brand h2 em {
+            font-style: normal;
+            color: var(--sky);
         }
 
         .brand span {
-            font-size: 0.8rem;
-            color: #aaa;
+            display: block;
+            margin-top: 8px;
+            font-size: 0.68rem;
+            color: var(--brand-gold);
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            font-weight: 600;
+        }
+
+        .top-header h1,
+        .panel-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
         }
 
         .nav-menu {
@@ -118,7 +136,7 @@
             padding: 15px 25px;
             display: flex;
             align-items: center;
-            color: #A0AEC0;
+            color: #b9cde3;
             text-decoration: none;
             transition: all 0.3s ease;
             cursor: pointer;
@@ -573,7 +591,7 @@
 
     <aside class="sidebar">
         <div class="brand">
-            <h2>VINOARGENTINO.ES</h2>
+            <h2>VinoArgentino<em>.es</em></h2>
             <span>SuperAdmin Hub</span>
         </div>
         <nav class="nav-menu">
