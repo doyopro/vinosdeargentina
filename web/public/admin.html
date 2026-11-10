@@ -633,6 +633,27 @@
             #view-inventory table th:first-child { background: #f7fafd; }
         }
 
+        .dash-trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 25px; margin-bottom: 30px; align-items: stretch; }
+        .dash-trio > .panel { margin-bottom: 0; min-width: 0; }
+        @media (max-width: 1400px) { .dash-trio { grid-template-columns: minmax(0, 1fr); } }
+        .igic-box { padding: 18px 20px; }
+        .igic-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 10px 0; border-bottom: 1px solid #E2E8F0; font-size: 0.92rem; }
+        .igic-row small { display: block; color: var(--text-muted); font-size: 0.72rem; }
+        .igic-row strong { font-size: 1.1rem; white-space: nowrap; }
+        .igic-total { border-bottom: none; border-top: 2px solid var(--brand-navy, #0f2a44); margin-top: 4px; }
+        .igic-total strong { font-size: 1.3rem; }
+        .igic-foot { font-size: 0.72rem; color: var(--text-muted); margin-top: 8px; line-height: 1.4; }
+        .trend-body { padding: 18px 20px; display: flex; align-items: flex-end; gap: 10px; height: 230px; }
+        .trend-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 0; }
+        .trend-bar { width: 100%; max-width: 44px; background: linear-gradient(180deg, #74acdf, #173a5c); border-radius: 6px 6px 0 0; min-height: 2px; }
+        .trend-bar.cur { background: linear-gradient(180deg, #e3a72f, #c78a14); }
+        .trend-val { font-size: 0.68rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px; white-space: nowrap; }
+        .trend-lbl { font-size: 0.7rem; color: var(--text-muted); margin-top: 6px; text-transform: capitalize; }
+        .alerts-body { padding: 12px 20px; }
+        .alert-item { display: flex; gap: 10px; padding: 9px 0; border-bottom: 1px solid #E2E8F0; font-size: 0.86rem; align-items: flex-start; }
+        .alert-item:last-child { border-bottom: none; }
+        .alert-item i { margin-top: 3px; }
+        .alert-ok { color: #166534; } .alert-warn { color: #b45309; } .alert-bad { color: #b91c1c; }
         .dash-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
         .dash-toolbar label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
         .dash-toolbar select { padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; font-family: inherit; font-size: 0.9rem; color: var(--text-main); }
@@ -783,13 +804,33 @@
 
                 <div class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-start justify-between gap-2 mb-4">
-                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2" data-i18n="metric_inv_value">Valor del inventario</h4>
-                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-lg"><i class="fa-solid fa-warehouse"></i></div>
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2">Ticket medio</h4>
+                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-lg"><i class="fa-solid fa-receipt"></i></div>
                     </div>
                     <div class="flex items-baseline gap-2 mt-auto">
-                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-inv-value">0,00 €</h2>
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-ticket">0,00 €</h2>
                     </div>
-                    <div class="kpi-sub" id="metric-inv-sub"></div>
+                    <div class="kpi-sub" id="metric-ticket-sub"></div>
+                </div>
+            </div>
+
+            <div class="dash-trio">
+                <div class="panel">
+                    <div class="panel-header"><h3><i class="fa-solid fa-scale-balanced"></i> IGIC del periodo</h3></div>
+                    <div class="igic-box">
+                        <div class="igic-row"><span>Repercutido <small>(cobrado en tus ventas)</small></span><strong id="igic-rep">0,00 €</strong></div>
+                        <div class="igic-row"><span>Soportado <small>(estimado en compras e importación)</small></span><strong id="igic-sop">- 0,00 €</strong></div>
+                        <div class="igic-row igic-total"><span>A liquidar <small id="igic-liq-note"></small></span><strong id="igic-liq">0,00 €</strong></div>
+                        <p class="igic-foot" id="igic-foot"></p>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-header"><h3><i class="fa-solid fa-chart-column"></i> Ventas netas por mes</h3></div>
+                    <div id="trend-body" class="trend-body"></div>
+                </div>
+                <div class="panel">
+                    <div class="panel-header"><h3><i class="fa-solid fa-triangle-exclamation"></i> Atención</h3></div>
+                    <div id="alerts-body" class="alerts-body"></div>
                 </div>
             </div>
 
@@ -1411,10 +1452,13 @@
                     const { data: orders } = await this.db.from('orders').select('*').order('created_at', { ascending: false });
                     const { data: resellers } = await this.db.from('resellers').select('*');
                     const { data: products } = await this.db.from('products').select('*');
+                    const { data: purchases } = await this.db.from('stock_movements').select('quantity, unit_cost_net, created_at').eq('movement_type', 'compra');
 
                     // KPI TOTALS
                     let grossSales = 0, discounts = 0, netIncome = 0, taxes = 0, commissions = 0;
                     let totalBoxes = 0, totalCOGS = 0;
+                    let manualCount = 0, webCount = 0;
+                    const monthly = {};
                     let paidCount = 0, pendingTotal = 0, pendingCount = 0, collected = 0;
                     const periodSel = (document.getElementById('dash-period') || {}).value || 'month';
                     const inPeriod = (dateStr) => {
@@ -1438,6 +1482,12 @@
                                 pendingCount++;
                             }
                             const invoiced = o.payment_status === 'paid' || (o.payment_status === 'pending' && o.sale_channel === 'manual');
+                            if (invoiced) {
+                                const dk = new Date(o.created_at), key = dk.getFullYear() + '-' + dk.getMonth();
+                                const tt = parseFloat(o.total_amount) || 0, sh = parseFloat(o.shipping_amount) || 0;
+                                const bg = parseFloat(o.base_imponible != null ? o.base_imponible : (tt - sh) / (1 + IGIC_RATE));
+                                monthly[key] = (monthly[key] || 0) + bg + sh / (1 + IGIC_RATE);
+                            }
                             if (invoiced && inPeriod(o.created_at)) {
                                 const total = parseFloat(o.total_amount) || 0;
                                 const ship = parseFloat(o.shipping_amount) || 0;
@@ -1452,6 +1502,7 @@
                                 taxes += igicGoods + (ship - shipNet);
                                 paidCount++;
                                 if (o.payment_status === 'paid') collected += total;
+                                if (o.sale_channel === 'manual') manualCount++; else webCount++;
 
                                 // Bottles + COGS (frozen cogs_total when saved; otherwise computed from items)
                                 let orderCOGS = 0;
@@ -1539,8 +1590,46 @@
                     set('metric-boxes-sub', 'en el periodo');
                     set('metric-stock', stockBottles);
                     set('metric-stock-sub', 'en almacén ahora');
-                    set('metric-inv-value', fmt(invValue));
-                    set('metric-inv-sub', 'a coste real (con arancel)');
+
+                    // IGIC soportado (estimación): compras del periodo, coste base = unit_cost_net / 1,10 (sin arancel) x 7%
+                    let igicSop = 0;
+                    (purchases || []).forEach(m => {
+                        if (inPeriod(m.created_at)) igicSop += (parseFloat(m.quantity) || 0) * ((parseFloat(m.unit_cost_net) || 0) / 1.10) * IGIC_RATE;
+                    });
+                    const igicLiq = taxes - igicSop;
+                    set('igic-rep', fmt(taxes));
+                    set('igic-sop', '- ' + fmt(igicSop));
+                    set('igic-liq', fmt(Math.abs(igicLiq)));
+                    set('igic-liq-note', igicLiq >= 0 ? 'a ingresar' : 'a compensar / favor');
+                    set('igic-foot', 'Soportado estimado: coste Martín x 7% sobre las compras registradas. Confirma con tu gestor la base real del IGIC de importación.');
+                    set('metric-ticket', fmt(paidCount ? netIncome / paidCount : 0));
+                    set('metric-ticket-sub', 'Web ' + webCount + ' · Manual ' + manualCount);
+                    set('metric-stock-sub', 'valor ' + fmt(invValue) + ' a coste real');
+
+                    // Tendencia 6 meses
+                    const now = new Date(), months = [];
+                    for (let i = 5; i >= 0; i--) {
+                        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                        months.push({ key: d.getFullYear() + '-' + d.getMonth(), label: d.toLocaleDateString('es-ES', { month: 'short' }), cur: i === 0 });
+                    }
+                    const maxM = Math.max(1, ...months.map(m => monthly[m.key] || 0));
+                    document.getElementById('trend-body').innerHTML = months.map(m => {
+                        const v = monthly[m.key] || 0;
+                        return `<div class="trend-col"><div class="trend-val">${v ? Math.round(v).toLocaleString('es-ES') + ' €' : ''}</div><div class="trend-bar ${m.cur ? 'cur' : ''}" style="height:${Math.max(1, (v / maxM) * 160)}px"></div><div class="trend-lbl">${m.label}</div></div>`;
+                    }).join('');
+
+                    // Alertas
+                    const alerts = [];
+                    (products || []).forEach(pr => {
+                        const st = parseInt(pr.stock) || 0;
+                        if (pr.is_active === false) return;
+                        if (st <= 0) alerts.push(['bad', 'fa-circle-xmark', `${pr.name || pr.wine_name || 'Producto'}: sin stock`]);
+                        else if (st <= 6) alerts.push(['warn', 'fa-triangle-exclamation', `${pr.name || pr.wine_name || 'Producto'}: quedan ${st}`]);
+                    });
+                    if (pendingCount) alerts.unshift(['warn', 'fa-hourglass-half', `${pendingCount} ${pendingCount === 1 ? 'venta' : 'ventas'} por cobrar: ${fmt(pendingTotal)}`]);
+                    document.getElementById('alerts-body').innerHTML = alerts.length
+                        ? alerts.slice(0, 8).map(a => `<div class="alert-item alert-${a[0]}"><i class="fa-solid ${a[1]}"></i><span>${a[2]}</span></div>`).join('')
+                        : '<div class="alert-item alert-ok"><i class="fa-solid fa-circle-check"></i><span>Todo en orden: sin stock bajo ni cobros pendientes.</span></div>';
 
                     // TOP VINOS RANKING
                     const topVinos = Object.entries(productSales)
