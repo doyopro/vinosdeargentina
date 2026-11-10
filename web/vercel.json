@@ -1,0 +1,14 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "admin.vinoargentino.es" }],
+      "destination": "/admin.html"
+    },
+    {
+      "source": "/login",
+      "has": [{ "type": "host", "value": "admin.vinoargentino.es" }],
+      "destination": "/login.html"
+    }
+  ]
+}
