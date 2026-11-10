@@ -1359,7 +1359,7 @@
             loadManualSale: async function () {
                 if (!this.manualProducts.length) {
                     const { data } = await this.db.from('products')
-                        .select('id,name,bodega,stock,price_retail,price_cost_net')
+                        .select('id,name,bodega,stock,price_retail,price_cost_net,price_cost_list')
                         .order('name');
                     this.manualProducts = data || [];
                 }
@@ -1416,7 +1416,7 @@
 
             manualRecalc: function () {
                 const lines = this.manualLines();
-                let sub = 0, cogs = 0, bottles = 0;
+                let sub = 0, cogs = 0, cogsList = 0, bottles = 0;
                 lines.forEach(l => {
                     const p = this.manualProducts.find(x => String(x.id) === l.product_id);
                     const mult = l.unit === 'case6' ? 6 : 1;
@@ -1424,6 +1424,8 @@
                     sub += Math.round(netUnit * l.qty * 100) / 100;
                     const cost = p && p.price_cost_net != null ? Math.round(parseFloat(p.price_cost_net) * 1.1 * 100) / 100 : 0;
                     cogs += cost * l.qty * mult;
+                    const costList = p && (p.price_cost_list != null || p.price_cost_net != null) ? Math.round(parseFloat(p.price_cost_list != null ? p.price_cost_list : p.price_cost_net) * 1.1 * 100) / 100 : 0;
+                    cogsList += costList * l.qty * mult;
                     bottles += l.qty * mult;
                 });
                 const disc = Math.max(0, parseFloat(document.getElementById('mv-discount').value) || 0);
@@ -1436,8 +1438,9 @@
                      <div><span>Base imponible</span><b>${fmt(base)}</b></div>
                      <div><span>IGIC 7%</span><b>${fmt(igic)}</b></div>
                      <div style="font-size:1.1rem;"><span>TOTAL</span><b>${fmt(total)}</b></div>
-                     <div style="color:#64748b;"><span>Coste mercancía</span><span>${fmt(cogs)}</span></div>
-                     <div style="color:#15803d;"><span>Margen bruto</span><b>${fmt(base - cogs)}</b></div>`;
+                     <div style="color:#64748b;"><span>Coste mercancía (con tu dto.)</span><span>${fmt(cogs)}</span></div>
+                     <div style="color:#15803d;"><span>Margen bruto real</span><b>${fmt(base - cogs)}</b></div>
+                     <div style="color:#64748b; font-size:0.85rem;"><span>Margen sin dto. de Martín</span><span style="${base - cogsList < 0 ? 'color:#b91c1c;font-weight:700;' : ''}">${fmt(base - cogsList)}</span></div>`;
                 const type = document.getElementById('mv-invtype').value;
                 document.getElementById('mv-fc').style.display = type === 'FC' ? 'block' : 'none';
                 const w = [];
