@@ -307,6 +307,17 @@
             font-weight: 700;
         }
 
+        /* Nueva venta manual */
+        .mv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .mv-field { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; color: var(--text-muted, #64748b); }
+        .mv-field input, .mv-field select, .mv-field textarea, .mv-line select, .mv-line input {
+            padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; width: 100%; box-sizing: border-box; background: #fff; }
+        .mv-line { display: grid; grid-template-columns: 3fr 1.2fr 0.8fr 1fr auto; gap: 8px; align-items: end; margin-bottom: 10px; }
+        .mv-summary { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-top: 14px; font-size: 0.95rem; }
+        .mv-summary div { display: flex; justify-content: space-between; padding: 3px 0; }
+        .mv-warn { background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; border-radius: 6px; padding: 8px 10px; margin-top: 8px; font-size: 0.85rem; }
+        @media (max-width: 768px) { .mv-grid { grid-template-columns: 1fr; } .mv-line { grid-template-columns: 1fr 1fr; } .mv-line .mv-wine { grid-column: 1 / -1; } }
+
         .btn-action {
             background: var(--sidebar-bg);
             color: var(--white);
@@ -570,6 +581,8 @@
                     class="fa-solid fa-chart-pie"></i> Vista General</div>
             <div class="nav-item" onclick="app.switchView('orders', this)" data-i18n="nav_orders"><i
                     class="fa-solid fa-receipt"></i> Ventas & Envíos</div>
+            <div class="nav-item" onclick="app.switchView('manual', this)" data-i18n="nav_manual"><i
+                    class="fa-solid fa-cash-register"></i> Nueva venta</div>
             <div class="nav-item" onclick="app.switchView('inventory', this)" data-i18n="nav_inventory"><i
                     class="fa-solid fa-calculator"></i> Catálogo & Pricing</div>
             <div class="nav-item" onclick="app.switchView('crm', this)" data-i18n="nav_crm"><i
@@ -809,6 +822,47 @@
             </div>
         </section>
 
+        <section id="view-manual" class="section">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3><i class="fa-solid fa-cash-register"></i> Nueva venta manual</h3>
+                </div>
+                <div style="padding: 16px;">
+                    <div class="mv-grid">
+                        <label class="mv-field">Cliente (nombre)<input id="mv-name" type="text" placeholder="Nombre o empresa"></label>
+                        <label class="mv-field">Email (opcional)<input id="mv-email" type="email"></label>
+                    </div>
+                    <h4 style="margin: 18px 0 8px;">Vinos</h4>
+                    <label style="display:flex; gap:8px; align-items:center; font-size:0.85rem; margin-bottom:10px;">
+                        <input type="checkbox" id="mv-gross" checked onchange="app.manualToggleGross()"> Los precios que escribo ya incluyen IGIC
+                    </label>
+                    <div id="mv-lines"></div>
+                    <button class="btn-action" onclick="app.addManualLine()" style="background: var(--brand-gold); color: var(--text-main); border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer;"><i class="fa-solid fa-plus"></i> Añadir vino</button>
+
+                    <div class="mv-grid" style="margin-top: 18px;">
+                        <label class="mv-field">Descuento (€, sin IGIC)<input id="mv-discount" type="number" step="0.01" min="0" value="0" oninput="app.manualRecalc()"></label>
+                        <label class="mv-field">Entrega<select id="mv-delivery"><option value="pickup">Recogida</option><option value="shipping">Envío</option></select></label>
+                        <label class="mv-field">Método de pago<select id="mv-pay" onchange="app.manualRecalc()"><option value="cash">Efectivo</option><option value="transfer">Transferencia</option><option value="stripe">Stripe / tarjeta</option><option value="other">Otro</option></select></label>
+                        <label class="mv-field">Estado del cobro<select id="mv-paid"><option value="1">Cobrado</option><option value="0">Pendiente de cobro</option></select></label>
+                        <label class="mv-field">Tipo de factura<select id="mv-invtype" onchange="app.manualRecalc()"><option value="FS">Factura simplificada (FS)</option><option value="FC">Factura completa (FC)</option></select></label>
+                    </div>
+                    <div id="mv-fc" style="display:none; margin-top: 12px;">
+                        <div class="mv-grid">
+                            <label class="mv-field">Nombre / razón social<input id="mv-taxname" type="text"></label>
+                            <label class="mv-field">NIF / CIF / NIE<input id="mv-taxid" type="text"></label>
+                        </div>
+                        <label class="mv-field" style="margin-top:12px;">Dirección fiscal<input id="mv-taxaddr" type="text" placeholder="Calle, CP, localidad, provincia"></label>
+                    </div>
+                    <label class="mv-field" style="margin-top: 12px;">Notas<textarea id="mv-notes" rows="2"></textarea></label>
+
+                    <div class="mv-summary" id="mv-summary"></div>
+                    <div id="mv-warnings"></div>
+                    <button id="mv-submit" class="btn-action" onclick="app.submitManualSale()" style="margin-top: 16px; width: 100%; background: var(--brand-gold); color: var(--text-main); border: none; padding: 14px; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer;"><i class="fa-solid fa-check"></i> Confirmar venta y descontar stock</button>
+                    <div id="mv-result" style="margin-top: 12px;"></div>
+                </div>
+            </div>
+        </section>
+
         <section id="view-inventory" class="section">
             <div class="panel">
                 <div class="panel-header">
@@ -958,14 +1012,17 @@
                 (item.name ? list.find(pr => pr.name === item.name) : null);
 
             const costoReal = product ? costBreakdown(product.price_cost_net).costoReal : 0;
-            const costPerBottle = costoReal > 0 ? costoReal : priceNetBottle * 0.5;
+            // Ventas manuales guardan el coste del momento (unit_cost) y el ingreso neto de la línea (line_net).
+            const snapCost = item.unit_cost != null ? parseFloat(item.unit_cost) : null;
+            const costPerBottle = snapCost != null ? snapCost : (costoReal > 0 ? costoReal : priceNetBottle * 0.5);
+            const revenueNet = item.line_net != null ? parseFloat(item.line_net) : bottles * priceNetBottle;
 
             return {
                 boxes,
                 bottles,
                 costPerBottle,
                 cogs: bottles * costPerBottle,
-                revenueNet: bottles * priceNetBottle,
+                revenueNet,
                 name: item.name || (product && product.name) || 'Unknown'
             };
         }
@@ -975,7 +1032,7 @@
             currentLang: 'es',
             adminTranslations: {
                 es: {
-                    nav_dashboard: 'Vista General', nav_orders: 'Ventas & Envíos', nav_inventory: 'Catálogo & Pricing', nav_crm: 'CRM Clientes', nav_promos: 'Cupones y Promos', nav_resellers: 'Resellers (Socios)',
+                    nav_dashboard: 'Vista General', nav_orders: 'Ventas & Envíos', nav_manual: 'Nueva venta', nav_inventory: 'Catálogo & Pricing', nav_crm: 'CRM Clientes', nav_promos: 'Cupones y Promos', nav_resellers: 'Resellers (Socios)',
                     nav_store: 'Volver a la Tienda', nav_logout: 'Cerrar Sesión', loading: 'Cargando...',
                     metric_revenue: 'Ingresos Netos', metric_orders: 'Pedidos Exitosos', metric_tax: 'Impuestos (IGIC)', metric_alerts: 'Vinos a Reponer',
                     recent_orders_title: 'Últimos Pedidos Recibidos', table_id: 'ID / Ref', table_customer: 'Cliente', table_total: 'Total',
@@ -1023,7 +1080,7 @@
                     top_wines_title: 'Top Vinos Más Vendidos', top_wine_name: 'Vino', top_wine_boxes: 'Cajas', top_wine_revenue: 'Ingreso'
                 },
                 en: {
-                    nav_dashboard: 'Dashboard', nav_orders: 'Sales & Shipping', nav_inventory: 'Catalog & Pricing', nav_crm: 'Customer CRM', nav_promos: 'Coupons & Promos', nav_resellers: 'Resellers (Partners)',
+                    nav_dashboard: 'Dashboard', nav_orders: 'Sales & Shipping', nav_manual: 'New sale', nav_inventory: 'Catalog & Pricing', nav_crm: 'Customer CRM', nav_promos: 'Coupons & Promos', nav_resellers: 'Resellers (Partners)',
                     nav_store: 'Back to Store', nav_logout: 'Logout', loading: 'Loading...',
                     metric_revenue: 'Net Revenue', metric_orders: 'Successful Orders', metric_tax: 'Taxes (IGIC)', metric_alerts: 'Wines to Restock',
                     recent_orders_title: 'Recent Orders Received', table_id: 'ID / Ref', table_customer: 'Customer', table_total: 'Total',
@@ -1133,10 +1190,137 @@
 
                 if (viewId === 'dashboard') this.loadDashboardData();
                 if (viewId === 'orders') this.loadOrdersTable();
+                if (viewId === 'manual') this.loadManualSale();
                 if (viewId === 'inventory') this.loadInventoryTable();
                 if (viewId === 'crm') this.loadCRM();
                 if (viewId === 'promos') this.loadPromos();
                 if (viewId === 'resellers') this.loadResellers();
+            },
+
+            manualProducts: [],
+
+            loadManualSale: async function () {
+                if (!this.manualProducts.length) {
+                    const { data } = await this.db.from('products')
+                        .select('id,name,bodega,stock,price_retail,price_cost_net')
+                        .order('name');
+                    this.manualProducts = data || [];
+                }
+                if (!document.querySelector('#mv-lines .mv-line')) this.addManualLine();
+                this.manualRecalc();
+            },
+
+            addManualLine: function () {
+                const opts = this.manualProducts.map(p =>
+                    `<option value="${p.id}">${p.name} (stock ${p.stock ?? 0})</option>`).join('');
+                const div = document.createElement('div');
+                div.className = 'mv-line';
+                div.innerHTML = `
+                    <label class="mv-field mv-wine">Vino<select class="mv-prod" onchange="app.manualPrefill(this)"><option value="">Elegir...</option>${opts}</select></label>
+                    <label class="mv-field">Unidad<select class="mv-unit" onchange="app.manualPrefill(this)"><option value="bottle">Botella</option><option value="case6">Caja x6</option></select></label>
+                    <label class="mv-field">Cant.<input class="mv-qty" type="number" min="1" step="1" value="1" oninput="app.manualRecalc()"></label>
+                    <label class="mv-field">Precio / unidad<input class="mv-price" type="number" min="0" step="0.01" value="0" oninput="app.manualRecalc()"></label>
+                    <button class="btn-action" onclick="this.closest('.mv-line').remove(); app.manualRecalc();" title="Quitar" style="padding: 10px; background: #fee2e2; color: #b91c1c; border: none; border-radius: 6px; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>`;
+                document.getElementById('mv-lines').appendChild(div);
+            },
+
+            manualPrefill: function (el) {
+                const line = el.closest('.mv-line');
+                const p = this.manualProducts.find(x => String(x.id) === line.querySelector('.mv-prod').value);
+                if (!p) return;
+                const mult = line.querySelector('.mv-unit').value === 'case6' ? 6 : 1;
+                const gross = document.getElementById('mv-gross').checked;
+                const unit = (parseFloat(p.price_retail) || 0) * mult;
+                line.querySelector('.mv-price').value = (gross ? unit : unit / 1.07).toFixed(2);
+                this.manualRecalc();
+            },
+
+            manualToggleGross: function () {
+                const gross = document.getElementById('mv-gross').checked;
+                document.querySelectorAll('#mv-lines .mv-price').forEach(inp => {
+                    const v = parseFloat(inp.value) || 0;
+                    inp.value = (gross ? v * 1.07 : v / 1.07).toFixed(2);
+                });
+                this.manualRecalc();
+            },
+
+            manualLines: function () {
+                const gross = document.getElementById('mv-gross').checked;
+                const out = [];
+                document.querySelectorAll('#mv-lines .mv-line').forEach(line => {
+                    const pid = line.querySelector('.mv-prod').value;
+                    const qty = parseInt(line.querySelector('.mv-qty').value) || 0;
+                    const price = parseFloat(line.querySelector('.mv-price').value);
+                    if (!pid || qty <= 0 || isNaN(price)) return;
+                    out.push({ product_id: pid, qty, unit: line.querySelector('.mv-unit').value, unit_price: price, price_includes_igic: gross });
+                });
+                return out;
+            },
+
+            manualRecalc: function () {
+                const lines = this.manualLines();
+                let sub = 0, cogs = 0, bottles = 0;
+                lines.forEach(l => {
+                    const p = this.manualProducts.find(x => String(x.id) === l.product_id);
+                    const mult = l.unit === 'case6' ? 6 : 1;
+                    const netUnit = l.price_includes_igic ? l.unit_price / 1.07 : l.unit_price;
+                    sub += Math.round(netUnit * l.qty * 100) / 100;
+                    const cost = p && p.price_cost_net != null ? Math.round(parseFloat(p.price_cost_net) * 1.1 * 100) / 100 : 0;
+                    cogs += cost * l.qty * mult;
+                    bottles += l.qty * mult;
+                });
+                const disc = Math.max(0, parseFloat(document.getElementById('mv-discount').value) || 0);
+                const base = Math.round((sub - disc) * 100) / 100;
+                const igic = Math.round(base * 7) / 100;
+                const total = base + igic;
+                const fmt = n => n.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+                document.getElementById('mv-summary').innerHTML =
+                    `<div><span>Botellas</span><b>${bottles}</b></div>
+                     <div><span>Base imponible</span><b>${fmt(base)}</b></div>
+                     <div><span>IGIC 7%</span><b>${fmt(igic)}</b></div>
+                     <div style="font-size:1.1rem;"><span>TOTAL</span><b>${fmt(total)}</b></div>
+                     <div style="color:#64748b;"><span>Coste mercancía</span><span>${fmt(cogs)}</span></div>
+                     <div style="color:#15803d;"><span>Margen bruto</span><b>${fmt(base - cogs)}</b></div>`;
+                const type = document.getElementById('mv-invtype').value;
+                document.getElementById('mv-fc').style.display = type === 'FC' ? 'block' : 'none';
+                const w = [];
+                if (type === 'FS' && total > 400) w.push('La factura simplificada solo es válida hasta 400 € (IGIC incluido). Este importe requiere factura completa.');
+                if (document.getElementById('mv-pay').value === 'cash' && total >= 1000) w.push('Pagos en efectivo: el límite legal es de 1.000 € por operación.');
+                document.getElementById('mv-warnings').innerHTML = w.map(t => `<div class="mv-warn">${t}</div>`).join('');
+                this._manualTotal = total;
+            },
+
+            submitManualSale: async function () {
+                const lines = this.manualLines();
+                const btn = document.getElementById('mv-submit');
+                const res = document.getElementById('mv-result');
+                if (!lines.length) { res.innerHTML = '<div class="mv-warn">Añade al menos un vino con cantidad y precio.</div>'; return; }
+                const type = document.getElementById('mv-invtype').value;
+                if (type === 'FS' && this._manualTotal > 400) { res.innerHTML = '<div class="mv-warn">Importe superior a 400 €: elige factura completa (FC).</div>'; return; }
+                if (type === 'FC' && (!document.getElementById('mv-taxname').value.trim() || !document.getElementById('mv-taxid').value.trim())) {
+                    res.innerHTML = '<div class="mv-warn">Para factura completa indica nombre/razón social y NIF.</div>'; return; }
+                if (!confirm('¿Confirmar la venta? Se descontará el stock.')) return;
+                btn.disabled = true;
+                const { data, error } = await this.db.rpc('create_manual_sale', {
+                    p_lines: lines,
+                    p_payment_method: document.getElementById('mv-pay').value,
+                    p_paid: document.getElementById('mv-paid').value === '1',
+                    p_discount_net: parseFloat(document.getElementById('mv-discount').value) || 0,
+                    p_customer_name: document.getElementById('mv-name').value.trim(),
+                    p_customer_email: document.getElementById('mv-email').value.trim(),
+                    p_delivery_method: document.getElementById('mv-delivery').value,
+                    p_invoice_type: type,
+                    p_tax_name: document.getElementById('mv-taxname').value.trim() || null,
+                    p_tax_id: document.getElementById('mv-taxid').value.trim() || null,
+                    p_tax_address: document.getElementById('mv-taxaddr').value.trim() || null,
+                    p_notes: document.getElementById('mv-notes').value.trim() || null
+                });
+                btn.disabled = false;
+                if (error) { res.innerHTML = `<div class="mv-warn">Error: ${error.message}</div>`; return; }
+                res.innerHTML = `<div style="background:#dcfce7; border:1px solid #16a34a; color:#166534; border-radius:6px; padding:10px;">Venta registrada y stock descontado. Pedido ${String(data).slice(0, 8)}${type === 'FC' ? ' · factura completa pendiente de número' : ''}.</div>`;
+                this.manualProducts = [];
+                document.getElementById('mv-lines').innerHTML = '';
+                this.loadManualSale();
             },
 
             loadDashboardData: async function () {
