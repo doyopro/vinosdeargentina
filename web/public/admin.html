@@ -676,6 +676,8 @@
                     class="fa-solid fa-receipt"></i> Ventas & Envíos</div>
             <div class="nav-item" onclick="app.switchView('manual', this)" data-i18n="nav_manual"><i
                     class="fa-solid fa-cash-register"></i> Nueva venta</div>
+            <div class="nav-item" onclick="app.switchView('gastos', this)" data-i18n="nav_gastos"><i
+                    class="fa-solid fa-file-invoice"></i> Gastos con IGIC</div>
             <div class="nav-item" onclick="app.switchView('inventory', this)" data-i18n="nav_inventory"><i
                     class="fa-solid fa-calculator"></i> Catálogo & Pricing</div>
             <div class="nav-item" onclick="app.switchView('crm', this)" data-i18n="nav_crm"><i
@@ -819,7 +821,7 @@
                     <div class="panel-header"><h3><i class="fa-solid fa-scale-balanced"></i> IGIC del periodo</h3></div>
                     <div class="igic-box">
                         <div class="igic-row"><span>Repercutido <small>(cobrado en tus ventas)</small></span><strong id="igic-rep">0,00 €</strong></div>
-                        <div class="igic-row"><span>Soportado <small>(estimado en compras e importación)</small></span><strong id="igic-sop">- 0,00 €</strong></div>
+                        <div class="igic-row"><span>Soportado <small>(facturas de compra cargadas)</small></span><strong id="igic-sop">- 0,00 €</strong></div>
                         <div class="igic-row igic-total"><span>A liquidar <small id="igic-liq-note"></small></span><strong id="igic-liq">0,00 €</strong></div>
                         <p class="igic-foot" id="igic-foot"></p>
                     </div>
@@ -891,6 +893,32 @@
                             </tr>
                         </thead>
                         <tbody id="all-orders-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-gastos" class="section">
+            <div class="panel">
+                <div class="panel-header"><h3><i class="fa-solid fa-file-invoice"></i> Facturas recibidas con IGIC (vinos)</h3></div>
+                <div style="padding: 16px;">
+                    <p style="font-size:0.82rem; color: var(--text-muted); margin-bottom:12px;">Carga aquí el IGIC soportado de las compras de vino (importación, despacho, transporte…). El dashboard usa estos importes reales. "Coste no recuperable" = AIEM, despacho y similares: no se deduce, se suma al coste de la mercancía.</p>
+                    <div class="mv-grid">
+                        <label class="mv-field">Fecha<input id="gx-date" type="date"></label>
+                        <label class="mv-field">Proveedor<input id="gx-supplier" type="text" placeholder="Ej. Hijos de Eulogio"></label>
+                        <label class="mv-field">Nº documento<input id="gx-ref" type="text"></label>
+                        <label class="mv-field">Concepto<input id="gx-concept" type="text" placeholder="Ej. IGIC importación"></label>
+                        <label class="mv-field">Base (€)<input id="gx-base" type="number" step="0.01" min="0"></label>
+                        <label class="mv-field">IGIC soportado (€)<input id="gx-igic" type="number" step="0.01" min="0" value="0"></label>
+                        <label class="mv-field">Coste no recuperable (€)<input id="gx-cost" type="number" step="0.01" min="0" value="0"></label>
+                    </div>
+                    <button class="btn-action" onclick="app.addGasto()" style="margin-top:12px; background: var(--brand-gold); color: var(--text-main); border: none; padding: 9px 16px; border-radius: 6px; font-weight: 700; cursor: pointer;"><i class="fa-solid fa-plus"></i> Guardar</button>
+                    <div id="gx-msg"></div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Fecha</th><th>Proveedor / Doc</th><th>Concepto</th><th>Base</th><th>IGIC</th><th>Coste no recup.</th><th></th></tr></thead>
+                        <tbody id="gx-body"></tbody>
                     </table>
                 </div>
             </div>
@@ -1119,7 +1147,7 @@
             currentLang: 'es',
             adminTranslations: {
                 es: {
-                    nav_dashboard: 'Vista General', nav_orders: 'Ventas & Envíos', nav_manual: 'Nueva venta', nav_inventory: 'Catálogo & Pricing', nav_crm: 'CRM Clientes', nav_promos: 'Cupones y Promos', nav_resellers: 'Resellers (Socios)',
+                    nav_dashboard: 'Vista General', nav_orders: 'Ventas & Envíos', nav_manual: 'Nueva venta', nav_gastos: 'Gastos con IGIC', nav_inventory: 'Catálogo & Pricing', nav_crm: 'CRM Clientes', nav_promos: 'Cupones y Promos', nav_resellers: 'Resellers (Socios)',
                     nav_store: 'Volver a la Tienda', nav_logout: 'Cerrar Sesión', loading: 'Cargando...',
                     metric_revenue: 'Ingresos Netos', metric_orders: 'Pedidos Exitosos', metric_tax: 'IGIC repercutido', metric_alerts: 'Vinos a Reponer',
                     recent_orders_title: 'Últimos Pedidos Recibidos', table_id: 'ID / Ref', table_customer: 'Cliente', table_total: 'Total',
@@ -1167,7 +1195,7 @@
                     top_wines_title: 'Top Vinos Más Vendidos', top_wine_name: 'Vino', top_wine_boxes: 'botellas', top_wine_revenue: 'Ingreso'
                 },
                 en: {
-                    nav_dashboard: 'Dashboard', nav_orders: 'Sales & Shipping', nav_manual: 'New sale', nav_inventory: 'Catalog & Pricing', nav_crm: 'Customer CRM', nav_promos: 'Coupons & Promos', nav_resellers: 'Resellers (Partners)',
+                    nav_dashboard: 'Dashboard', nav_orders: 'Sales & Shipping', nav_manual: 'New sale', nav_gastos: 'Expenses with IGIC', nav_inventory: 'Catalog & Pricing', nav_crm: 'Customer CRM', nav_promos: 'Coupons & Promos', nav_resellers: 'Resellers (Partners)',
                     nav_store: 'Back to Store', nav_logout: 'Logout', loading: 'Loading...',
                     metric_revenue: 'Net Revenue', metric_orders: 'Successful Orders', metric_tax: 'IGIC charged', metric_alerts: 'Wines to Restock',
                     recent_orders_title: 'Recent Orders Received', table_id: 'ID / Ref', table_customer: 'Customer', table_total: 'Total',
@@ -1278,6 +1306,7 @@
                 if (viewId === 'dashboard') this.loadDashboardData();
                 if (viewId === 'orders') this.loadOrdersTable();
                 if (viewId === 'manual') this.loadManualSale();
+                if (viewId === 'gastos') this.loadGastos();
                 if (viewId === 'inventory') this.loadInventoryTable();
                 if (viewId === 'crm') this.loadCRM();
                 if (viewId === 'promos') this.loadPromos();
@@ -1447,12 +1476,51 @@
                 this.loadManualSale();
             },
 
+            loadGastos: async function () {
+                const d = document.getElementById('gx-date'); if (d && !d.value) d.value = new Date().toISOString().slice(0, 10);
+                const { data, error } = await this.db.from('tax_expenses').select('*').order('doc_date', { ascending: false });
+                const f = (v) => (parseFloat(v) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+                const body = document.getElementById('gx-body');
+                if (error || !data || !data.length) { body.innerHTML = '<tr><td colspan="7" style="text-align:center;">Aún no hay facturas cargadas</td></tr>'; return; }
+                body.innerHTML = data.map(g => `<tr>
+                    <td>${new Date(g.doc_date).toLocaleDateString('es-ES')}</td>
+                    <td><strong>${g.supplier}</strong><br><small style="color: var(--text-muted)">${g.doc_ref || ''}</small></td>
+                    <td>${g.concept}</td>
+                    <td>${g.base_net != null ? f(g.base_net) : '-'}</td>
+                    <td><strong>${f(g.igic_amount)}</strong></td>
+                    <td>${f(g.cost_amount)}</td>
+                    <td><button class="btn-action" onclick="app.deleteGasto('${g.id}')" title="Borrar" style="padding:4px 9px; background:#fee2e2; color:#b91c1c; border:none; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-trash"></i></button></td>
+                </tr>`).join('');
+            },
+
+            addGasto: async function () {
+                const msg = document.getElementById('gx-msg');
+                const v = (id) => document.getElementById(id).value.trim();
+                const num = (id) => parseFloat(document.getElementById(id).value) || 0;
+                if (!v('gx-date') || !v('gx-supplier') || !v('gx-concept')) { msg.innerHTML = '<div class="mv-warn">Faltan fecha, proveedor o concepto.</div>'; return; }
+                const { error } = await this.db.from('tax_expenses').insert({
+                    doc_date: v('gx-date'), supplier: v('gx-supplier'), doc_ref: v('gx-ref') || null, concept: v('gx-concept'),
+                    base_net: v('gx-base') === '' ? null : num('gx-base'), igic_amount: num('gx-igic'), cost_amount: num('gx-cost')
+                });
+                if (error) { msg.innerHTML = `<div class="mv-warn">Error: ${error.message}</div>`; return; }
+                msg.innerHTML = '<div style="color:#166534; margin-top:8px;">Guardado.</div>';
+                ['gx-ref', 'gx-concept', 'gx-base'].forEach(id => document.getElementById(id).value = '');
+                document.getElementById('gx-igic').value = '0'; document.getElementById('gx-cost').value = '0';
+                this.loadGastos();
+            },
+
+            deleteGasto: async function (id) {
+                if (!confirm('¿Borrar este gasto?')) return;
+                await this.db.from('tax_expenses').delete().eq('id', id);
+                this.loadGastos();
+            },
+
             loadDashboardData: async function () {
                 try {
                     const { data: orders } = await this.db.from('orders').select('*').order('created_at', { ascending: false });
                     const { data: resellers } = await this.db.from('resellers').select('*');
                     const { data: products } = await this.db.from('products').select('*');
-                    const { data: purchases } = await this.db.from('stock_movements').select('quantity, unit_cost_net, created_at').eq('movement_type', 'compra');
+                    const { data: expenses } = await this.db.from('tax_expenses').select('doc_date, igic_amount');
 
                     // KPI TOTALS
                     let grossSales = 0, discounts = 0, netIncome = 0, taxes = 0, commissions = 0;
@@ -1591,17 +1659,17 @@
                     set('metric-stock', stockBottles);
                     set('metric-stock-sub', 'en almacén ahora');
 
-                    // IGIC soportado (estimación): compras del periodo, coste base = unit_cost_net / 1,10 (sin arancel) x 7%
-                    let igicSop = 0;
-                    (purchases || []).forEach(m => {
-                        if (inPeriod(m.created_at)) igicSop += (parseFloat(m.quantity) || 0) * ((parseFloat(m.unit_cost_net) || 0) / 1.10) * IGIC_RATE;
+                    // IGIC soportado real: facturas cargadas en "Gastos con IGIC"
+                    let igicSop = 0, nExp = 0;
+                    (expenses || []).forEach(g => {
+                        if (inPeriod(g.doc_date + 'T12:00:00')) { igicSop += parseFloat(g.igic_amount) || 0; nExp++; }
                     });
                     const igicLiq = taxes - igicSop;
                     set('igic-rep', fmt(taxes));
                     set('igic-sop', '- ' + fmt(igicSop));
                     set('igic-liq', fmt(Math.abs(igicLiq)));
                     set('igic-liq-note', igicLiq >= 0 ? 'a ingresar' : 'a compensar / favor');
-                    set('igic-foot', 'Soportado estimado: coste Martín x 7% sobre las compras registradas. Confirma con tu gestor la base real del IGIC de importación.');
+                    set('igic-foot', (nExp ? nExp + ' factura(s) cargadas en el periodo. ' : 'Sin facturas de compra cargadas en este periodo. ') + 'Solo vinos: tu 420 global lo presenta el gestor con todas tus actividades.');
                     set('metric-ticket', fmt(paidCount ? netIncome / paidCount : 0));
                     set('metric-ticket-sub', 'Web ' + webCount + ' · Manual ' + manualCount);
                     set('metric-stock-sub', 'valor ' + fmt(invValue) + ' a coste real');
