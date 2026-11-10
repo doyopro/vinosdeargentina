@@ -12,6 +12,8 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="/invoice-pdf.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -1215,6 +1217,24 @@
                 if (viewId === 'resellers') this.loadResellers();
             },
 
+            downloadInvoice: async function (orderId) {
+                try {
+                    const { data: order, error } = await this.db.from('orders').select('*').eq('id', orderId).single();
+                    if (error || !order) throw new Error(error ? error.message : 'Pedido no encontrado');
+                    if (!order.invoice_number) throw new Error('Este pedido todavía no tiene número de factura.');
+                    if (!window.jspdf || !window.InvoicePdf) throw new Error('No se pudo cargar el generador de PDF.');
+                    let logo = null;
+                    try {
+                        const blob = await (await fetch('/images/logo-factura.png')).blob();
+                        logo = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(blob); });
+                    } catch (e) { /* sin logo: usa el texto */ }
+                    const doc = window.InvoicePdf.build(window.jspdf.jsPDF, order, { logoDataUrl: logo, logoRatio: 0.2333 });
+                    doc.save(order.invoice_number.replace('/', '-') + '.pdf');
+                } catch (e) {
+                    alert('No se pudo generar la factura: ' + e.message);
+                }
+            },
+
             manualProducts: [],
 
             loadManualSale: async function () {
@@ -1335,7 +1355,10 @@
                 });
                 btn.disabled = false;
                 if (error) { res.innerHTML = `<div class="mv-warn">Error: ${error.message}</div>`; return; }
-                res.innerHTML = `<div style="background:#dcfce7; border:1px solid #16a34a; color:#166534; border-radius:6px; padding:10px;">Venta registrada y stock descontado. Pedido ${String(data).slice(0, 8)}${type === 'FC' ? ' · factura completa pendiente de número' : ''}.</div>`;
+                const oid = data;
+                res.innerHTML = `<div style="background:#dcfce7; border:1px solid #16a34a; color:#166534; border-radius:6px; padding:10px;">Venta registrada y stock descontado. Pedido ${String(oid).slice(0, 8)}${type === 'FC' ? ' · factura completa pendiente de número' : ''}.
+                    ${type === 'FS' ? `<br><button class="btn-action" onclick="app.downloadInvoice('${oid}')" style="margin-top:8px; background: var(--brand-gold); color: var(--text-main); border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer;"><i class="fa-solid fa-file-pdf"></i> Descargar factura simplificada</button>` : ''}</div>`;
+                if (type === 'FS') this.downloadInvoice(oid);
                 this.manualProducts = [];
                 document.getElementById('mv-lines').innerHTML = '';
                 this.loadManualSale();
@@ -1485,12 +1508,13 @@
                     const badgeClass = o.payment_status === 'paid' ? 'badge-paid' : 'badge-pending';
                     const statusText = o.payment_status === 'paid' ? this.adminTranslations[this.currentLang].paid_upper : this.adminTranslations[this.currentLang].pending_upper;
 
-                    const isShipped = o.shipping_status === 'shipped';
+                    const isShipped = o.shipping_status === 'shipped' || o.shipping_status === 'delivered';
                     const shipBadge = isShipped ? 'badge-paid' : 'badge-pending';
                     const shipText = isShipped ? `<i class="fa-solid fa-check"></i> ${this.adminTranslations[this.currentLang].shipped_upper}` : `<i class="fa-solid fa-truck"></i> ${this.adminTranslations[this.currentLang].preparing_upper}`;
 
                     return `<tr>
-                        <td><strong>#${o.id.slice(0, 8).toUpperCase()}</strong><br><small>${new Date(o.created_at).toLocaleDateString()}</small></td>
+                        <td><strong>#${o.id.slice(0, 8).toUpperCase()}</strong><br><small>${new Date(o.created_at).toLocaleDateString()}</small>
+                            ${o.invoice_number ? `<br><small style="color: var(--text-muted);">${o.invoice_number}</small> <button class="btn-action" onclick="app.downloadInvoice('${o.id}')" title="Descargar factura PDF" style="padding: 3px 8px; background: var(--brand-gold); color: var(--text-main); border: none; border-radius: 4px; cursor: pointer;"><i class="fa-solid fa-file-pdf"></i></button>` : ''}</td>
                         <td>${o.customer_name}<br><small style="color: var(--text-muted)">${o.customer_email}</small></td>
                         <td>${o.island || 'N/A'}</td>
                         <td><strong>${parseFloat(o.total_amount).toFixed(2)} €</strong></td>
