@@ -632,6 +632,12 @@
             #view-inventory table th:first-child, #view-inventory table td:first-child { position: sticky; left: 0; background: #fff; z-index: 2; box-shadow: 2px 0 4px rgba(15, 42, 68, 0.06); }
             #view-inventory table th:first-child { background: #f7fafd; }
         }
+
+        .dash-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+        .dash-toolbar label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+        .dash-toolbar select { padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; font-family: inherit; font-size: 0.9rem; color: var(--text-main); }
+        .dash-note { font-size: 0.78rem; color: var(--text-muted); flex: 1 1 280px; }
+        .kpi-sub { margin-top: 6px; font-size: 0.74rem; color: var(--text-muted); }
 </style>
 </head>
 
@@ -685,190 +691,106 @@
         </div>
 
         <section id="view-dashboard" class="section active">
+            <div class="dash-toolbar">
+                <label for="dash-period">Periodo</label>
+                <select id="dash-period" onchange="app.loadDashboardData()">
+                    <option value="month">Este mes</option>
+                    <option value="prev">Mes anterior</option>
+                    <option value="quarter">Este trimestre</option>
+                    <option value="year">Este año</option>
+                    <option value="all">Todo</option>
+                </select>
+                <span class="dash-note">Ventas facturadas = pedidos cobrados + ventas manuales aún sin cobrar. Importes sin IGIC; el stock y lo pendiente son siempre el total actual.</span>
+            </div>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
-
-                <div
-                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                <div class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-start justify-between gap-2 mb-4">
-                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
-                            data-i18n="metric_gross_sales">Ventas Brutas</h4>
-                        <div
-                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
-                            <i class="fa-solid fa-money-bill-wave"></i>
-                        </div>
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2" data-i18n="metric_net_sales">Ventas netas</h4>
+                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg"><i class="fa-solid fa-money-bill-wave"></i></div>
                     </div>
                     <div class="flex items-baseline gap-2 mt-auto">
-                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-gross-sales">0.00 €</h2>
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-net-sales">0,00 €</h2>
                     </div>
+                    <div class="kpi-sub" id="metric-net-sub"></div>
                 </div>
 
-                <div
-                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                <div class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-start justify-between gap-2 mb-4">
-                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
-                            data-i18n="metric_discounts">Descuentos</h4>
-                        <div
-                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center text-lg">
-                            <i class="fa-solid fa-percent"></i>
-                        </div>
-                    </div>
-                    <div class="flex items-baseline gap-2 mt-auto">
-                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-discounts">0.00 €</h2>
-                    </div>
-                </div>
-
-                <div
-                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
-                    <div class="flex items-start justify-between gap-2 mb-4">
-                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
-                            data-i18n="metric_net_income">Neto</h4>
-                        <div
-                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-lg">
-                            <i class="fa-solid fa-euro-sign"></i>
-                        </div>
-                    </div>
-                    <div class="flex items-baseline gap-2 mt-auto">
-                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-net-income">0.00 €</h2>
-                    </div>
-                </div>
-
-                <div
-                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
-                    <div class="flex items-start justify-between gap-2 mb-4">
-                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
-                            data-i18n="metric_tax">IGIC</h4>
-                        <div
-                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
-                            <i class="fa-solid fa-file-invoice-dollar"></i>
-                        </div>
-                    </div>
-                    <div class="flex items-baseline gap-2 mt-auto">
-                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-tax">0.00 €</h2>
-                    </div>
-                </div>
-
-                <div
-                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
-                    <div class="flex items-start justify-between gap-2 mb-4">
-                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
-                            data-i18n="metric_partner_commissions">Comisiones</h4>
-                        <div
-                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-lg">
-                            <i class="fa-solid fa-handshake"></i>
-                        </div>
-                    </div>
-                    <div class="flex items-baseline gap-2 mt-auto">
-                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-commissions">0.00 €</h2>
-                    </div>
-                </div>
-
-                <div
-                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
-                    <div class="flex items-start justify-between gap-2 mb-4">
-                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
-                            data-i18n="metric_orders">Pedidos</h4>
-                        <div
-                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
-                            <i class="fa-solid fa-clipboard-check"></i>
-                        </div>
-                    </div>
-                    <div class="flex items-baseline gap-2 mt-auto">
-                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-orders">0</h2>
-                    </div>
-                </div>
-
-                <div
-                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
-                    <div class="flex items-start justify-between gap-2 mb-4">
-                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
-                            data-i18n="metric_boxes_sold">Botellas</h4>
-                        <div
-                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
-                            <i class="fa-solid fa-boxes-stacked"></i>
-                        </div>
-                    </div>
-                    <div class="flex items-baseline gap-2 mt-auto">
-                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-boxes">0</h2>
-                    </div>
-                </div>
-
-                <div
-                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
-                    <div class="flex items-start justify-between gap-2 mb-4">
-                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
-                            data-i18n="metric_total_cogs">COGS</h4>
-                        <div
-                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center text-lg">
-                            <i class="fa-solid fa-chart-line"></i>
-                        </div>
-                    </div>
-                    <div class="flex items-baseline gap-2 mt-auto">
-                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-cogs">0.00 €</h2>
-                    </div>
-                </div>
-
-                <div
-                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
-                    <div class="flex items-start justify-between gap-2 mb-4">
-                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
-                            data-i18n="metric_gross_margin">Margen</h4>
-                        <div
-                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-lg">
-                            <i class="fa-solid fa-arrow-trend-up"></i>
-                        </div>
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2" data-i18n="metric_gross_margin">Margen bruto</h4>
+                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-lg"><i class="fa-solid fa-arrow-trend-up"></i></div>
                     </div>
                     <div class="flex items-center flex-wrap gap-2 mt-auto">
-                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-margin-amount">0.00 €</h2>
-                        <span class="px-2 py-1 text-[11px] font-bold text-green-700 bg-green-100 rounded-md"
-                            id="metric-margin-percent">0%</span>
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-margin-amount">0,00 €</h2>
+                        <span class="px-2 py-1 text-[11px] font-bold text-green-700 bg-green-100 rounded-md" id="metric-margin-percent">0%</span>
                     </div>
+                    <div class="kpi-sub" id="metric-margin-sub"></div>
                 </div>
 
-                <div
-                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                <div class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-start justify-between gap-2 mb-4">
-                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
-                            data-i18n="metric_pending">Pendiente de cobro</h4>
-                        <div
-                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
-                            <i class="fa-solid fa-hourglass-half"></i>
-                        </div>
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2" data-i18n="metric_collected">Cobrado</h4>
+                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-lg"><i class="fa-solid fa-circle-check"></i></div>
                     </div>
                     <div class="flex items-baseline gap-2 mt-auto">
-                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-pending">0.00 €</h2>
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-collected">0,00 €</h2>
                     </div>
+                    <div class="kpi-sub" id="metric-collected-sub"></div>
                 </div>
 
-                <div
-                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                <div class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-start justify-between gap-2 mb-4">
-                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
-                            data-i18n="metric_stock">Stock (botellas)</h4>
-                        <div
-                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
-                            <i class="fa-solid fa-wine-bottle"></i>
-                        </div>
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2" data-i18n="metric_pending">Pendiente de cobro</h4>
+                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-lg"><i class="fa-solid fa-hourglass-half"></i></div>
                     </div>
                     <div class="flex items-baseline gap-2 mt-auto">
-                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-stock">0.00 €</h2>
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-pending">0,00 €</h2>
                     </div>
+                    <div class="kpi-sub" id="metric-pending-sub"></div>
                 </div>
 
-                <div
-                    class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                <div class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-start justify-between gap-2 mb-4">
-                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2"
-                            data-i18n="metric_inv_value">Valor del inventario</h4>
-                        <div
-                            class="flex-shrink-0 w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-lg">
-                            <i class="fa-solid fa-warehouse"></i>
-                        </div>
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2" data-i18n="metric_tax">IGIC repercutido</h4>
+                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-lg"><i class="fa-solid fa-file-invoice-dollar"></i></div>
                     </div>
                     <div class="flex items-baseline gap-2 mt-auto">
-                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-inv-value">0.00 €</h2>
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-tax">0,00 €</h2>
                     </div>
+                    <div class="kpi-sub" id="metric-tax-sub"></div>
                 </div>
 
+                <div class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-start justify-between gap-2 mb-4">
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2" data-i18n="metric_boxes_sold">Botellas vendidas</h4>
+                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg"><i class="fa-solid fa-wine-bottle"></i></div>
+                    </div>
+                    <div class="flex items-baseline gap-2 mt-auto">
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-boxes">0,00 €</h2>
+                    </div>
+                    <div class="kpi-sub" id="metric-boxes-sub"></div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-start justify-between gap-2 mb-4">
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2" data-i18n="metric_stock">Stock (botellas)</h4>
+                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg"><i class="fa-solid fa-boxes-stacked"></i></div>
+                    </div>
+                    <div class="flex items-baseline gap-2 mt-auto">
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-stock">0,00 €</h2>
+                    </div>
+                    <div class="kpi-sub" id="metric-stock-sub"></div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-start justify-between gap-2 mb-4">
+                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider line-clamp-2" data-i18n="metric_inv_value">Valor del inventario</h4>
+                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-lg"><i class="fa-solid fa-warehouse"></i></div>
+                    </div>
+                    <div class="flex items-baseline gap-2 mt-auto">
+                        <h2 class="text-2xl lg:text-3xl font-bold text-stone-800" id="metric-inv-value">0,00 €</h2>
+                    </div>
+                    <div class="kpi-sub" id="metric-inv-sub"></div>
+                </div>
             </div>
 
             <div class="dash-split">
@@ -1110,6 +1032,19 @@
         //  - viejo: {id, name, qty, box, price (neto)}
         // qty = cajas en ambos. Devuelve todo por botella para que ambos den el mismo COGS.
         function processOrderItem(item, products) {
+            if (item.kind === 'pack' && Array.isArray(item.components)) {
+                const packs = parseInt(item.qty) || 1;
+                const list0 = products || [];
+                let bottlesPerPack = 0, costPerPack = 0;
+                item.components.forEach(c => {
+                    const pr = list0.find(x => String(x.id) === String(c.product_id));
+                    bottlesPerPack += parseInt(c.bottles) || 0;
+                    costPerPack += (parseInt(c.bottles) || 0) * (pr ? costBreakdown(pr.price_cost_net).costoReal : 0);
+                });
+                const revenue = item.line_total != null ? parseFloat(item.line_total) : packs * (parseFloat(item.unit_price) || 0) / (1 + IGIC_RATE);
+                return { boxes: packs, bottles: packs * bottlesPerPack, costPerBottle: bottlesPerPack ? costPerPack / bottlesPerPack : 0,
+                         cogs: packs * costPerPack, revenueNet: revenue, name: item.name || 'Pack' };
+            }
             const boxes = parseInt(item.qty) || 1;
             const bottles = boxes * (parseInt(item.box_size ?? item.box) || 1);
             const priceNetBottle = item.unit_price != null
@@ -1145,7 +1080,7 @@
                 es: {
                     nav_dashboard: 'Vista General', nav_orders: 'Ventas & Envíos', nav_manual: 'Nueva venta', nav_inventory: 'Catálogo & Pricing', nav_crm: 'CRM Clientes', nav_promos: 'Cupones y Promos', nav_resellers: 'Resellers (Socios)',
                     nav_store: 'Volver a la Tienda', nav_logout: 'Cerrar Sesión', loading: 'Cargando...',
-                    metric_revenue: 'Ingresos Netos', metric_orders: 'Pedidos Exitosos', metric_tax: 'Impuestos (IGIC)', metric_alerts: 'Vinos a Reponer',
+                    metric_revenue: 'Ingresos Netos', metric_orders: 'Pedidos Exitosos', metric_tax: 'IGIC repercutido', metric_alerts: 'Vinos a Reponer',
                     recent_orders_title: 'Últimos Pedidos Recibidos', table_id: 'ID / Ref', table_customer: 'Cliente', table_total: 'Total',
                     table_payment_status: 'Estado Pago', table_logistics: 'Logística', orders_mgmt_title: 'Gestión de Órdenes',
                     table_ref: 'Ref. Pedido', table_customer_info: 'Cliente info', table_destination: 'Destino', table_amount: 'Importe',
@@ -1187,13 +1122,13 @@
                     metric_gross_sales: 'Ventas Brutas', metric_discounts: 'Descuentos Aplicados', metric_net_income: 'Ingresos Netos',
                     metric_partner_commissions: 'Comisiones a Socios', table_origin_promo: 'Origen / Promo', origin_organic: 'Orgánico',
                     origin_coupon: 'Cupón', origin_partner: 'Socio',
-                    metric_boxes_sold: 'Botellas Vendidas', metric_pending: 'Pendiente de cobro', metric_stock: 'Stock (botellas)', metric_inv_value: 'Valor del inventario', delivered_upper: 'ENTREGADO', mark_paid: 'Marcar cobrado', metric_total_cogs: 'Coste Total (COGS)', metric_gross_margin: 'Margen Bruto',
+                    metric_boxes_sold: 'Botellas vendidas', metric_net_sales: 'Ventas netas', metric_collected: 'Cobrado', metric_pending: 'Pendiente de cobro', metric_stock: 'Stock (botellas)', metric_inv_value: 'Valor del inventario', delivered_upper: 'ENTREGADO', mark_paid: 'Marcar cobrado', metric_total_cogs: 'Coste Total (COGS)', metric_gross_margin: 'Margen Bruto',
                     top_wines_title: 'Top Vinos Más Vendidos', top_wine_name: 'Vino', top_wine_boxes: 'botellas', top_wine_revenue: 'Ingreso'
                 },
                 en: {
                     nav_dashboard: 'Dashboard', nav_orders: 'Sales & Shipping', nav_manual: 'New sale', nav_inventory: 'Catalog & Pricing', nav_crm: 'Customer CRM', nav_promos: 'Coupons & Promos', nav_resellers: 'Resellers (Partners)',
                     nav_store: 'Back to Store', nav_logout: 'Logout', loading: 'Loading...',
-                    metric_revenue: 'Net Revenue', metric_orders: 'Successful Orders', metric_tax: 'Taxes (IGIC)', metric_alerts: 'Wines to Restock',
+                    metric_revenue: 'Net Revenue', metric_orders: 'Successful Orders', metric_tax: 'IGIC charged', metric_alerts: 'Wines to Restock',
                     recent_orders_title: 'Recent Orders Received', table_id: 'ID / Ref', table_customer: 'Customer', table_total: 'Total',
                     table_payment_status: 'Payment Status', table_logistics: 'Logistics (WhatsApp)', orders_mgmt_title: 'Order Management',
                     table_ref: 'Order Ref.', table_customer_info: 'Customer info', table_destination: 'Destination', table_amount: 'Amount',
@@ -1235,7 +1170,7 @@
                     metric_gross_sales: 'Gross Sales', metric_discounts: 'Discounts Applied', metric_net_income: 'Net Revenue',
                     metric_partner_commissions: 'Partner Commissions', table_origin_promo: 'Source / Promo', origin_organic: 'Organic',
                     origin_coupon: 'Coupon', origin_partner: 'Partner',
-                    metric_boxes_sold: 'Bottles Sold', metric_pending: 'Pending payment', metric_stock: 'Stock (bottles)', metric_inv_value: 'Inventory value', delivered_upper: 'DELIVERED', mark_paid: 'Mark as paid', metric_total_cogs: 'Total Cost (COGS)', metric_gross_margin: 'Gross Margin',
+                    metric_boxes_sold: 'Bottles sold', metric_net_sales: 'Net sales', metric_collected: 'Collected', metric_pending: 'Pending payment', metric_stock: 'Stock (bottles)', metric_inv_value: 'Inventory value', delivered_upper: 'DELIVERED', mark_paid: 'Mark as paid', metric_total_cogs: 'Total Cost (COGS)', metric_gross_margin: 'Gross Margin',
                     top_wines_title: 'Top Wines Sold', top_wine_name: 'Wine', top_wine_boxes: 'bottles', top_wine_revenue: 'Revenue'
                 }
             },
@@ -1480,7 +1415,17 @@
                     // KPI TOTALS
                     let grossSales = 0, discounts = 0, netIncome = 0, taxes = 0, commissions = 0;
                     let totalBoxes = 0, totalCOGS = 0;
-                    let paidCount = 0, pendingTotal = 0;
+                    let paidCount = 0, pendingTotal = 0, pendingCount = 0, collected = 0;
+                    const periodSel = (document.getElementById('dash-period') || {}).value || 'month';
+                    const inPeriod = (dateStr) => {
+                        if (periodSel === 'all') return true;
+                        const d = new Date(dateStr), n = new Date();
+                        if (periodSel === 'year') return d.getFullYear() === n.getFullYear();
+                        if (periodSel === 'quarter') return d.getFullYear() === n.getFullYear() && Math.floor(d.getMonth() / 3) === Math.floor(n.getMonth() / 3);
+                        const ref = periodSel === 'prev' ? new Date(n.getFullYear(), n.getMonth() - 1, 1) : n;
+                        return d.getFullYear() === ref.getFullYear() && d.getMonth() === ref.getMonth();
+                    };
+                    const fmt = (v) => v.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
                     let recentRows = '';
 
                     // TOP PRODUCTS TRACKING
@@ -1490,44 +1435,42 @@
                         orders.forEach((o, index) => {
                             if (o.payment_status === 'pending' && o.sale_channel === 'manual') {
                                 pendingTotal += parseFloat(o.total_amount) || 0;
+                                pendingCount++;
                             }
-                            if (o.payment_status === 'paid') {
-                                // MOTOR DE REGLAS: Extraer valores guardados en la orden
-                                const subtotal = parseFloat(o.subtotal_bruto || o.total_amount / 1.07);
+                            const invoiced = o.payment_status === 'paid' || (o.payment_status === 'pending' && o.sale_channel === 'manual');
+                            if (invoiced && inPeriod(o.created_at)) {
+                                const total = parseFloat(o.total_amount) || 0;
+                                const ship = parseFloat(o.shipping_amount) || 0;
+                                const shipNet = ship / (1 + IGIC_RATE);
                                 const descuento = parseFloat(o.valor_descuento || 0);
-                                const baseImponible = parseFloat(o.base_imponible || (o.total_amount / 1.07 - descuento));
-                                const igic = parseFloat(o.igic_amount || o.total_amount - baseImponible);
+                                const baseGoods = parseFloat(o.base_imponible != null ? o.base_imponible : (total - ship) / (1 + IGIC_RATE));
+                                const igicGoods = parseFloat(o.igic_amount != null ? o.igic_amount : (total - ship) - baseGoods);
 
-                                grossSales += subtotal;
+                                grossSales += parseFloat(o.subtotal_bruto != null ? o.subtotal_bruto : baseGoods + descuento) + shipNet;
                                 discounts += descuento;
-                                netIncome += baseImponible;
-                                taxes += igic;
+                                netIncome += baseGoods + shipNet;
+                                taxes += igicGoods + (ship - shipNet);
                                 paidCount++;
+                                if (o.payment_status === 'paid') collected += total;
 
-                                // PROCESAR ITEMS: Cajas, COGS, Top Productos
+                                // Bottles + COGS (frozen cogs_total when saved; otherwise computed from items)
+                                let orderCOGS = 0;
                                 if (o.items && Array.isArray(o.items)) {
                                     o.items.forEach(item => {
-                                        // COGS con costo real (costo Martín + arancel 10%); ver processOrderItem
                                         const r = processOrderItem(item, products);
                                         totalBoxes += r.bottles;
-                                        totalCOGS += r.cogs;
-
-                                        // TOP PRODUCTOS: Agrupar por nombre
-                                        if (!productSales[r.name]) {
-                                            productSales[r.name] = { boxes: 0, revenue: 0 };
-                                        }
+                                        orderCOGS += r.cogs;
+                                        if (!productSales[r.name]) productSales[r.name] = { boxes: 0, revenue: 0 };
                                         productSales[r.name].boxes += r.bottles;
                                         productSales[r.name].revenue += r.revenueNet;
                                     });
                                 }
+                                totalCOGS += o.cogs_total != null ? parseFloat(o.cogs_total) : orderCOGS;
 
-                                // COMISIONES: Si es tipo RESELLER, buscar commission_rate
+                                // Comisiones de socios (revendedores) sobre la base de bienes
                                 if (o.promo_type === 'RESELLER' && o.promo_code && resellers) {
                                     const reseller = resellers.find(r => r.code && r.code.toUpperCase() === o.promo_code.toUpperCase());
-                                    if (reseller && reseller.commission_rate) {
-                                        const commission = baseImponible * (reseller.commission_rate / 100);
-                                        commissions += commission;
-                                    }
+                                    if (reseller && reseller.commission_rate) commissions += baseGoods * (reseller.commission_rate / 100);
                                 }
                             }
 
@@ -1570,30 +1513,34 @@
                         document.getElementById('recent-orders-body').innerHTML = `<tr><td colspan="6" style="text-align:center;">${this.adminTranslations[this.currentLang].no_sales_recorded}</td></tr>`;
                     }
 
-                    // CALCULAR MARGEN BRUTO
-                    const marginAmount = netIncome - totalCOGS;
+                    // MARGEN = ventas netas - coste de la mercancía - comisiones de socios
+                    const marginAmount = netIncome - totalCOGS - commissions;
                     const marginPercent = netIncome > 0 ? ((marginAmount / netIncome) * 100).toFixed(1) : 0;
 
-                    // ACTUALIZAR KPIs
-                    document.getElementById('metric-gross-sales').textContent = grossSales.toFixed(2) + ' €';
-                    document.getElementById('metric-discounts').textContent = discounts.toFixed(2) + ' €';
-                    document.getElementById('metric-net-income').textContent = netIncome.toFixed(2) + ' €';
-                    document.getElementById('metric-tax').textContent = taxes.toFixed(2) + ' €';
-                    document.getElementById('metric-commissions').textContent = commissions.toFixed(2) + ' €';
-                    document.getElementById('metric-orders').textContent = paidCount;
-                    document.getElementById('metric-boxes').textContent = totalBoxes;
-                    document.getElementById('metric-cogs').textContent = totalCOGS.toFixed(2) + ' €';
-                    document.getElementById('metric-margin-amount').textContent = marginAmount.toFixed(2) + ' €';
-                    document.getElementById('metric-margin-percent').textContent = marginPercent + '%';
-                    document.getElementById('metric-pending').textContent = pendingTotal.toFixed(2) + ' €';
                     let stockBottles = 0, invValue = 0;
                     (products || []).forEach(pr => {
                         const st = parseInt(pr.stock) || 0;
                         stockBottles += st;
                         invValue += st * costBreakdown(pr.price_cost_net).costoReal;
                     });
-                    document.getElementById('metric-stock').textContent = stockBottles;
-                    document.getElementById('metric-inv-value').textContent = invValue.toFixed(2) + ' €';
+                    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+                    set('metric-net-sales', fmt(netIncome));
+                    set('metric-net-sub', paidCount + (paidCount === 1 ? ' pedido' : ' pedidos') + (discounts > 0 ? ' · desc. ' + fmt(discounts) : ''));
+                    set('metric-margin-amount', fmt(marginAmount));
+                    set('metric-margin-percent', marginPercent + '%');
+                    set('metric-margin-sub', 'Coste ' + fmt(totalCOGS) + (commissions > 0 ? ' · Comisiones ' + fmt(commissions) : ''));
+                    set('metric-collected', fmt(collected));
+                    set('metric-collected-sub', 'IGIC incluido');
+                    set('metric-pending', fmt(pendingTotal));
+                    set('metric-pending-sub', pendingCount ? pendingCount + (pendingCount === 1 ? ' venta' : ' ventas') + ' sin cobrar' : 'Nada pendiente');
+                    set('metric-tax', fmt(taxes));
+                    set('metric-tax-sub', 'Sobre ventas facturadas');
+                    set('metric-boxes', totalBoxes);
+                    set('metric-boxes-sub', 'en el periodo');
+                    set('metric-stock', stockBottles);
+                    set('metric-stock-sub', 'en almacén ahora');
+                    set('metric-inv-value', fmt(invValue));
+                    set('metric-inv-sub', 'a coste real (con arancel)');
 
                     // TOP VINOS RANKING
                     const topVinos = Object.entries(productSales)
