@@ -67,7 +67,6 @@
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
     doc.text('NIF ' + seller.nif, L, 63);
     doc.text(seller.address, L, 68);
-    doc.text(seller.email, L, 73);
     if (showClient) {
       doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
       doc.text(order.customer_tax_name || order.customer_name || '', 112, 58);
@@ -131,7 +130,7 @@
     doc.setDrawColor(line[0], line[1], line[2]); doc.setLineWidth(0.3); doc.line(L, 275, R, 275);
     doc.setFontSize(7.5); setC(muted);
     doc.text(isFS ? 'Factura simplificada emitida a consumidor final. Operación sujeta a IGIC al tipo del 7%, desglosado arriba.' : 'Operación sujeta a IGIC al tipo del 7%.', L, 281);
-    doc.text('VinoArgentino.es - ' + seller.email, L, 286);
+    doc.text('VinoArgentino.es', L, 286);
     return doc;
   }
 
