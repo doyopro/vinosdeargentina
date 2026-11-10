@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
     <title>SuperAdmin | VinoArgentino.es</title>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -586,7 +587,29 @@
                 opacity: 1;
             }
         }
-    </style>
+    
+        /* ---- Retoque de marca (Atlántico) ---- */
+        body { background: linear-gradient(180deg, #eef3f9 0%, var(--bg-light) 320px); }
+        .top-header { padding-bottom: 18px; border-bottom: 1px solid #dfe7f0; margin-bottom: 28px; }
+        .top-header h1 { letter-spacing: -0.01em; }
+        .user-profile { display: flex; align-items: center; gap: 10px; }
+        .user-email { font-size: 0.85rem; color: var(--text-muted); max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .panel { border-radius: 14px; border: 1px solid #dfe7f0; box-shadow: 0 6px 18px rgba(15, 42, 68, 0.05); }
+        .panel-header h3 { color: var(--sidebar-bg); }
+        .panel-header h3 i { color: var(--brand-gold); margin-right: 6px; }
+        thead th { text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.72rem !important; color: var(--text-muted) !important; }
+        tbody tr:hover { background: #f6f9fd; }
+        .nav-item.active { background: linear-gradient(90deg, rgba(227, 167, 47, 0.16), rgba(227, 167, 47, 0)); }
+        .btn-action { transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease; }
+        .btn-action:hover { filter: brightness(1.05); box-shadow: 0 4px 10px rgba(15, 42, 68, 0.15); }
+        .mv-field input:focus, .mv-field select:focus, .mv-field textarea:focus, .mv-line input:focus, .mv-line select:focus {
+            outline: none; border-color: var(--sky); box-shadow: 0 0 0 3px rgba(116, 172, 223, 0.28); }
+        .mv-field { font-weight: 500; }
+        .mv-summary { background: linear-gradient(180deg, #f7fafd, #eef3f9); border-color: #d5e0ec; }
+        .mv-summary div:nth-child(4) { border-top: 1px solid #d5e0ec; margin-top: 6px; padding-top: 8px; color: var(--sidebar-bg); }
+        #view-manual h4 { font-family: 'Playfair Display', serif; color: var(--sidebar-bg); font-size: 1.15rem; }
+        #view-manual h4::after { content: ""; display: block; width: 36px; height: 2px; background: var(--brand-gold); margin-top: 6px; }
+</style>
 </head>
 
 <body>
@@ -634,7 +657,7 @@
             <div class="user-profile">
                 <button onclick="app.toggleLanguage()" id="lang-toggle-btn" class="lang-toggle">🇬🇧 EN</button>
                 <i class="fa-solid fa-circle-user fa-2x" style="color: var(--brand-gold);"></i>
-                <span id="user-email-display" data-i18n="loading">Cargando...</span>
+                <span id="user-email-display" class="user-email">…</span>
             </div>
         </div>
 
