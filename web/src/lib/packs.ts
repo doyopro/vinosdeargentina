@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import { Pack, PackImage, PackLine, PackProduct } from "./types";
+import { stripVintage } from "./wineName";
 
 interface PackRow {
   id: string;
@@ -91,7 +92,7 @@ export const packBottleCount = (pack: Pack) => pack.items.reduce((sum, i) => sum
 /** One image per bottle (a product repeated `bottles` times shows up that many times). */
 export function packImages(pack: Pack): PackImage[] {
   return pack.items.flatMap((i) =>
-    i.product.image_url ? Array.from({ length: i.bottles }, () => ({ src: i.product.image_url!, alt: i.product.name })) : []
+    i.product.image_url ? Array.from({ length: i.bottles }, () => ({ src: i.product.image_url!, alt: stripVintage(i.product.name) })) : []
   );
 }
 

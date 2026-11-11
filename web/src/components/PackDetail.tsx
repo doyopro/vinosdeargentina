@@ -10,6 +10,7 @@ import { lineKey } from "@/lib/cart";
 import { packBottleCount, packImages, packLoosePrice, packName, toPackLine } from "@/lib/packs";
 import { PackCollage } from "@/components/PackCollage";
 import { Pack } from "@/lib/types";
+import { stripVintage } from "@/lib/wineName";
 
 const eur = (n: number) => n.toFixed(2).replace(".", ",");
 const filled = (v: string | null | undefined): v is string => typeof v === "string" && v.trim() !== "";
@@ -138,13 +139,13 @@ export function PackDetail({ pack, others }: { pack: Pack; others: Pack[] }) {
                 <li key={w.id} className="flex gap-4 rounded-xl border border-stone-100 bg-stone-50 p-4">
                   <div className="relative w-20 h-36 md:w-24 md:h-44 flex-shrink-0">
                     {w.image_url && (
-                      <Image src={w.image_url} alt={w.name} fill sizes="96px" className="object-contain drop-shadow-[0_6px_8px_rgba(15,42,68,0.25)]" />
+                      <Image src={w.image_url} alt={stripVintage(w.name)} fill sizes="96px" className="object-contain drop-shadow-[0_6px_8px_rgba(15,42,68,0.25)]" />
                     )}
                   </div>
                   <div className="min-w-0 flex-grow">
                     <h3 className="font-serif font-bold text-brand-900 text-lg leading-snug">
                       {n > 1 ? `${n} × ` : ""}
-                      {w.name}
+                      {stripVintage(w.name)}
                     </h3>
                     {place && <p className="text-xs text-stone-500 mt-0.5">{place}</p>}
                     {profile.length > 0 && (

@@ -7,6 +7,7 @@ import { useLocaleSwitch } from "@/lib/i18n";
 import { Pack } from "@/lib/types";
 import { packBottleCount, packImages, packLoosePrice, packName } from "@/lib/packs";
 import { PackCollage } from "@/components/PackCollage";
+import { stripVintage } from "@/lib/wineName";
 
 interface Props {
   pack: Pack;
@@ -86,7 +87,7 @@ export function PackCard({ pack, qty, onChangeQty }: Props) {
                 <li key={it.product.id} className="text-[13px] text-stone-600 flex justify-between gap-3">
                   <span className="truncate">
                     {it.bottles > 1 ? `${it.bottles} × ` : ""}
-                    {it.product.name}
+                    {stripVintage(it.product.name)}
                   </span>
                   <span className="text-stone-400 whitespace-nowrap">{t(`wineType.${it.product.type}`)}</span>
                 </li>

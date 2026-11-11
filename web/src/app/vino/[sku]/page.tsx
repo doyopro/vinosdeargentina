@@ -4,6 +4,7 @@ import { SiteShell } from "@/components/SiteShell";
 import { WineDetail } from "@/components/WineDetail";
 import { getBodega, getProduct, getProducts } from "@/lib/catalog";
 import { SITE_URL } from "@/lib/site";
+import { stripVintage } from "@/lib/wineName";
 
 export const revalidate = 300;
 
@@ -17,8 +18,8 @@ export async function generateMetadata({ params }: { params: Promise<{ sku: stri
   const { sku } = await params;
   const p = await getProduct(sku);
   if (!p) return { title: "Vino no encontrado" };
-  const description = clip(p.why_es || p.notes_es || `${p.name}, vino argentino de ${p.bodega}.`);
-  const title = `${p.name} · ${p.bodega} | VinoArgentino.es`;
+  const description = clip(p.why_es || p.notes_es || `${stripVintage(p.name)}, vino argentino de ${p.bodega}.`);
+  const title = `${stripVintage(p.name)} · ${p.bodega} | VinoArgentino.es`;
   return {
     title,
     description,
@@ -28,7 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ sku: stri
       title,
       description,
       url: `${SITE_URL}/vino/${p.sku}`,
-      images: p.image_url ? [{ url: p.image_url, alt: p.name }] : undefined,
+      images: p.image_url ? [{ url: p.image_url, alt: stripVintage(p.name) }] : undefined,
     },
   };
 }
@@ -47,7 +48,7 @@ export default async function WinePage({ params }: { params: Promise<{ sku: stri
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: product.name,
+    name: stripVintage(product.name),
     image: product.image_url ? [product.image_url] : undefined,
     description: product.why_es || product.notes_es || undefined,
     sku: product.sku,

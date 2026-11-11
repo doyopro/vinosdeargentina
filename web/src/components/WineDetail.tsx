@@ -8,6 +8,7 @@ import { useLocaleSwitch } from "@/lib/i18n";
 import { useCart } from "@/lib/CartContext";
 import { lineKey } from "@/lib/cart";
 import { toCatalogWine } from "@/lib/catalog-map";
+import { stripVintage } from "@/lib/wineName";
 import { Bodega, Product } from "@/lib/types";
 
 const eur = (n: number) => n.toFixed(2).replace(".", ",");
@@ -55,7 +56,6 @@ export function WineDetail({ product, bodega }: { product: Product; bodega: Bode
 
   const pick = (es: string | null, en: string | null) => (locale === "en" ? (filled(en) ? en : es) : filled(es) ? es : en);
 
-  const vintage = product.name.match(/\b(19|20)\d{2}\b/)?.[0] ?? null;
   const alcohol = product.alcohol != null && !Number.isNaN(Number(product.alcohol)) ? `${String(Number(product.alcohol)).replace(".", ",")} %` : null;
   const profile = (pick(product.profile_es, product.profile_en) || "")
     .split("·")
@@ -92,7 +92,7 @@ export function WineDetail({ product, bodega }: { product: Product; bodega: Bode
   ];
   const shownFacts = keyFacts.filter(([, , v]) => filled(v));
 
-  const headerMeta = [product.grape, product.subregion, vintage].filter(filled);
+  const headerMeta = [product.grape, product.subregion].filter(filled);
 
   return (
     <article className="bg-stone-50">
@@ -119,7 +119,7 @@ export function WineDetail({ product, bodega }: { product: Product; bodega: Bode
                 <span className="text-[11px] font-bold uppercase tracking-widest text-sky-500">{product.bodega}</span>
               )}
             </div>
-            <h1 className="mt-2 text-4xl md:text-6xl font-serif font-bold text-white leading-tight">{product.name}</h1>
+            <h1 className="mt-2 text-4xl md:text-6xl font-serif font-bold text-white leading-tight">{stripVintage(product.name)}</h1>
             {headerMeta.length > 0 && <p className="mt-3 text-stone-300">{headerMeta.join(" · ")}</p>}
             {profile.length > 0 && (
               <ul className="mt-5 flex flex-wrap gap-2">
@@ -170,7 +170,7 @@ export function WineDetail({ product, bodega }: { product: Product; bodega: Bode
             {product.image_url && (
               <Image
                 src={product.image_url}
-                alt={product.name}
+                alt={stripVintage(product.name)}
                 fill
                 priority
                 sizes="(min-width: 768px) 40vw, 100vw"

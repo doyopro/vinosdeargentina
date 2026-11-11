@@ -1,5 +1,6 @@
 import { getProvinciaBodega } from "./bodegaProvincia";
 import { CatalogWine, Product } from "./types";
+import { stripVintage } from "./wineName";
 
 export const toCatalogWine = (p: Product): CatalogWine => ({
   id: p.id,
@@ -11,7 +12,7 @@ export const toCatalogWine = (p: Product): CatalogWine => ({
   box: 1, // sold by the bottle: cart qty = bottles
   price: (p.price_retail || 0) / 1.07,
   bodega: p.bodega,
-  name: p.name,
+  name: stripVintage(p.name),
   notes_es: p.notes_es,
   notes_en: p.notes_en,
   image_url: p.image_url,
