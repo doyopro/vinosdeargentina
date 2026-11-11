@@ -1471,8 +1471,11 @@
                 const type = document.getElementById('mv-invtype').value;
                 document.getElementById('mv-fc').style.display = type === 'FC' ? 'block' : 'none';
                 const w = [];
-                if (type === 'FS' && total > 400) w.push('La factura simplificada solo es válida hasta 400 € (IGIC incluido). Este importe requiere factura completa.');
-                if (document.getElementById('mv-pay').value === 'cash' && total >= 1000) w.push('Pagos en efectivo: el límite legal es de 1.000 € por operación.');
+                const hasTaxId = !!document.getElementById('mv-taxid').value.trim();
+                if (type === 'FS' && total > 3000) w.push('La factura simplificada no puede superar 3.000 € (IGIC incluido). Este importe requiere factura completa.');
+                else if (type === 'FS' && total > 400 && hasTaxId) w.push('Por encima de 400 € la factura simplificada solo vale para consumidor final. Con NIF de empresa o profesional, usa factura completa.');
+                else if (type === 'FS' && total > 400) w.push('Importe superior a 400 €: la factura simplificada solo es válida si el cliente es un particular (consumidor final), no una empresa ni un profesional.');
+                if (document.getElementById('mv-pay').value === 'cash' && total >= 1000) w.push('Pago en efectivo: no se puede cobrar en metálico una operación de 1.000 € o más (empresario con cliente). Usa transferencia, Bizum o tarjeta.');
                 document.getElementById('mv-warnings').innerHTML = w.map(t => `<div class="mv-warn">${t}</div>`).join('');
                 this._manualTotal = total;
             },
@@ -1484,7 +1487,11 @@
                 const res = document.getElementById('mv-result');
                 if (!lines.length) { res.innerHTML = '<div class="mv-warn">Añade al menos un vino con cantidad y precio.</div>'; return; }
                 const type = document.getElementById('mv-invtype').value;
-                if (type === 'FS' && this._manualTotal > 400) { res.innerHTML = '<div class="mv-warn">Importe superior a 400 €: elige factura completa (FC).</div>'; return; }
+                if (type === 'FS' && this._manualTotal > 3000) { res.innerHTML = '<div class="mv-warn">Importe superior a 3.000 €: elige factura completa (FC).</div>'; return; }
+                if (type === 'FS' && this._manualTotal > 400) {
+                    if (document.getElementById('mv-taxid').value.trim()) { res.innerHTML = '<div class="mv-warn">Con NIF de empresa o profesional, por encima de 400 € usa factura completa (FC).</div>'; return; }
+                    if (!confirm('Importe superior a 400 €: la factura simplificada solo vale si el cliente es un particular (consumidor final). ¿Confirmas que lo es?')) return;
+                }
                 if (type === 'FC' && (!document.getElementById('mv-taxname').value.trim() || !document.getElementById('mv-taxid').value.trim())) {
                     res.innerHTML = '<div class="mv-warn">Para factura completa indica nombre/razón social y NIF.</div>'; return; }
                 if (!confirm('¿Confirmar la venta? Se descontará el stock.')) return;
