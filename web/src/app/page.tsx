@@ -5,7 +5,7 @@ import { SITE_URL } from "@/lib/site";
 
 // Catalog and packs are fetched on the server so the initial HTML already
 // contains the wines (SEO); filters then run on the client.
-export const revalidate = 300;
+export const revalidate = 30;
 
 const jsonLd = [
   {

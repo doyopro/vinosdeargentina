@@ -666,6 +666,8 @@
         .invest-bar { height: 8px; background: #e2e8f0; border-radius: 99px; overflow: hidden; margin-top: 6px; }
         .invest-bar > span { display: block; height: 100%; background: linear-gradient(90deg, #74acdf, #e3a72f); }
         #invest-panel { margin-bottom: 30px; }
+        tr.row-agotado td { opacity: 0.55; }
+        tr.row-agotado td:first-child::after { content: ' · AGOTADO'; color: #b91c1c; font-weight: 700; font-size: 0.7rem; }
         .dash-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
         .dash-toolbar label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
         .dash-toolbar select { padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; font-family: inherit; font-size: 0.9rem; color: var(--text-main); }
@@ -1371,11 +1373,17 @@
             manualProducts: [],
 
             loadManualSale: async function () {
-                if (!this.manualProducts.length) {
+                {
                     const { data } = await this.db.from('products')
                         .select('id,name,bodega,stock,price_retail,price_cost_net,price_cost_list')
                         .order('name');
-                    this.manualProducts = data || [];
+                    this.manualProducts = (data || []).sort((a, b) => ((b.stock || 0) > 0) - ((a.stock || 0) > 0) || a.name.localeCompare(b.name));
+                    document.querySelectorAll('#mv-lines .mv-prod').forEach(sel => {
+                        const cur = sel.value;
+                        sel.innerHTML = '<option value="">Elegir...</option>' + this.manualProducts.map(p =>
+                            `<option value="${p.id}">${p.name} (${(p.stock || 0) > 0 ? 'stock ' + p.stock : 'AGOTADO'})</option>`).join('');
+                        sel.value = cur;
+                    });
                 }
                 if (!document.querySelector('#mv-lines .mv-line')) this.addManualLine();
                 this.manualRecalc();
@@ -1383,7 +1391,7 @@
 
             addManualLine: function () {
                 const opts = this.manualProducts.map(p =>
-                    `<option value="${p.id}">${p.name} (stock ${p.stock ?? 0})</option>`).join('');
+                    `<option value="${p.id}">${p.name} (${(p.stock || 0) > 0 ? 'stock ' + p.stock : 'AGOTADO'})</option>`).join('');
                 const div = document.createElement('div');
                 div.className = 'mv-line';
                 div.innerHTML = `
@@ -1874,6 +1882,7 @@
             loadInventoryTable: async function () {
                 const { data: products } = await this.db.from('products').select('*').order('name');
                 if (!products) return;
+                products.sort((a, b) => ((b.stock || 0) > 0) - ((a.stock || 0) > 0) || a.name.localeCompare(b.name));
 
                 document.getElementById('inventory-body').innerHTML = products.map(p => {
                     const { costoMartin, arancel, costoReal, igicImportacion } = costBreakdown(p.price_cost_net);
@@ -1894,7 +1903,7 @@
 
                     const stockClass = p.stock < 0 ? 'negative-stock' : '';
 
-                    return `<tr>
+                    return `<tr class="${(p.stock || 0) <= 0 ? 'row-agotado' : ''}">
                         <td><strong>${p.name}</strong><br><small style="color: var(--text-muted)">${p.bodega || p.region}</small></td>
                         <td style="text-align: center;"><input type="number" class="input-stock ${stockClass}" id="inv-${p.id}" value="${p.stock || 0}" data-orig="${p.stock || 0}"></td>
                         <td style="text-align: center;">

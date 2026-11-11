@@ -5,7 +5,7 @@ import { PackDetail } from "@/components/PackDetail";
 import { fetchPack, fetchPacks, packBottleCount } from "@/lib/packs";
 import { SITE_URL } from "@/lib/site";
 
-export const revalidate = 300;
+export const revalidate = 30;
 
 export async function generateStaticParams() {
   return (await fetchPacks()).map((p) => ({ slug: p.slug }));

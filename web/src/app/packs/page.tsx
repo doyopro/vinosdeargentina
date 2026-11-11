@@ -7,7 +7,7 @@ import { PacksCatalogCta, PacksHeading, PacksHero } from "@/components/PacksText
 import { fetchPacks } from "@/lib/packs";
 import { SITE_URL } from "@/lib/site";
 
-export const revalidate = 300;
+export const revalidate = 30;
 
 const title = "Packs y ofertas | VinoArgentino.es";
 const description = "Packs de selección de vinos argentinos de altura y descuentos por volumen. Retirada gratis en Lanzarote y envío a Canarias.";

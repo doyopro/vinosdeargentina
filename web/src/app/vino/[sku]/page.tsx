@@ -6,7 +6,7 @@ import { getBodega, getProduct, getProducts } from "@/lib/catalog";
 import { SITE_URL } from "@/lib/site";
 import { stripVintage } from "@/lib/wineName";
 
-export const revalidate = 300;
+export const revalidate = 30;
 
 export async function generateStaticParams() {
   return (await getProducts()).map((p) => ({ sku: p.sku }));

@@ -3,7 +3,7 @@ import { SiteShell } from "@/components/SiteShell";
 import { BodegasIndex } from "@/components/BodegasIndex";
 import { getBodegas } from "@/lib/catalog";
 
-export const revalidate = 300;
+export const revalidate = 30;
 
 export const metadata: Metadata = {
   title: "Bodegas | VinoArgentino.es",

@@ -59,7 +59,12 @@ export async function fetchPacks(): Promise<Pack[]> {
     return [];
   }
 
-  return ((data ?? []) as unknown as PackRow[]).map(mapPack).filter((p) => p.items.length > 0);
+  // Packs completos primero; los que tienen algún vino agotado, al final (orden estable).
+  const complete = (p: Pack) => p.items.every((i) => i.product.is_available !== false);
+  return ((data ?? []) as unknown as PackRow[])
+    .map(mapPack)
+    .filter((p) => p.items.length > 0)
+    .sort((a, b) => Number(complete(b)) - Number(complete(a)));
 }
 
 export async function fetchPack(slug: string): Promise<Pack | null> {

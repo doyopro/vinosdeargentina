@@ -6,7 +6,7 @@ import { BodegaWines } from "@/components/BodegaWines";
 import { getBodega, getBodegas, getWinesByBodega } from "@/lib/catalog";
 import { SITE_URL } from "@/lib/site";
 
-export const revalidate = 300;
+export const revalidate = 30;
 
 export async function generateStaticParams() {
   return (await getBodegas()).map((b) => ({ slug: b.slug }));
