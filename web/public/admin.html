@@ -657,8 +657,11 @@
         .cost-edit { display: flex; gap: 4px; margin: 6px 0 2px; align-items: center; }
         .cost-edit input { width: 62px; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.78rem; font-family: inherit; }
         .cost-edit .btn-action { padding: 4px 8px; }
-        .invest-table th, .invest-table td { text-align: right; }
-        .invest-table th:first-child, .invest-table td:first-child { text-align: left; }
+        .invest-table td { text-align: right; padding: 11px 14px; }
+        .invest-table td:first-child { text-align: left; }
+        .invest-table td.note { text-align: left; color: var(--text-muted); font-size: 0.78rem; width: 42%; }
+        .invest-table tr.tot td { font-weight: 700; border-top: 1px solid #e2e8f0; }
+        @media (max-width: 700px) { .invest-table td.note { display: none; } }
         .invest-table tr.sec td { background: #f1f5f9; font-weight: 700; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
         .invest-table td small { display: block; color: var(--text-muted); font-size: 0.72rem; font-weight: 400; }
         .invest-table .pos { color: #15803d; font-weight: 700; } .invest-table .neg { color: #b91c1c; font-weight: 700; }
@@ -844,14 +847,13 @@
             </div>
 
             <div class="panel" id="invest-panel">
-                <div class="panel-header"><h3><i class="fa-solid fa-scale-unbalanced-flip"></i> Inversión, stock y punto de equilibrio <small style="font-weight:500; color:var(--text-muted); font-size:0.75rem;">(acumulado, sin filtro de periodo)</small></h3></div>
+                <div class="panel-header"><h3><i class="fa-solid fa-scale-unbalanced-flip"></i> Resumen del negocio <small style="font-weight:500; color:var(--text-muted); font-size:0.75rem;">(acumulado · importes sin IGIC)</small></h3></div>
                 <div class="table-wrapper">
                     <table class="invest-table">
-                        <thead><tr><th></th><th>Con tu dto. (real)</th><th>Sin dto. de Martín</th></tr></thead>
                         <tbody id="invest-body"></tbody>
                     </table>
                 </div>
-                <p class="invest-foot">El 20% fue una gentileza puntual: la columna "Sin dto." es el coste de reposición normal (lista × 1,10 de arancel). Los extras de despacho se suman a la inversión en ambas columnas.</p>
+                <p class="invest-foot"><b>Coste real</b> = precio de lista de Martín × 1,10 (arancel 10%), <b>sin</b> el 20% de descuento: es la base para fijar tus PVP y medir tu margen. El 20% se muestra aparte como ahorro extra.</p>
             </div>
 
             <div class="dash-split">
@@ -1133,7 +1135,7 @@
                 });
                 const revenue = item.line_total != null ? parseFloat(item.line_total) : packs * (parseFloat(item.unit_price) || 0) / (1 + IGIC_RATE);
                 return { boxes: packs, bottles: packs * bottlesPerPack, costPerBottle: bottlesPerPack ? costPerPack / bottlesPerPack : 0,
-                         cogs: packs * costPerPack, cogsList: packs * listPerPack, revenueNet: revenue, name: item.name || 'Pack' };
+                         cogs: packs * costPerPack, cogsList: packs * listPerPack, revenueNet: revenue, pvpNet: revenue, name: item.name || 'Pack' };
             }
             const boxes = parseInt(item.qty) || 1;
             const bottles = boxes * (parseInt(item.box_size ?? item.box) || 1);
@@ -1161,6 +1163,7 @@
                 cogs: bottles * costPerBottle,
                 cogsList: bottles * (snapCost != null || costoReal > 0 ? listPerBottle : costPerBottle),
                 revenueNet,
+                pvpNet: product && parseFloat(product.price_retail) > 0 ? bottles * parseFloat(product.price_retail) / (1 + IGIC_RATE) : revenueNet,
                 name: item.name || (product && product.name) || 'Unknown'
             };
         }
@@ -1465,9 +1468,9 @@
                      <div><span>Base imponible</span><b>${fmt(base)}</b></div>
                      <div><span>IGIC 7%</span><b>${fmt(igic)}</b></div>
                      <div style="font-size:1.1rem;"><span>TOTAL</span><b>${fmt(total)}</b></div>
-                     <div style="color:#64748b;"><span>Coste mercancía (con tu dto.)</span><span>${fmt(cogs)}</span></div>
-                     <div style="color:#15803d;"><span>Margen bruto real</span><b>${fmt(base - cogs)}</b></div>
-                     <div style="color:#64748b; font-size:0.85rem;"><span>Margen sin dto. de Martín</span><span style="${base - cogsList < 0 ? 'color:#b91c1c;font-weight:700;' : ''}">${fmt(base - cogsList)}</span></div>`;
+                     <div style="color:#64748b;"><span>Coste real (lista × 1,10, sin el 20%)</span><span>${fmt(cogsList)}</span></div>
+                     <div style="${base - cogsList < 0 ? 'color:#b91c1c;' : 'color:#15803d;'}"><span>Margen sobre coste real</span><b>${fmt(base - cogsList)} (${base > 0 ? ((base - cogsList) / base * 100).toFixed(1) : 0}%)</b></div>
+                     <div style="color:#64748b; font-size:0.85rem;"><span>Con tu dto. de Martín (coste pagado ${fmt(cogs)})</span><span>${fmt(base - cogs)}</span></div>`;
                 const type = document.getElementById('mv-invtype').value;
                 document.getElementById('mv-fc').style.display = type === 'FC' ? 'block' : 'none';
                 const w = [];
@@ -1693,15 +1696,15 @@
                     (products || []).forEach(pr => {
                         const st = parseInt(pr.stock) || 0;
                         stockBottles += st;
-                        invValue += st * costBreakdown(pr.price_cost_net).costoReal;
+                        invValue += st * costBreakdown(pr.price_cost_list != null ? pr.price_cost_list : pr.price_cost_net).costoReal;
                     });
                     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
                     set('metric-net-sales', fmt(netIncome));
                     set('metric-net-sub', paidCount + (paidCount === 1 ? ' pedido' : ' pedidos') + (discounts > 0 ? ' · desc. ' + fmt(discounts) : ''));
-                    set('metric-margin-amount', fmt(marginAmount));
-                    set('metric-margin-percent', marginPercent + '%');
-                    set('metric-margin-list', 'Sin dto. de Martín: ' + fmt(marginList) + ' (' + marginListPct + '%) · dto. te ahorra ' + fmt(dtoSaving));
-                    set('metric-margin-sub', 'Coste ' + fmt(totalCOGS) + (commissions > 0 ? ' · Comisiones ' + fmt(commissions) : '') + (extraCosts > 0 ? ' · Extras ' + fmt(extraCosts) : ''));
+                    set('metric-margin-amount', fmt(marginList));
+                    set('metric-margin-percent', marginListPct + '%');
+                    set('metric-margin-list', 'Con dto. de Martín: ' + fmt(marginAmount) + ' (+' + fmt(dtoSaving) + ' de ahorro)');
+                    set('metric-margin-sub', 'Sobre coste real ' + fmt(Math.max(totalCOGSList, totalCOGS)) + (commissions > 0 ? ' · Comisiones ' + fmt(commissions) : '') + (extraCosts > 0 ? ' · Extras ' + fmt(extraCosts) : ''));
                     set('metric-collected', fmt(collected));
                     set('metric-collected-sub', 'IGIC incluido');
                     set('metric-pending', fmt(pendingTotal));
@@ -1724,7 +1727,7 @@
                     set('metric-tax-sub2', 'Soportado (pagado) ' + fmt(igicSop) + (!nExp ? (igicSopAll > 0 ? ' · ' + fmt(igicSopAll) + ' en otros periodos' : ' · sin facturas cargadas') : ''));
                     set('metric-ticket', fmt(paidCount ? netIncome / paidCount : 0));
                     set('metric-ticket-sub', 'Web ' + webCount + ' · Manual ' + manualCount);
-                    set('metric-stock-sub', 'valor ' + fmt(invValue) + ' a coste real');
+                    set('metric-stock-sub', 'valor ' + fmt(invValue) + ' a coste real (sin dto.)');
 
                     // Tendencia 6 meses
                     const now = new Date(), months = [];
@@ -1751,67 +1754,66 @@
                         ? alerts.slice(0, 8).map(a => `<div class="alert-item alert-${a[0]}"><i class="fa-solid ${a[1]}"></i><span>${a[2]}</span></div>`).join('')
                         : '<div class="alert-item alert-ok"><i class="fa-solid fa-circle-check"></i><span>Todo en orden: sin stock bajo ni cobros pendientes.</span></div>';
 
-                    // ===== INVERSIÓN / STOCK / BREAK-EVEN (acumulado) =====
-                    let salesAll = 0, cogsAll = 0, cogsAllList = 0, commAll = 0;
+                    // ===== RESUMEN DEL NEGOCIO (acumulado) =====
+                    let salesAll = 0, goodsAll = 0, pvpAll = 0, cogsAll = 0, cogsAllList = 0, commAll = 0;
                     (orders || []).forEach(o => {
                         const inv = o.payment_status === 'paid' || (o.payment_status === 'pending' && o.sale_channel === 'manual');
                         if (!inv) return;
                         const tt = parseFloat(o.total_amount) || 0, sh = parseFloat(o.shipping_amount) || 0;
                         const bg = parseFloat(o.base_imponible != null ? o.base_imponible : (tt - sh) / (1 + IGIC_RATE));
                         salesAll += bg + sh / (1 + IGIC_RATE);
-                        let oc = 0, ocl = 0;
-                        (Array.isArray(o.items) ? o.items : []).forEach(it => { const r = processOrderItem(it, products); oc += r.cogs; ocl += r.cogsList; });
+                        goodsAll += bg;
+                        let oc = 0, ocl = 0, opvp = 0;
+                        (Array.isArray(o.items) ? o.items : []).forEach(it => { const r = processOrderItem(it, products); oc += r.cogs; ocl += r.cogsList; opvp += r.pvpNet; });
                         const real = o.cogs_total != null ? parseFloat(o.cogs_total) : oc;
                         cogsAll += real; cogsAllList += Math.max(ocl, real);
+                        pvpAll += Math.max(opvp, bg);
                         if (o.promo_type === 'RESELLER' && o.promo_code && resellers) {
                             const rs = resellers.find(r => r.code && r.code.toUpperCase() === o.promo_code.toUpperCase());
                             if (rs && rs.commission_rate) commAll += bg * (rs.commission_rate / 100);
                         }
                     });
                     const extraAll = (expenses || []).reduce((a, g) => a + (parseFloat(g.cost_amount) || 0), 0);
-                    let investReal = extraAll, investList = extraAll;
-                    (purchases || []).forEach(m => {
-                        const q = parseFloat(m.quantity) || 0;
-                        investReal += q * (parseFloat(m.unit_cost_net) || 0);
-                        const pr = (products || []).find(x => x.id === m.product_id);
-                        investList += q * costBreakdown(pr ? (pr.price_cost_list != null ? pr.price_cost_list : pr.price_cost_net) : (parseFloat(m.unit_cost_net) || 0) / 1.1).costoReal;
-                    });
-                    let stockCostReal = 0, stockCostList = 0, stockPvpNet = 0, stockUnits = 0;
+                    let investPaid = extraAll;
+                    (purchases || []).forEach(m => { investPaid += (parseFloat(m.quantity) || 0) * (parseFloat(m.unit_cost_net) || 0); });
+                    let stockCostList = 0, stockPvpNet = 0, stockUnits = 0;
                     (products || []).forEach(pr => {
                         const st = Math.max(0, parseInt(pr.stock) || 0);
                         stockUnits += st;
-                        stockCostReal += st * costBreakdown(pr.price_cost_net).costoReal;
                         stockCostList += st * costBreakdown(pr.price_cost_list != null ? pr.price_cost_list : pr.price_cost_net).costoReal;
                         stockPvpNet += st * (parseFloat(pr.price_retail) || 0) / (1 + IGIC_RATE);
                     });
                     const avgPvp = stockUnits ? stockPvpNet / stockUnits : 0;
-                    const pm = (v) => `<span class="${v >= 0 ? 'pos' : 'neg'}">${fmt(v)}</span>`;
-                    const col = (invest, cogsV, stockCost) => {
-                        const realized = salesAll - cogsV - commAll;
-                        const projected = salesAll + stockPvpNet - invest - commAll;
-                        const missing = Math.max(0, invest - salesAll);
-                        const pct = invest > 0 ? Math.min(100, (salesAll / invest) * 100) : 0;
-                        return { realized, projected, missing, pct, invest, cogsV, stockCost };
-                    };
-                    const A = col(investReal, cogsAll, stockCostReal), B = col(investList, cogsAllList, stockCostList);
-                    const row = (label, a, b, sub) => `<tr><td>${label}${sub ? '<small>' + sub + '</small>' : ''}</td><td>${a}</td><td>${b}</td></tr>`;
+                    const pct = (a, b) => b > 0 ? (a / b * 100).toFixed(1).replace('.', ',') + '%' : '-';
+                    const pm = (v) => `<span class="${v >= 0 ? 'pos' : 'neg'}">${v > 0 ? '+' : ''}${fmt(v)}</span>`;
+                    const stockMargin = stockPvpNet - stockCostList;
+                    const discGiven = Math.max(0, pvpAll - goodsAll);
+                    const marginReal = salesAll - cogsAllList - commAll - extraAll;
+                    const dtoSave = cogsAllList - cogsAll;
+                    const marginTotal = marginReal + dtoSave;
+                    const recovered = investPaid > 0 ? Math.min(100, salesAll / investPaid * 100) : 0;
+                    const missing = Math.max(0, investPaid - salesAll);
+                    const row = (label, val, note, cls) => `<tr class="${cls || ''}"><td>${label}</td><td>${val}</td><td class="note">${note || ''}</td></tr>`;
                     const sec = (t) => `<tr class="sec"><td colspan="3">${t}</td></tr>`;
-                    const bar = (c) => `${c.pct.toFixed(0)}% recuperado<div class="invest-bar"><span style="width:${c.pct}%"></span></div>`;
                     document.getElementById('invest-body').innerHTML =
-                        sec('Inversión') +
-                        row('Invertido en compras', fmt(A.invest), fmt(B.invest), 'coste real con arancel 10% + despacho') +
-                        sec('Stock en almacén (' + stockUnits + ' botellas)') +
-                        row('Stock a coste', fmt(A.stockCost), fmt(B.stockCost)) +
-                        row('Stock a precio de venta', fmt(stockPvpNet), fmt(stockPvpNet), 'neto sin IGIC, PVP medio ' + fmt(avgPvp) + '/botella') +
-                        sec('Vendido hasta hoy') +
-                        row('Ventas netas', fmt(salesAll), fmt(salesAll), 'facturadas, sin IGIC') +
-                        row('Coste de lo vendido', fmt(A.cogsV), fmt(B.cogsV)) +
-                        row('Margen realizado', pm(A.realized), pm(B.realized), commAll > 0 ? 'después de comisiones ' + fmt(commAll) : '') +
-                        sec('Punto de equilibrio') +
-                        row('Recuperado de lo invertido', bar(A), bar(B), 'ventas netas ÷ inversión') +
-                        row('Faltan por vender', A.missing > 0 ? fmt(A.missing) + (avgPvp ? '<small>≈ ' + Math.ceil(A.missing / avgPvp) + ' botellas a PVP medio</small>' : '') : '<span class="pos">Recuperado</span>',
-                                                  B.missing > 0 ? fmt(B.missing) + (avgPvp ? '<small>≈ ' + Math.ceil(B.missing / avgPvp) + ' botellas a PVP medio</small>' : '') : '<span class="pos">Recuperado</span>') +
-                        row('Beneficio si vendes todo el stock a PVP', pm(A.projected), pm(B.projected), 'ventas + stock a PVP − inversión');
+                        sec('Tu stock · ' + stockUnits + ' botellas') +
+                        row('Coste real de reponerlo', fmt(stockCostList), 'lista de Martín × 1,10, sin el 20%') +
+                        row('Valor a PVP publicado', fmt(stockPvpNet), 'precio web sin IGIC · PVP medio ' + fmt(avgPvp) + ' por botella') +
+                        row('Margen si lo vendes todo a PVP', pm(stockMargin), pct(stockMargin, stockPvpNet) + ' sobre la venta', 'tot') +
+                        sec('Lo vendido hasta hoy') +
+                        row('Ventas facturadas', fmt(salesAll), 'incluye lo pendiente de cobro') +
+                        row('A PVP publicado habría sido', fmt(pvpAll), 'lo que valían esas botellas en la web') +
+                        row('Descuentos y precios especiales', discGiven > 0 ? '<span class="neg">- ' + fmt(discGiven) + '</span>' : fmt(0), pct(discGiven, pvpAll) + ' por debajo del PVP') +
+                        row('Coste real de lo vendido', fmt(cogsAllList), 'sin el 20% de Martín') +
+                        (commAll > 0 ? row('Comisiones de revendedores', fmt(commAll), '') : '') +
+                        (extraAll > 0 ? row('Despacho y costes extra', fmt(extraAll), 'gestión de importación') : '') +
+                        row('Margen sobre coste real', pm(marginReal), pct(marginReal, salesAll) + ' de las ventas · con PVP completo sería ' + pct(stockPvpNet - stockCostList, stockPvpNet), 'tot') +
+                        row('+ Ahorro por el 20% de Martín', pm(dtoSave), 'coste que pagaste de verdad: ' + fmt(cogsAll)) +
+                        row('= Margen total con tu descuento', pm(marginTotal), pct(marginTotal, salesAll) + ' de las ventas', 'tot') +
+                        sec('Dinero invertido') +
+                        row('Invertido en compras', fmt(investPaid), 'lo pagado + arancel 10% + despacho') +
+                        row('Recuperado con tus ventas', recovered.toFixed(0) + '%<div class="invest-bar"><span style="width:' + recovered + '%"></span></div>', 'ventas netas ÷ invertido') +
+                        row('Faltan por vender', missing > 0 ? fmt(missing) : '<span class="pos">Recuperado</span>', missing > 0 && avgPvp ? '≈ ' + Math.ceil(missing / avgPvp) + ' botellas a PVP medio' : '', 'tot');
 
                     // TOP VINOS RANKING
                     const topVinos = Object.entries(productSales)
@@ -1892,7 +1894,8 @@
                 products.sort((a, b) => ((b.stock || 0) > 0) - ((a.stock || 0) > 0) || a.name.localeCompare(b.name));
 
                 document.getElementById('inventory-body').innerHTML = products.map(p => {
-                    const { costoMartin, arancel, costoReal, igicImportacion } = costBreakdown(p.price_cost_net);
+                    const { costoMartin, arancel, costoReal, igicImportacion } = costBreakdown(p.price_cost_list != null ? p.price_cost_list : p.price_cost_net);
+                    const paidNet = parseFloat(p.price_cost_net) || 0;
 
                     // HORECA Calculations
                     const priceHorecaTotal = parseFloat(p.price_horeca || 0);
@@ -1919,7 +1922,7 @@
                             </button>
                         </td>
                         <td style="text-align: right;"><button class="btn-action" onclick="app.updateSingleStock('${p.id}', event)"><i class="fa-solid fa-floppy-disk"></i></button></td>
-                        <td class="finance-value" style="color: var(--text-muted);">💰 ${costoMartin.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].cost_martin_label} (pagado)</small>
+                        <td class="finance-value" style="color: var(--text-muted);">💰 ${costoMartin.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].cost_martin_label} (lista)</small>${paidNet && Math.abs(paidNet - costoMartin) > 0.004 ? '<br><small>pagado con dto: ' + paidNet.toFixed(2) + ' €</small>' : ''}
                             <div class="cost-edit"><input type="number" step="0.01" min="0" id="cl-${p.id}" value="${p.price_cost_list != null ? p.price_cost_list : p.price_cost_net}" title="Precio de lista de Martín"><input type="number" step="0.5" min="0" max="100" id="cd-${p.id}" value="${p.cost_discount_pct || 0}" title="Descuento %"><button class="btn-action" onclick="app.saveCost('${p.id}', event)" title="Guardar lista y descuento"><i class="fa-solid fa-floppy-disk"></i></button></div><small>lista € · dto %</small></td>
                         <td class="finance-value" style="color: var(--text-muted);">🛃 ${arancel.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].arancel_label}</small></td>
                         <td class="finance-value" style="color: var(--text-main);">✅ ${costoReal.toFixed(2)} €<br><small>${this.adminTranslations[this.currentLang].cost_real_label}</small></td>
