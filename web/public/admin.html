@@ -693,6 +693,8 @@
                     class="fa-solid fa-receipt"></i> Ventas & Envíos</div>
             <div class="nav-item" onclick="app.switchView('manual', this)" data-i18n="nav_manual"><i
                     class="fa-solid fa-cash-register"></i> Nueva venta</div>
+            <div class="nav-item" onclick="app.switchView('salidas', this)" data-i18n="nav_salidas"><i
+                    class="fa-solid fa-box-open"></i> Salidas de stock</div>
             <div class="nav-item" onclick="app.switchView('gastos', this)" data-i18n="nav_gastos"><i
                     class="fa-solid fa-file-invoice"></i> Gastos con IGIC</div>
             <div class="nav-item" onclick="app.switchView('inventory', this)" data-i18n="nav_inventory"><i
@@ -987,6 +989,43 @@
             </div>
         </section>
 
+        <section id="view-salidas" class="section">
+            <div class="panel">
+                <div class="panel-header"><h3><i class="fa-solid fa-box-open"></i> Salida de stock sin factura</h3></div>
+                <div style="padding: 16px;">
+                    <p style="font-size:0.88rem; color: var(--text-muted); margin-bottom:12px;">Descuenta botellas del stock sin emitir factura ni contar la venta: entregas pendientes de facturar, roturas, uso propio, muestras. Queda anotado con su etiqueta.</p>
+                    <div id="so-lines"></div>
+                    <button class="btn-action" onclick="app.addSalidaLine()" style="background:#e2e8f0; color:#334155; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; margin-bottom:12px;"><i class="fa-solid fa-plus"></i> Otro vino</button>
+                    <div class="mv-grid">
+                        <label class="mv-field">Motivo
+                            <select id="so-reason"><option value="entregado">Entregado (pendiente de facturar)</option><option value="rotura">Rotura / merma</option><option value="uso_propio">Uso propio</option><option value="muestra">Muestra / regalo</option><option value="otro">Otro</option></select></label>
+                        <label class="mv-field">Etiqueta / nota<input id="so-label" type="text" placeholder="Ej. Entregado a Tito"></label>
+                    </div>
+                    <button class="btn-action" onclick="app.submitSalida()" style="margin-top: 14px; width: 100%; background: var(--brand-gold); color: var(--text-main); border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer;"><i class="fa-solid fa-check"></i> Descontar del stock</button>
+                    <div id="so-result" style="margin-top: 10px;"></div>
+                </div>
+            </div>
+            <div class="panel" style="margin-top: 20px;">
+                <div class="panel-header"><h3>Salidas registradas</h3></div>
+                <div class="table-responsive"><table>
+                    <thead><tr><th>Fecha</th><th>Vino</th><th>Uds.</th><th>Motivo</th><th>Etiqueta</th><th>Coste</th><th></th></tr></thead>
+                    <tbody id="so-body"></tbody>
+                </table></div>
+            </div>
+        </section>
+
+        <div id="pv-modal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); z-index:9999; align-items:center; justify-content:center; padding:12px;">
+            <div style="background:#fff; border-radius:10px; width:100%; max-width:820px; height:92vh; display:flex; flex-direction:column; overflow:hidden;">
+                <div style="display:flex; gap:8px; align-items:center; padding:10px 14px; border-bottom:1px solid #e2e8f0; flex-wrap:wrap;">
+                    <strong id="pv-title" style="flex:1; min-width:140px;"></strong>
+                    <a id="pv-open" target="_blank" rel="noopener" style="font-size:0.85rem; color:#334155;"><i class="fa-solid fa-up-right-from-square"></i> Abrir</a>
+                    <button onclick="app.downloadInvoice(app._pvOrder.id)" style="background: var(--brand-gold); border:none; padding:8px 12px; border-radius:6px; font-weight:600; cursor:pointer;"><i class="fa-solid fa-download"></i> Descargar</button>
+                    <button onclick="app.closePreview()" style="background:#e2e8f0; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;"><i class="fa-solid fa-xmark"></i> Cerrar</button>
+                </div>
+                <iframe id="pv-frame" style="flex:1; border:0; width:100%;"></iframe>
+            </div>
+        </div>
+
         <section id="view-inventory" class="section">
             <div class="panel">
                 <div class="panel-header">
@@ -1173,7 +1212,7 @@
             currentLang: 'es',
             adminTranslations: {
                 es: {
-                    nav_dashboard: 'Vista General', nav_orders: 'Ventas & Envíos', nav_manual: 'Nueva venta', nav_gastos: 'Gastos con IGIC', nav_inventory: 'Catálogo & Pricing', nav_crm: 'CRM Clientes', nav_promos: 'Cupones y Promos', nav_resellers: 'Resellers (Socios)',
+                    nav_dashboard: 'Vista General', nav_orders: 'Ventas & Envíos', nav_manual: 'Nueva venta', nav_gastos: 'Gastos con IGIC', nav_salidas: 'Salidas de stock', nav_inventory: 'Catálogo & Pricing', nav_crm: 'CRM Clientes', nav_promos: 'Cupones y Promos', nav_resellers: 'Resellers (Socios)',
                     nav_store: 'Volver a la Tienda', nav_logout: 'Cerrar Sesión', loading: 'Cargando...',
                     metric_revenue: 'Ingresos Netos', metric_orders: 'Pedidos Exitosos', metric_tax: 'IGIC repercutido', metric_alerts: 'Vinos a Reponer',
                     recent_orders_title: 'Últimos Pedidos Recibidos', table_id: 'ID / Ref', table_customer: 'Cliente', table_total: 'Total',
@@ -1221,7 +1260,7 @@
                     top_wines_title: 'Top Vinos Más Vendidos', top_wine_name: 'Vino', top_wine_boxes: 'botellas', top_wine_revenue: 'Ingreso'
                 },
                 en: {
-                    nav_dashboard: 'Dashboard', nav_orders: 'Sales & Shipping', nav_manual: 'New sale', nav_gastos: 'Expenses with IGIC', nav_inventory: 'Catalog & Pricing', nav_crm: 'Customer CRM', nav_promos: 'Coupons & Promos', nav_resellers: 'Resellers (Partners)',
+                    nav_dashboard: 'Dashboard', nav_orders: 'Sales & Shipping', nav_manual: 'New sale', nav_gastos: 'Expenses with IGIC', nav_salidas: 'Stock withdrawals', nav_inventory: 'Catalog & Pricing', nav_crm: 'Customer CRM', nav_promos: 'Coupons & Promos', nav_resellers: 'Resellers (Partners)',
                     nav_store: 'Back to Store', nav_logout: 'Logout', loading: 'Loading...',
                     metric_revenue: 'Net Revenue', metric_orders: 'Successful Orders', metric_tax: 'IGIC charged', metric_alerts: 'Wines to Restock',
                     recent_orders_title: 'Recent Orders Received', table_id: 'ID / Ref', table_customer: 'Customer', table_total: 'Total',
@@ -1331,7 +1370,11 @@
 
                 if (viewId === 'dashboard') this.loadDashboardData();
                 if (viewId === 'orders') this.loadOrdersTable();
-                if (viewId === 'manual') this.loadManualSale();
+                if (viewId === 'manual') {
+                    if (this._skipReset) { this._skipReset = false; }
+                    else { this.resetManualEdit(true); this.loadManualSale(); }
+                }
+                if (viewId === 'salidas') this.loadSalidas();
                 if (viewId === 'gastos') this.loadGastos();
                 if (viewId === 'inventory') this.loadInventoryTable();
                 if (viewId === 'crm') this.loadCRM();
@@ -1355,22 +1398,186 @@
                 if (view === 'orders') this.loadOrdersTable(); else this.loadDashboardData();
             },
 
+            buildInvoiceDoc: async function (orderId) {
+                const { data: order, error } = await this.db.from('orders').select('*').eq('id', orderId).single();
+                if (error || !order) throw new Error(error ? error.message : 'Pedido no encontrado');
+                if (!order.invoice_number) throw new Error('Este pedido todavía no tiene número de factura.');
+                if (!window.jspdf || !window.InvoicePdf) throw new Error('No se pudo cargar el generador de PDF.');
+                let logo = null;
+                try {
+                    const blob = await (await fetch('/images/logo-factura.png')).blob();
+                    logo = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(blob); });
+                } catch (e) { /* sin logo: usa el texto */ }
+                const doc = window.InvoicePdf.build(window.jspdf.jsPDF, order, { logoDataUrl: logo, logoRatio: 0.2333 });
+                return { doc, order };
+            },
+
+            previewInvoice: async function (orderId) {
+                try {
+                    const { doc, order } = await this.buildInvoiceDoc(orderId);
+                    if (this._pvUrl) URL.revokeObjectURL(this._pvUrl);
+                    this._pvUrl = URL.createObjectURL(doc.output('blob'));
+                    this._pvOrder = order;
+                    document.getElementById('pv-title').textContent = order.invoice_number + (order.invoice_version > 1 ? ' · v' + order.invoice_version : '') + (order.invoice_status === 'anulada' ? ' · ANULADA' : '');
+                    document.getElementById('pv-frame').src = this._pvUrl;
+                    document.getElementById('pv-open').href = this._pvUrl;
+                    document.getElementById('pv-modal').style.display = 'flex';
+                } catch (e) {
+                    alert('No se pudo mostrar la factura: ' + e.message);
+                }
+            },
+
+            closePreview: function () {
+                document.getElementById('pv-modal').style.display = 'none';
+                document.getElementById('pv-frame').src = 'about:blank';
+            },
+
             downloadInvoice: async function (orderId) {
                 try {
-                    const { data: order, error } = await this.db.from('orders').select('*').eq('id', orderId).single();
-                    if (error || !order) throw new Error(error ? error.message : 'Pedido no encontrado');
-                    if (!order.invoice_number) throw new Error('Este pedido todavía no tiene número de factura.');
-                    if (!window.jspdf || !window.InvoicePdf) throw new Error('No se pudo cargar el generador de PDF.');
-                    let logo = null;
-                    try {
-                        const blob = await (await fetch('/images/logo-factura.png')).blob();
-                        logo = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(blob); });
-                    } catch (e) { /* sin logo: usa el texto */ }
-                    const doc = window.InvoicePdf.build(window.jspdf.jsPDF, order, { logoDataUrl: logo, logoRatio: 0.2333 });
+                    const { doc, order } = await this.buildInvoiceDoc(orderId);
                     doc.save(order.invoice_number.replace('/', '-') + '.pdf');
+                    await this.db.rpc('mark_invoice_downloaded', { p_order: orderId });
+                    const active = document.querySelector('.nav-item.active');
+                    if (active && active.getAttribute('onclick').indexOf("'orders'") > -1) this.loadOrdersTable();
                 } catch (e) {
                     alert('No se pudo generar la factura: ' + e.message);
                 }
+            },
+
+            invoiceActions: function (o) {
+                const anulada = o.invoice_status === 'anulada';
+                const b = (icon, title, fn, bg, col) => `<button class="btn-action" onclick="${fn}" title="${title}" style="padding: 3px 8px; background: ${bg}; color: ${col}; border: none; border-radius: 4px; cursor: pointer; margin: 2px 2px 0 0;"><i class="fa-solid ${icon}"></i></button>`;
+                let h = '';
+                if (o.invoice_number) {
+                    h += `<br><small style="color: var(--text-muted);${anulada ? ' text-decoration: line-through;' : ''}">${o.invoice_number}${o.invoice_version > 1 ? ' · v' + o.invoice_version : ''}</small>`;
+                    if (anulada) h += ` <small style="color:#b91c1c; font-weight:700;">ANULADA</small>`;
+                    h += '<br>' + b('fa-eye', 'Ver factura', `app.previewInvoice('${o.id}')`, '#e2e8f0', '#334155') + b('fa-file-pdf', 'Descargar PDF', `app.downloadInvoice('${o.id}')`, 'var(--brand-gold)', 'var(--text-main)');
+                    if (o.invoice_downloaded_at && !anulada) h += ` <small style="color:#64748b;" title="Descargada el ${new Date(o.invoice_downloaded_at).toLocaleString()}"><i class="fa-solid fa-download"></i></small>`;
+                } else if (anulada) { h += `<br><small style="color:#b91c1c; font-weight:700;">ANULADA</small>`; }
+                if (o.sale_channel === 'manual' && !anulada) {
+                    h += (o.invoice_number ? '' : '<br>') + b('fa-pen', 'Editar (mantiene el número)', `app.editManualSale('${o.id}')`, '#dbeafe', '#1d4ed8') + b('fa-ban', 'Anular', `app.voidInvoice('${o.id}')`, '#fee2e2', '#b91c1c');
+                }
+                return h;
+            },
+
+            refreshActiveView: function () {
+                const active = document.querySelector('.nav-item.active');
+                const view = active ? active.getAttribute('onclick').match(/'([^']+)'/)[1] : 'dashboard';
+                if (view === 'orders') this.loadOrdersTable(); else if (view === 'dashboard') this.loadDashboardData();
+            },
+
+            voidInvoice: async function (orderId) {
+                const { data: o } = await this.db.from('orders').select('id, invoice_number, invoice_downloaded_at, invoice_status').eq('id', orderId).single();
+                if (!o || o.invoice_status === 'anulada') { alert('Ya está anulada.'); return; }
+                let msg = '¿Anular ' + (o.invoice_number || 'esta venta') + '?\n\nEl número se conserva marcado como ANULADA (no se reutiliza) y deja de contar en ventas e IGIC.';
+                if (o.invoice_downloaded_at) msg += '\n\nOJO: este documento ya se descargó. Asegúrate de no entregarlo ni usarlo.';
+                if (!confirm(msg)) return;
+                const reason = prompt('Motivo de la anulación (opcional):', '');
+                if (reason === null) return;
+                const restock = confirm('¿Devolver las botellas al stock?\n\nAceptar = sí (no se llegaron a entregar).\nCancelar = no (ya se entregaron).');
+                const { error } = await this.db.rpc('void_manual_sale', { p_order: orderId, p_reason: reason, p_restock: restock });
+                if (error) { alert('No se pudo anular: ' + error.message); return; }
+                this.refreshActiveView();
+            },
+
+            _editing: null,
+
+            resetManualEdit: function (clearFields) {
+                this._editing = null;
+                const t = document.getElementById('mv-invtype'); if (t) t.disabled = false;
+                const b = document.getElementById('mv-submit'); if (b) b.innerHTML = '<i class="fa-solid fa-check"></i> Confirmar venta y descontar stock';
+                if (clearFields) {
+                    ['mv-name', 'mv-email', 'mv-taxname', 'mv-taxid', 'mv-taxaddr', 'mv-notes'].forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
+                    const d = document.getElementById('mv-discount'); if (d) d.value = 0;
+                    const r = document.getElementById('mv-result'); if (r) r.innerHTML = '';
+                }
+            },
+
+            cancelManualEdit: function () {
+                this.resetManualEdit(true);
+                document.getElementById('mv-lines').innerHTML = '';
+                this.loadManualSale();
+            },
+
+            editManualSale: async function (orderId) {
+                const { data: o, error } = await this.db.from('orders').select('*').eq('id', orderId).single();
+                if (error || !o) { alert('No se pudo cargar la venta.'); return; }
+                if (o.invoice_status === 'anulada') { alert('Está anulada: no se puede editar.'); return; }
+                let msg = 'Vas a editar ' + (o.invoice_number || 'esta venta') + '. Mantiene el mismo número y genera un documento nuevo (v' + ((o.invoice_version || 1) + 1) + ').';
+                if (o.invoice_downloaded_at) msg += '\n\nOJO: la versión anterior YA SE DESCARGÓ. Si se la diste a alguien, mejor anúlala y crea una nueva.';
+                if (!confirm(msg + '\n\n¿Continuar?')) return;
+                this._skipReset = true;
+                this.switchView('manual', document.querySelector(".nav-item[onclick*=\"'manual'\"]"));
+                await this.loadManualSale();
+                document.getElementById('mv-lines').innerHTML = '';
+                document.getElementById('mv-gross').checked = false;
+                (o.items || []).forEach(it => {
+                    this.addManualLine();
+                    const line = document.querySelector('#mv-lines .mv-line:last-child');
+                    line.querySelector('.mv-prod').value = String(it.id);
+                    line.querySelector('.mv-unit').value = it.unit === 'case6' ? 'case6' : 'bottle';
+                    line.querySelector('.mv-qty').value = it.qty;
+                    line.querySelector('.mv-price').value = parseFloat(it.unit_price_net).toFixed(4).replace(/0+$/, '').replace(/\.$/, '');
+                });
+                const v = (id, val) => { document.getElementById(id).value = val == null ? '' : val; };
+                v('mv-name', o.customer_name === 'Consumidor final' ? '' : o.customer_name);
+                v('mv-email', /@manual\.local$/.test(o.customer_email || '') ? '' : o.customer_email);
+                v('mv-delivery', o.delivery_method || 'pickup'); v('mv-pay', o.payment_method);
+                v('mv-paid', o.payment_status === 'paid' ? '1' : '0');
+                v('mv-invtype', o.invoice_type || 'FS'); document.getElementById('mv-invtype').disabled = true;
+                v('mv-taxname', o.customer_tax_name); v('mv-taxid', o.customer_tax_id); v('mv-taxaddr', o.customer_tax_address);
+                v('mv-notes', o.notes);
+                v('mv-disc-mode', 'eur'); v('mv-discount', parseFloat(o.valor_descuento) || 0);
+                this._editing = { id: o.id, number: o.invoice_number };
+                document.getElementById('mv-submit').innerHTML = '<i class="fa-solid fa-check"></i> Guardar cambios' + (o.invoice_number ? ' (mantiene ' + o.invoice_number + ')' : '');
+                document.getElementById('mv-result').innerHTML = `<div class="mv-warn">Editando ${o.invoice_number || 'venta'} · ${o.invoice_downloaded_at ? 'ya descargada · ' : ''}se devuelve al stock lo anterior y se descuenta lo nuevo. <button onclick="app.cancelManualEdit()" style="margin-left:8px; padding:3px 8px; border:1px solid #92400e; background:transparent; border-radius:4px; cursor:pointer;">Cancelar edición</button></div>`;
+                this.manualRecalc();
+            },
+
+            addSalidaLine: function () {
+                const opts = (this.manualProducts || []).map(p => `<option value="${p.id}">${p.name} (stock ${p.stock || 0})</option>`).join('');
+                const d = document.createElement('div');
+                d.className = 'mv-line'; d.style.gridTemplateColumns = '3fr 1fr auto';
+                d.innerHTML = `<label class="mv-field mv-wine">Vino<select class="so-prod"><option value="">Elegir...</option>${opts}</select></label>
+                    <label class="mv-field">Cant.<input class="so-qty" type="number" min="1" step="1" value="1"></label>
+                    <button class="btn-action" onclick="this.closest('.mv-line').remove()" title="Quitar" style="padding: 10px; background: #fee2e2; color: #b91c1c; border: none; border-radius: 6px; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>`;
+                document.getElementById('so-lines').appendChild(d);
+            },
+
+            loadSalidas: async function () {
+                const { data: prods } = await this.db.from('products').select('id,name,stock').order('name');
+                this.manualProducts = (prods || []).sort((a, b) => ((b.stock || 0) > 0) - ((a.stock || 0) > 0) || a.name.localeCompare(b.name));
+                document.getElementById('so-lines').innerHTML = '';
+                this.addSalidaLine();
+                const names = {}; (prods || []).forEach(p => names[p.id] = p.name);
+                const { data: mv } = await this.db.from('stock_movements').select('*').eq('movement_type', 'salida_sin_factura').order('created_at', { ascending: false }).limit(100);
+                const RL = { entregado: 'Entregado', rotura: 'Rotura', uso_propio: 'Uso propio', muestra: 'Muestra', otro: 'Otro' };
+                document.getElementById('so-body').innerHTML = (mv || []).length ? mv.map(m => {
+                    const rev = !!m.reverted_at;
+                    const cost = Math.abs(m.quantity) * (parseFloat(m.unit_cost_net) || 0);
+                    return `<tr style="${rev ? 'opacity:0.5; text-decoration: line-through;' : ''}"><td>${new Date(m.created_at).toLocaleDateString()}</td><td>${names[m.product_id] || m.product_id}</td><td>${Math.abs(m.quantity)}</td><td>${RL[m.reason] || m.reason || ''}</td><td>${m.label || ''}</td><td>${cost.toFixed(2)} €</td><td>${rev ? '<small>deshecha</small>' : `<button class="btn-action" onclick="app.revertSalida('${m.id}')" title="Deshacer (devuelve al stock)" style="padding:3px 8px; background:#fee2e2; color:#b91c1c; border:none; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-rotate-left"></i></button>`}</td></tr>`;
+                }).join('') : '<tr><td colspan="7" style="text-align:center;">Todavía no hay salidas.</td></tr>';
+            },
+
+            submitSalida: async function () {
+                const res = document.getElementById('so-result');
+                const lines = [...document.querySelectorAll('#so-lines .mv-line')].map(l => ({ product_id: l.querySelector('.so-prod').value, qty: parseInt(l.querySelector('.so-qty').value) || 0 })).filter(l => l.product_id && l.qty > 0);
+                if (!lines.length) { res.innerHTML = '<div class="mv-warn">Elige al menos un vino y cantidad.</div>'; return; }
+                const reason = document.getElementById('so-reason').value, label = document.getElementById('so-label').value.trim();
+                if (!label && reason !== 'rotura') { res.innerHTML = '<div class="mv-warn">Pon una etiqueta (ej. "Entregado a Tito") para acordarte luego.</div>'; return; }
+                if (!confirm('¿Descontar del stock sin factura?')) return;
+                const { error } = await this.db.rpc('create_stock_out', { p_lines: lines, p_reason: reason, p_label: label });
+                if (error) { res.innerHTML = `<div class="mv-warn">Error: ${error.message}</div>`; return; }
+                document.getElementById('so-label').value = '';
+                await this.loadSalidas();
+                res.innerHTML = '<div style="background:#dcfce7; border:1px solid #16a34a; color:#166534; border-radius:6px; padding:10px;">Stock descontado y salida anotada.</div>';
+            },
+
+            revertSalida: async function (id) {
+                if (!confirm('¿Deshacer esta salida? Las botellas vuelven al stock.')) return;
+                const { error } = await this.db.rpc('revert_stock_out', { p_movement: id });
+                if (error) { alert('No se pudo deshacer: ' + error.message); return; }
+                this.loadSalidas();
             },
 
             manualProducts: [],
@@ -1497,9 +1704,9 @@
                 }
                 if (type === 'FC' && (!document.getElementById('mv-taxname').value.trim() || !document.getElementById('mv-taxid').value.trim())) {
                     res.innerHTML = '<div class="mv-warn">Para factura completa indica nombre/razón social y NIF.</div>'; return; }
-                if (!confirm('¿Confirmar la venta? Se descontará el stock.')) return;
+                if (!confirm(this._editing ? '¿Guardar los cambios? Mantiene el número y ajusta el stock.' : '¿Confirmar la venta? Se descontará el stock.')) return;
                 btn.disabled = true;
-                const { data, error } = await this.db.rpc('create_manual_sale', {
+                const rpcParams = {
                     p_lines: lines,
                     p_payment_method: document.getElementById('mv-pay').value,
                     p_paid: document.getElementById('mv-paid').value === '1',
@@ -1512,13 +1719,18 @@
                     p_tax_id: document.getElementById('mv-taxid').value.trim() || null,
                     p_tax_address: document.getElementById('mv-taxaddr').value.trim() || null,
                     p_notes: document.getElementById('mv-notes').value.trim() || null
-                });
+                };
+                const editing = this._editing;
+                const { data, error } = editing
+                    ? await this.db.rpc('update_manual_sale', Object.assign({ p_order: editing.id }, rpcParams))
+                    : await this.db.rpc('create_manual_sale', rpcParams);
                 btn.disabled = false;
                 if (error) { res.innerHTML = `<div class="mv-warn">Error: ${error.message}</div>`; return; }
                 const oid = data;
-                res.innerHTML = `<div style="background:#dcfce7; border:1px solid #16a34a; color:#166534; border-radius:6px; padding:10px;">Venta registrada y stock descontado. Pedido ${String(oid).slice(0, 8)}${type === 'FC' ? ' · factura completa pendiente de número' : ''}.
-                    ${type === 'FS' ? `<br><button class="btn-action" onclick="app.downloadInvoice('${oid}')" style="margin-top:8px; background: var(--brand-gold); color: var(--text-main); border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer;"><i class="fa-solid fa-file-pdf"></i> Descargar factura simplificada</button>` : ''}</div>`;
-                if (type === 'FS') this.downloadInvoice(oid);
+                res.innerHTML = `<div style="background:#dcfce7; border:1px solid #16a34a; color:#166534; border-radius:6px; padding:10px;">${editing ? 'Cambios guardados (misma numeración, nueva versión).' : 'Venta registrada y stock descontado.'} Pedido ${String(oid).slice(0, 8)}${type === 'FC' ? ' · factura completa pendiente de número' : ''}.
+                    ${type === 'FS' ? `<br><button class="btn-action" onclick="app.previewInvoice('${oid}')" style="margin-top:8px; background:#e2e8f0; color:#334155; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer;"><i class="fa-solid fa-eye"></i> Ver factura</button> <button class="btn-action" onclick="app.downloadInvoice('${oid}')" style="margin-top:8px; background: var(--brand-gold); color: var(--text-main); border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer;"><i class="fa-solid fa-file-pdf"></i> Descargar</button>` : ''}</div>`;
+                if (type === 'FS') this.previewInvoice(oid);
+                if (editing) this.resetManualEdit(false);
                 this.manualProducts = [];
                 document.getElementById('mv-lines').innerHTML = '';
                 this.loadManualSale();
@@ -1570,6 +1782,7 @@
                     const { data: products } = await this.db.from('products').select('*');
                     const { data: expenses } = await this.db.from('tax_expenses').select('doc_date, igic_amount, cost_amount');
                     const { data: purchases } = await this.db.from('stock_movements').select('product_id, quantity, unit_cost_net').eq('movement_type', 'compra');
+                    const { data: salidas } = await this.db.from('stock_movements').select('quantity, unit_cost_net, reverted_at').eq('movement_type', 'salida_sin_factura');
 
                     // KPI TOTALS
                     let grossSales = 0, discounts = 0, netIncome = 0, taxes = 0, commissions = 0;
@@ -1774,6 +1987,8 @@
                         }
                     });
                     const extraAll = (expenses || []).reduce((a, g) => a + (parseFloat(g.cost_amount) || 0), 0);
+                    let salidasUnits = 0, salidasCost = 0;
+                    (salidas || []).filter(m => !m.reverted_at).forEach(m => { salidasUnits += Math.abs(m.quantity); salidasCost += Math.abs(m.quantity) * (parseFloat(m.unit_cost_net) || 0); });
                     let investPaid = extraAll;
                     (purchases || []).forEach(m => { investPaid += (parseFloat(m.quantity) || 0) * (parseFloat(m.unit_cost_net) || 0); });
                     let stockCostList = 0, stockPvpNet = 0, stockUnits = 0;
@@ -1807,6 +2022,7 @@
                         row('Coste real de lo vendido', fmt(cogsAllList), 'sin el 20% de Martín') +
                         (commAll > 0 ? row('Comisiones de revendedores', fmt(commAll), '') : '') +
                         (extraAll > 0 ? row('Despacho y costes extra', fmt(extraAll), 'gestión de importación') : '') +
+                        (salidasUnits > 0 ? row('Salidas de stock sin facturar', fmt(salidasCost), salidasUnits + ' botellas (entregas, roturas, uso propio) · no restado del margen') : '') +
                         row('Margen sobre coste real', pm(marginReal), pct(marginReal, salesAll) + ' de las ventas · con PVP completo sería ' + pct(stockPvpNet - stockCostList, stockPvpNet), 'tot') +
                         row('+ Ahorro por el 20% de Martín', pm(dtoSave), 'coste que pagaste de verdad: ' + fmt(cogsAll)) +
                         row('= Margen total con tu descuento', pm(marginTotal), pct(marginTotal, salesAll) + ' de las ventas', 'tot') +
@@ -1844,8 +2060,9 @@
                     return;
                 }
                 document.getElementById('all-orders-body').innerHTML = orders.map(o => {
+                    const voided = o.invoice_status === 'anulada';
                     const badgeClass = o.payment_status === 'paid' ? 'badge-paid' : 'badge-pending';
-                    const statusText = o.payment_status === 'paid' ? this.adminTranslations[this.currentLang].paid_upper : this.adminTranslations[this.currentLang].pending_upper;
+                    const statusText = voided ? 'ANULADA' : (o.payment_status === 'paid' ? this.adminTranslations[this.currentLang].paid_upper : this.adminTranslations[this.currentLang].pending_upper);
 
                     const isShipped = o.shipping_status === 'shipped' || o.shipping_status === 'delivered';
                     const shipBadge = isShipped ? 'badge-paid' : 'badge-pending';
@@ -1853,7 +2070,7 @@
 
                     return `<tr>
                         <td><strong>#${o.id.slice(0, 8).toUpperCase()}</strong><br><small>${new Date(o.created_at).toLocaleDateString()}</small>
-                            ${o.invoice_number ? `<br><small style="color: var(--text-muted);">${o.invoice_number}</small> <button class="btn-action" onclick="app.downloadInvoice('${o.id}')" title="Descargar factura PDF" style="padding: 3px 8px; background: var(--brand-gold); color: var(--text-main); border: none; border-radius: 4px; cursor: pointer;"><i class="fa-solid fa-file-pdf"></i></button>` : ''}</td>
+                            ${this.invoiceActions(o)}</td>
                         <td>${o.customer_name}<br><small style="color: var(--text-muted)">${/@manual\.local$/.test(o.customer_email || '') ? '' : o.customer_email}</small></td>
                         <td>${o.island || 'N/A'}</td>
                         <td><strong>${parseFloat(o.total_amount).toFixed(2)} €</strong></td>
